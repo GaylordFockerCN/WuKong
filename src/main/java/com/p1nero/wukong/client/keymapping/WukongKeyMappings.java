@@ -1,8 +1,14 @@
 package com.p1nero.wukong.client.keymapping;
 
+import com.p1nero.wukong.epicfight.WukongSkillCategories;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.client.ChangeStaffStylePacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.event.TickEvent;
@@ -10,6 +16,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
+import yesman.epicfight.network.EpicFightNetworkManager;
+import yesman.epicfight.network.client.CPChangeSkill;
+import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+
+import java.util.Collection;
+import java.util.Set;
+
 @Mod.EventBusSubscriber(value = {Dist.CLIENT},bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongKeyMappings {
     public static final MyKeyMapping CHOP_STYLE = new MyKeyMapping("key.wukong.chop_style", GLFW.GLFW_KEY_Z, "key.wukong.category");
@@ -25,16 +40,34 @@ public class WukongKeyMappings {
         ClientRegistry.registerKeyBinding(STAFF_FLOWER);
     }
 
+    /**
+     * 按键切换棍势，确保学过才可以用按键切换。
+     */
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if(CHOP_STYLE.isDown()){
-            PacketRelay.sendToServer(PacketHandler.INSTANCE, new ChangeStaffStylePacket(0));
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if(localPlayer == null){
+            return;
         }
-        if(POKE_STYLE.isDown()){
-            PacketRelay.sendToServer(PacketHandler.INSTANCE, new ChangeStaffStylePacket(1));
-        }
-        if(CHOP_STYLE.isDown()){
-            PacketRelay.sendToServer(PacketHandler.INSTANCE, new ChangeStaffStylePacket(2));
-        }
+        localPlayer.getCapability(EpicFightCapabilities.CAPABILITY_SKILL).ifPresent(capabilitySkill -> {
+            Collection<Skill> styles = capabilitySkill.getLearnedSkills(WukongSkillCategories.STAFF_STYLE);
+            Skill skill;
+            if(CHOP_STYLE.isRelease() && styles.contains(WukongSkills.CHOP_STYLE)){
+                skill = WukongSkills.CHOP_STYLE;
+            }else if(POKE_STYLE.isRelease() && styles.contains(WukongSkills.POKE_STYLE)){
+                skill = WukongSkills.POKE_STYLE;
+            }else if(STAND_STYLE.isRelease() && styles.contains(WukongSkills.STAND_STYLE)){
+                skill = WukongSkills.STAND_STYLE;
+            }else {
+                return;
+            }
+            Set<SkillContainer> skillContainers = capabilitySkill.getSkillContainersFor(WukongSkillCategories.STAFF_STYLE);
+            SkillContainer skillContainer = skillContainers.iterator().next();
+            skillContainer.setSkill(skill);
+            capabilitySkill.addLearnedSkill(skill);
+            localPlayer.displayClientMessage(new TranslatableComponent("tips.wukong.style_change").append(skill.getDisplayName()), true);
+            EpicFightNetworkManager.sendToServer(new CPChangeSkill(skillContainer.getSlot().universalOrdinal(), -1, skill.toString(), false));
+        });
+
 
     }
 
