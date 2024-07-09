@@ -35,7 +35,7 @@ public class Config
 //    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEMS_CAN_FLY;
 //    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEMS_CAN_NOT_FLY;
 //
-//    static final ForgeConfigSpec SPEC;
+    static final ForgeConfigSpec SPEC;
 
     static {
 
@@ -61,7 +61,7 @@ public class Config
 //                .defineListAllowEmpty(List.of("items can't fly"), () -> List.of("minecraft:iron_ingot"), Config::validateItemName);
 //        BUILDER.pop();
 //
-//        SPEC = BUILDER.build();
+        SPEC = BUILDER.build();
     }
 
     public static Set<Item> swordItems = new HashSet<>();
