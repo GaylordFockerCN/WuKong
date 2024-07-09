@@ -9,7 +9,7 @@ import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ModAnimations {
+public class WukongAnimations {
 
     //劈棍
     public static StaticAnimation CHOP_IDLE;
@@ -73,7 +73,7 @@ public class ModAnimations {
 
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
-        event.getRegistryMap().put(WukongMoveset.MOD_ID, ModAnimations::build);
+        event.getRegistryMap().put(WukongMoveset.MOD_ID, WukongAnimations::build);
     }
 
     private static void build() {

@@ -3,14 +3,13 @@ package com.p1nero.wukong.epicfight;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 
-public enum WukongSkillSlot implements SkillSlot {
-    CHOP,
-    POKE,
-    STAND;
-    SkillCategory category;
-    int id;
+public enum WukongSkillSlots implements SkillSlot {
+    STAFF_STYLE(WukongSkillCategories.STAFF_STYLE);
+    final SkillCategory category;
+    final int id;
 
-    WukongSkillSlot(){
+    WukongSkillSlots(WukongSkillCategories category){
+        this.category = category;
         this.id = SkillSlot.ENUM_MANAGER.assign(this);
     }
 
