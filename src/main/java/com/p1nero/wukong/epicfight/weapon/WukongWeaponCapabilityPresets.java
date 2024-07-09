@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
@@ -40,25 +41,23 @@ public class WukongWeaponCapabilityPresets {
             //学棍势之前只是普通滴棍子（可以改成劈棍默认也行
             .newStyleCombo(WukongStyles.WUKONG_COMMON,
                     Animations.SPEAR_ONEHAND_AUTO)
-            .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> WukongSkills.CHOP_CHARGED)
+            .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> EpicFightSkills.SWEEPING_EDGE)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.IDLE,
-                    Animations.BIPED_RUN_LONGSWORD)
+                    Animations.BIPED_HOLD_SPEAR)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.WALK,
-                    Animations.LONGSWORD_GUARD)
+                    Animations.BIPED_WALK_SPEAR)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.CHASE,
-                    Animations.BIPED_RUN_LONGSWORD)
+                    Animations.BIPED_RUN_SPEAR)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.RUN,
-                    Animations.BIPED_RUN_LONGSWORD)
+                    Animations.BIPED_RUN_SPEAR)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.SWIM,
-                    Animations.LONGSWORD_GUARD)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.BLOCK,
-                    Animations.LONGSWORD_GUARD)
+                    Animations.BIPED_HOLD_SPEAR)
+
             //劈棍
             .newStyleCombo(WukongStyles.CHOP,
                     WukongAnimations.CHOP_AUTO1,
