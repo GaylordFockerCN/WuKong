@@ -135,9 +135,118 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAND_WALK)
             ;
 
+    public static final Function<Item, CapabilityItem.Builder> CHOP_ONLY = (item) ->
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+                    .styleProvider((entityPatch) -> WukongStyles.CHOP)
+                    .collider(WukongColliders.STAFF)
+                    .hitSound(EpicFightSounds.BLUNT_HIT)
+                    .hitParticle(EpicFightParticles.HIT_BLUNT.get())
+                    .canBePlacedOffhand(false)
+                    .comboCancel((style) -> false)
+                    //劈棍
+                    .newStyleCombo(WukongStyles.CHOP,
+                            WukongAnimations.CHOP_AUTO1,
+                            WukongAnimations.CHOP_AUTO2,
+                            WukongAnimations.CHOP_AUTO3,
+                            WukongAnimations.CHOP_AUTO4,
+                            WukongAnimations.CHOP_AUTO5,
+                            WukongAnimations.CHOP_AUTO5,//冲刺
+                            WukongAnimations.CHOP_AUTO1)//空中
+                    .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
+                    .livingMotionModifier(WukongStyles.CHOP,
+                            LivingMotions.IDLE,
+                            WukongAnimations.CHOP_IDLE)
+                    .livingMotionModifier(WukongStyles.CHOP,
+                            LivingMotions.WALK,
+                            WukongAnimations.CHOP_WALK)
+                    .livingMotionModifier(WukongStyles.CHOP,
+                            LivingMotions.CHASE,
+                            WukongAnimations.CHOP_RUN)
+                    .livingMotionModifier(WukongStyles.CHOP,
+                            LivingMotions.RUN,
+                            WukongAnimations.CHOP_RUN)
+                    .livingMotionModifier(WukongStyles.CHOP,
+                            LivingMotions.SWIM,
+                            WukongAnimations.CHOP_WALK);
+
+    public static final Function<Item, CapabilityItem.Builder> POKE_ONLY = (item) ->
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+                    .styleProvider((entityPatch) -> WukongStyles.POKE)
+                    .collider(WukongColliders.STAFF)
+                    .hitSound(EpicFightSounds.BLUNT_HIT)
+                    .hitParticle(EpicFightParticles.HIT_BLUNT.get())
+                    .canBePlacedOffhand(false)
+                    .comboCancel((style) -> false)
+
+                    //戳棍
+                    .newStyleCombo(WukongStyles.POKE,
+                            WukongAnimations.POKE_AUTO1,
+                            WukongAnimations.POKE_AUTO2,
+                            WukongAnimations.POKE_AUTO3,
+                            WukongAnimations.POKE_AUTO4,
+                            WukongAnimations.POKE_AUTO5,
+                            WukongAnimations.POKE_AUTO5,//冲刺
+                            WukongAnimations.POKE_AUTO1)//空中
+                    .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
+                    .livingMotionModifier(WukongStyles.POKE,
+                            LivingMotions.IDLE,
+                            WukongAnimations.POKE_IDLE)
+                    .livingMotionModifier(WukongStyles.POKE,
+                            LivingMotions.WALK,
+                            WukongAnimations.POKE_WALK)
+                    .livingMotionModifier(WukongStyles.POKE,
+                            LivingMotions.CHASE,
+                            WukongAnimations.POKE_RUN)
+                    .livingMotionModifier(WukongStyles.POKE,
+                            LivingMotions.RUN,
+                            WukongAnimations.POKE_RUN)
+                    .livingMotionModifier(WukongStyles.POKE,
+                            LivingMotions.SWIM,
+                            WukongAnimations.POKE_WALK);
+
+    public static final Function<Item, CapabilityItem.Builder> STAND_ONLY = (item) ->
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+                    .styleProvider((entityPatch) -> WukongStyles.STAND)
+                    .collider(WukongColliders.STAFF)
+                    .hitSound(EpicFightSounds.BLUNT_HIT)
+                    .hitParticle(EpicFightParticles.HIT_BLUNT.get())
+                    .canBePlacedOffhand(false)
+                    .comboCancel((style) -> false)
+
+                    //立棍
+                    .newStyleCombo(WukongStyles.STAND,
+                            WukongAnimations.STAND_AUTO1,
+                            WukongAnimations.STAND_AUTO2,
+                            WukongAnimations.STAND_AUTO3,
+                            WukongAnimations.STAND_AUTO4,
+                            WukongAnimations.STAND_AUTO5,
+                            WukongAnimations.STAND_AUTO5,//冲刺
+                            WukongAnimations.STAND_AUTO1)//空中
+                    .innateSkill(WukongStyles.STAND, (itemstack) -> WukongSkills.STAND_CHARGED)
+                    .livingMotionModifier(WukongStyles.STAND,
+                            LivingMotions.IDLE,
+                            WukongAnimations.STAND_IDLE)
+                    .livingMotionModifier(WukongStyles.STAND,
+                            LivingMotions.WALK,
+                            WukongAnimations.STAND_WALK)
+                    .livingMotionModifier(WukongStyles.STAND,
+                            LivingMotions.CHASE,
+                            WukongAnimations.STAND_RUN)
+                    .livingMotionModifier(WukongStyles.STAND,
+                            LivingMotions.RUN,
+                            WukongAnimations.STAND_RUN)
+                    .livingMotionModifier(WukongStyles.STAND,
+                            LivingMotions.SWIM,
+                            WukongAnimations.STAND_WALK)
+            ;
+
+
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
-        event.getTypeEntry().put("staff", STAFF);
+        event.getTypeEntry().put("wk_staff", STAFF);
+        event.getTypeEntry().put("chop_only", CHOP_ONLY);
+        event.getTypeEntry().put("poke_only", POKE_ONLY);
+        event.getTypeEntry().put("stand_only", STAND_ONLY);
     }
 
 }
