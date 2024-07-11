@@ -10,6 +10,7 @@ import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.item.WukongCreativeTabs;
 import com.p1nero.wukong.item.WukongItems;
 import com.p1nero.wukong.network.PacketHandler;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -42,7 +43,6 @@ public class WukongMoveset
 
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         fg_bus.addListener(WukongSkills::BuildSkills);
-        fg_bus.addListener(WukongKeyMappings::onClientTick);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         MinecraftForge.EVENT_BUS.register(this);

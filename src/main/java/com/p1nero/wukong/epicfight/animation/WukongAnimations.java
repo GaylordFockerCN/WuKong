@@ -11,6 +11,8 @@ import yesman.epicfight.model.armature.HumanoidArmature;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
+    //棍花
+    public static StaticAnimation STAFF_FLOWER;
 
     //劈棍
     public static StaticAnimation CHOP_IDLE;

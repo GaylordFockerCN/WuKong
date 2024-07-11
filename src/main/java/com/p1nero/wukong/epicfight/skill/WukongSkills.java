@@ -6,6 +6,7 @@ import com.p1nero.wukong.item.WukongCreativeTabs;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillCategories;
 
 public class WukongSkills {
 
@@ -20,6 +21,8 @@ public class WukongSkills {
     public static Skill Ding;//定身术
 
     public static void registerSkills() {
+
+        SkillManager.register(StaffFlower::new, Skill.createBuilder().setCreativeTab(WukongCreativeTabs.ITEMS).setResource(Skill.Resource.NONE).setCategory(SkillCategories.GUARD), WukongMoveset.MOD_ID, "staff_flower");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.CHOP), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "chop_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.STAND), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "stand_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.POKE), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "poke_style");
