@@ -1,0 +1,11 @@
+{
+  "trail": {
+    "color": [245, 245, 245],
+    "begin_pos": [0.0, 0.0, -0.25],
+    "end_pos": [0.0, 0.0, -2.2],
+    "lifetime": 4,
+    "interpolations": 5,
+    "texture_path": "sword_soaring:textures/particle/gold_trail.png",
+    "particle_type": "epicfight:swing_trail"
+  }
+}

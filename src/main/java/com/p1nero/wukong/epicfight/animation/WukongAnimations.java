@@ -5,6 +5,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 
@@ -73,6 +74,15 @@ public class WukongAnimations {
 
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
+        //TODO 测试完记得删
+        CHOP_AUTO1 = Animations.SWORD_AUTO1;
+        CHOP_AUTO2 = Animations.SWORD_AUTO2;
+        CHOP_AUTO3 = Animations.SWORD_AUTO3;
+        CHOP_AUTO4 = Animations.SWORD_DASH;
+        CHOP_AUTO5 = Animations.SWORD_AIR_SLASH;
+        CHOP_WALK = Animations.BIPED_WALK;
+        CHOP_RUN = Animations.BIPED_RUN;
+        CHOP_IDLE = Animations.BIPED_IDLE;
         event.getRegistryMap().put(WukongMoveset.MOD_ID, WukongAnimations::build);
     }
 

@@ -2,6 +2,7 @@ package com.p1nero.wukong.epicfight.skill;
 
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import com.p1nero.wukong.item.WukongCreativeTabs;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
@@ -22,14 +23,16 @@ public class WukongSkills {
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.CHOP), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "chop_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.STAND), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "stand_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.POKE), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "poke_style");
-        SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.CHOP), WukongMoveset.MOD_ID, "chop_style");
-        SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.POKE), WukongMoveset.MOD_ID, "poke_style");
-        SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.STAND), WukongMoveset.MOD_ID, "stand_style");
+        SkillManager.register(ChargedAttack::new, ChargedAttack.createChargedAttack(), WukongMoveset.MOD_ID, "chop_charged");
+        SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.CHOP).setCreativeTab(WukongCreativeTabs.ITEMS), WukongMoveset.MOD_ID, "chop_style");
+        SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.POKE).setCreativeTab(WukongCreativeTabs.ITEMS), WukongMoveset.MOD_ID, "poke_style");
+        SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.STAND).setCreativeTab(WukongCreativeTabs.ITEMS), WukongMoveset.MOD_ID, "stand_style");
     }
 
 
     public static void BuildSkills(SkillBuildEvent event){
-//        CHOP_CHARGED = event.build(WukongMoveset.MOD_ID, "chop_charged"); TODO 重击
+        CHOP_CHARGED = event.build(WukongMoveset.MOD_ID, "chop_charged");
+
         CHOP_STYLE = event.build(WukongMoveset.MOD_ID, "chop_style");
         POKE_STYLE = event.build(WukongMoveset.MOD_ID, "poke_style");
         STAND_STYLE = event.build(WukongMoveset.MOD_ID, "stand_style");

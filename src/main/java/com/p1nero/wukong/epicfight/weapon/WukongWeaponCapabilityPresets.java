@@ -15,7 +15,8 @@ import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
 
@@ -25,22 +26,27 @@ import java.util.function.Function;
 public class WukongWeaponCapabilityPresets {
 
     public static final Function<Item, CapabilityItem.Builder> STAFF = (item) ->
-            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
             .styleProvider((livingEntityPatch) -> {
-                if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
-                    if(playerPatch.getSkill(WukongSkillSlots.STAFF_STYLE).getSkill() instanceof StaffStyle style){
-                        return style.getStyle();
+                if(livingEntityPatch instanceof PlayerPatch playerPatch){
+                    SkillContainer container = playerPatch.getSkill(WukongSkillSlots.STAFF_STYLE);
+                    if(container.getSkill() instanceof StaffStyle style){
+                        return style.getStyle(container);
                     }
                 }
                 return WukongStyles.WUKONG_COMMON;
-            }).collider(WukongColliders.STAFF)
+            }).collider(WukongColliders.WK_STAFF)
             .hitSound(EpicFightSounds.BLUNT_HIT)
             .hitParticle(EpicFightParticles.HIT_BLUNT.get())
             .canBePlacedOffhand(false)
             .comboCancel((style) -> false)
             //学棍势之前只是普通滴棍子（可以改成劈棍默认也行
             .newStyleCombo(WukongStyles.WUKONG_COMMON,
-                    Animations.SPEAR_ONEHAND_AUTO)
+                    Animations.SPEAR_ONEHAND_AUTO,
+                    Animations.SPEAR_TWOHAND_AUTO1,
+                    Animations.SPEAR_TWOHAND_AUTO2,
+                    Animations.SPEAR_DASH,
+                    Animations.SPEAR_TWOHAND_AIR_SLASH)
             .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> EpicFightSkills.SWEEPING_EDGE)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.IDLE,
@@ -60,14 +66,21 @@ public class WukongWeaponCapabilityPresets {
 
             //劈棍
             .newStyleCombo(WukongStyles.CHOP,
-                    WukongAnimations.CHOP_AUTO1,
-                    WukongAnimations.CHOP_AUTO2,
-                    WukongAnimations.CHOP_AUTO3,
-                    WukongAnimations.CHOP_AUTO4,
-                    WukongAnimations.CHOP_AUTO5,
-                    WukongAnimations.CHOP_AUTO5,//冲刺
-                    WukongAnimations.CHOP_AUTO1)//空中
+//                    WukongAnimations.CHOP_AUTO1,
+//                    WukongAnimations.CHOP_AUTO2,
+//                    WukongAnimations.CHOP_AUTO3,
+//                    WukongAnimations.CHOP_AUTO4,
+//                    WukongAnimations.CHOP_AUTO5,
+//                    WukongAnimations.CHOP_AUTO5,//冲刺
+//                    WukongAnimations.CHOP_AUTO1)//空中
+
+                    Animations.SPEAR_ONEHAND_AUTO,
+                    Animations.SPEAR_TWOHAND_AUTO1,
+                    Animations.SPEAR_TWOHAND_AUTO2,
+                    Animations.SPEAR_DASH,
+                    Animations.SPEAR_TWOHAND_AIR_SLASH)
             .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
+//            .innateSkill(WukongStyles.CHOP, (itemstack) -> EpicFightSkills.SWEEPING_EDGE)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.IDLE,
                     WukongAnimations.CHOP_IDLE)
@@ -136,9 +149,9 @@ public class WukongWeaponCapabilityPresets {
             ;
 
     public static final Function<Item, CapabilityItem.Builder> CHOP_ONLY = (item) ->
-            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.CHOP)
-                    .collider(WukongColliders.STAFF)
+                    .collider(WukongColliders.WK_STAFF)
                     .hitSound(EpicFightSounds.BLUNT_HIT)
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)
@@ -170,9 +183,9 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.CHOP_WALK);
 
     public static final Function<Item, CapabilityItem.Builder> POKE_ONLY = (item) ->
-            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.POKE)
-                    .collider(WukongColliders.STAFF)
+                    .collider(WukongColliders.WK_STAFF)
                     .hitSound(EpicFightSounds.BLUNT_HIT)
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)
@@ -205,9 +218,9 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.POKE_WALK);
 
     public static final Function<Item, CapabilityItem.Builder> STAND_ONLY = (item) ->
-            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.STAFF)
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.STAND)
-                    .collider(WukongColliders.STAFF)
+                    .collider(WukongColliders.WK_STAFF)
                     .hitSound(EpicFightSounds.BLUNT_HIT)
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)

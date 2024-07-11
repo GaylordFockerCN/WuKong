@@ -2,24 +2,41 @@ package com.p1nero.wukong.epicfight.skill;
 
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import net.minecraft.world.item.CreativeModeTab;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
+import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillDataManager;
 
 public class StaffStyle extends Skill {
 
-    protected final WukongStyles style;
+    protected final WukongStyles style;//客户端无效，所以得有datakey
+    private static final SkillDataManager.SkillDataKey<Integer> STYLE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
 
     public StaffStyle(Builder builder) {
         super(builder);
         this.style = builder.style;
     }
 
+    @Override
+    public void onInitiate(SkillContainer container) {
+        super.onInitiate(container);
+        container.getDataManager().registerData(STYLE);
+        if(!container.getExecuter().isLogicalClient()){
+            container.getDataManager().setData(STYLE, style.ordinal());
+        }
+    }
+
     public static Builder createStaffStyle(){
         return new Builder().setCategory(WukongSkillCategories.STAFF_STYLE).setResource(Resource.NONE);
     }
 
-    public WukongStyles getStyle() {
-        return style;
+    /**
+     * 得根据key返回，不然客户端不同步。。
+     */
+    public WukongStyles getStyle(SkillContainer container) {
+//        return style;
+        return WukongStyles.values()[container.getDataManager().getDataValue(STYLE)];
     }
 
     public static class Builder extends Skill.Builder<StaffStyle>{
@@ -39,6 +56,12 @@ public class StaffStyle extends Skill {
         @Override
         public Builder setCategory(SkillCategory category) {
             this.category = category;
+            return this;
+        }
+
+        @Override
+        public Builder setCreativeTab(CreativeModeTab tab) {
+            this.tab = tab;
             return this;
         }
     }
