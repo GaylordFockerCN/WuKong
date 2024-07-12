@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "com.p1nero.wukong.mixin",
+  "client": [
+    "BattleModeGuiMixin",
+    "ItemRendererMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "wukong.mixins.refmap.json"
+}

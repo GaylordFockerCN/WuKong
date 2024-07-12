@@ -183,14 +183,16 @@ public class ChargedAttack extends WeaponInnateSkill {
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean shouldDraw(SkillContainer container) {
-        return true;
+        return false;
     }
 
     /**
      * 根据棍式和星级画图
+     * @deprecated 迁移到 {@link com.p1nero.wukong.mixin.BattleModeGuiMixin}
      */
     @OnlyIn(Dist.CLIENT)
     @Override
+    @Deprecated
     public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
         int stack = container.getStack();
         int style = ((StaffStyle) container.getExecuter().getSkill(WukongSkillSlots.STAFF_STYLE).getSkill()).style.ordinal();

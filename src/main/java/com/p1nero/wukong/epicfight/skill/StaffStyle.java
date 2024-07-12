@@ -2,6 +2,7 @@ package com.p1nero.wukong.epicfight.skill;
 
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
@@ -22,20 +23,30 @@ public class StaffStyle extends Skill {
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         container.getDataManager().registerData(STYLE);
-        if(!container.getExecuter().isLogicalClient()){
-            container.getDataManager().setData(STYLE, style.ordinal());
-        }
+        container.getDataManager().setData(STYLE, style.ordinal());
     }
 
     public static Builder createStaffStyle(){
         return new Builder().setCategory(WukongSkillCategories.STAFF_STYLE).setResource(Resource.NONE);
     }
 
+    @Override
+    public void onRemoved(SkillContainer container) {
+        container.getDataManager().setData(STYLE, WukongStyles.WUKONG_COMMON.ordinal());
+    }
+
     /**
      * 得根据key返回，不然客户端不同步。。
+     * 很奇怪，onInitiate里面setDataSync会出错
      */
     public WukongStyles getStyle(SkillContainer container) {
 //        return style;
+        if(!container.getDataManager().hasData(STYLE)){
+            container.getDataManager().registerData(STYLE);
+            if(!container.getExecuter().isLogicalClient()){
+                container.getDataManager().setDataSync(STYLE, style.ordinal(), ((ServerPlayer) container.getExecuter().getOriginal()));
+            }
+        }
         return WukongStyles.values()[container.getDataManager().getDataValue(STYLE)];
     }
 
