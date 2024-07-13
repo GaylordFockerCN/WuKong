@@ -1,23 +1,32 @@
 package com.p1nero.wukong.epicfight.skill;
 
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
+import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
@@ -44,20 +53,20 @@ public class ChargedAttack extends WeaponInnateSkill {
     public static Builder createChargedAttack(){
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE)
                 //default animations for test
-                .setAnimations(Animations.SWEEPING_EDGE,
-                        Animations.DANCING_EDGE,
-                        Animations.SPEAR_ONEHAND_AIR_SLASH,
-                        Animations.SWORD_DASH,
-                        Animations.AXE_AIRSLASH,
-                        Animations.SPEAR_GUARD,
-                        Animations.SPEAR_DASH);
-//                .setAnimationLocations(new ResourceLocation("epicfight", "biped/combat/fist_auto1"),
-//                        new ResourceLocation("epicfight", "biped/combat/fist_auto2"),
-//                        new ResourceLocation("epicfight", "biped/combat/fist_auto3"),
-//                        new ResourceLocation("epicfight", "biped/combat/fist_dash"),
-//                        new ResourceLocation("epicfight", "biped/combat/fist_air_slash"),
-//                        new ResourceLocation("epicfight", "biped/combat/sweeping_edge"),
-//                        new ResourceLocation("epicfight", "biped/combat/dancing_edge"));
+//                .setAnimations(Animations.SWEEPING_EDGE,
+//                        Animations.DANCING_EDGE,
+//                        Animations.SPEAR_ONEHAND_AIR_SLASH,
+//                        Animations.SWORD_DASH,
+//                        Animations.AXE_AIRSLASH,
+//                        Animations.SPEAR_GUARD,
+//                        Animations.SPEAR_DASH);
+                .setAnimationLocations(new ResourceLocation("epicfight", "biped/combat/fist_auto1"),
+                        new ResourceLocation("epicfight", "biped/combat/fist_auto2"),
+                        new ResourceLocation("epicfight", "biped/combat/fist_auto3"),
+                        new ResourceLocation("epicfight", "biped/combat/fist_dash"),
+                        new ResourceLocation("epicfight", "biped/combat/fist_air_slash"),
+                        new ResourceLocation("epicfight", "biped/combat/sweeping_edge"),
+                        new ResourceLocation("epicfight", "biped/combat/dancing_edge"));
     }
 
     public ChargedAttack(Builder builder) {
@@ -119,6 +128,15 @@ public class ChargedAttack extends WeaponInnateSkill {
         container.getDataManager().registerData(CAN_SECOND_DERIVE);
         container.getDataManager().registerData(DERIVE_TIMER);
 
+        //前三星不能破条
+        container.getExecuter().getEventListener().addEventListener(
+                PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (event -> {
+                    if(container.getStack() < 3 && Math.ceil(container.getResource(1.0F) * 20) > 10){
+                        this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
+                        this.setStackSynchronize(event.getPlayerPatch(), container.getStack()+1);
+                    }
+                }));
+
         //进行衍生阶段的重置
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (event -> {
@@ -159,6 +177,7 @@ public class ChargedAttack extends WeaponInnateSkill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
         listener.removeListener(PlayerEventListener.EventType.ATTACK_ANIMATION_END_EVENT, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
     }
 
     @Override
@@ -183,24 +202,41 @@ public class ChargedAttack extends WeaponInnateSkill {
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean shouldDraw(SkillContainer container) {
+        if(Minecraft.getInstance().player != null){
+            return EpicFightCapabilities.getItemStackCapability(Minecraft.getInstance().player.getMainHandItem()).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF);
+        }
         return false;
     }
 
     /**
      * 根据棍式和星级画图
-     * @deprecated 迁移到 {@link com.p1nero.wukong.mixin.BattleModeGuiMixin}
+     * 取消原本的绘制在 {@link com.p1nero.wukong.mixin.BattleModeGuiMixin}
      */
     @OnlyIn(Dist.CLIENT)
     @Override
-    @Deprecated
     public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
         int stack = container.getStack();
         int style = ((StaffStyle) container.getExecuter().getSkill(WukongSkillSlots.STAFF_STYLE).getSkill()).style.ordinal();
+        float cooldownRatio = !container.isFull() && !container.isActivated() ? container.getResource(1.0F) : 1.0F;
+        int progress = ((int) Math.ceil(cooldownRatio * 20));
+        ConfigurationIngame config = EpicFightMod.CLIENT_INGAME_CONFIG;
+        Window sr = Minecraft.getInstance().getWindow();
+        int width = sr.getGuiScaledWidth();
+        int height = sr.getGuiScaledHeight();
+        Vec2i pos = config.getWeaponInnatePosition(width, height);
         poseStack.pushPose();
         poseStack.translate(0.0, gui.getSlidingProgression(), 0.0);
-        ResourceLocation currentStyle = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/"+style+"_"+stack+".png");
-        RenderSystem.setShaderTexture(0, currentStyle);
-        GuiComponent.blit(poseStack, (int)x, (int)y, 24, 24, 0.0F, 0.0F, 1, 1, 1, 1);
+        ResourceLocation progressTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/progress/" + progress + ".png");
+        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style" + style + ".png");
+        ResourceLocation stackTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/stack/" + stack + ".png");
+        RenderSystem.setShaderTexture(0, progressTexture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
+        RenderSystem.setShaderTexture(0, stackTexture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
+
+
     }
 
     @Override
@@ -215,6 +251,7 @@ public class ChargedAttack extends WeaponInnateSkill {
     public static class Builder extends Skill.Builder<ChargedAttack> {
 
         protected ResourceLocation[] animationLocations;
+        @Nullable
         protected StaticAnimation[] animations;
         protected WukongStyles style;
         protected boolean repeatDerive1;
