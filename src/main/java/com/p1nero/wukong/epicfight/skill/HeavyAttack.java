@@ -15,11 +15,15 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
+import yesman.epicfight.api.animation.property.AnimationProperty;
+import yesman.epicfight.api.animation.types.BasicAttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
@@ -47,7 +51,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     private static boolean shouldRepeatDerive1;
     private static boolean chargeable;
     private static final SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
-    private static final SkillDataManager.SkillDataKey<Integer> LIGHT = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
+    private static final SkillDataManager.SkillDataKey<Integer> STARTS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING_PRE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final SkillDataManager.SkillDataKey<Integer> CHARGING_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
@@ -61,7 +65,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     @Nullable
     protected final StaticAnimation charging;
     @Nullable
-    protected final StaticAnimation post;
+    protected StaticAnimation post;
 
     public static Builder createChargedAttack(){
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE)
@@ -90,7 +94,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         if(builder.animationProviders == null){
             this.animations = new StaticAnimation[builder.animationLocations.length];
             for(int i = 0; i < builder.animationLocations.length; ++i) {
-                WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.animationLocations[i].toString());
+                WukongMoveset.LOGGER.info("loading heavy attack animations from resource location: {}", builder.animationLocations[i].toString());
                 this.animations[i] = EpicFightMod.getInstance().animationManager.findAnimationByPath(builder.animationLocations[i].toString());
             }
         } else {
@@ -118,7 +122,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         boolean stackConsumed = container.getStack() > 0;
         if(stackConsumed){
             dataManager.setDataSync(RED_TIMER, MAX_TIMER, player);
-            dataManager.setDataSync(LIGHT, Math.min(container.getStack(), 3), player);
+            dataManager.setDataSync(STARTS_CONSUMED, container.getStack(), player);
         }
         if(dataManager.getDataValue(DERIVE_TIMER) > 0){
             if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
@@ -156,7 +160,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     @Override
     public void onInitiate(SkillContainer container) {
         container.getDataManager().registerData(RED_TIMER);
-        container.getDataManager().registerData(LIGHT);
+        container.getDataManager().registerData(STARTS_CONSUMED);
         container.getDataManager().registerData(IS_CHARGING_PRE);
         container.getDataManager().registerData(IS_CHARGING);
         container.getDataManager().registerData(CHARGING_TIMER);
@@ -164,6 +168,16 @@ public class HeavyAttack extends WeaponInnateSkill {
         container.getDataManager().registerData(CAN_FIRST_DERIVE);
         container.getDataManager().registerData(CAN_SECOND_DERIVE);
         container.getDataManager().registerData(DERIVE_TIMER);
+
+
+//        //蓄力不能动，没有办法的办法。。
+//        container.getExecuter().getEventListener().addEventListener(
+//                PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
+//                    if(container.getDataManager().getDataValue(IS_CHARGING)){
+//                        Player player = event.getPlayerPatch().getOriginal();
+//                        player.teleportTo(player.getX(), player.getY(), player.getZ());
+//                    }
+//                }));
 
         //前三星不能破条
         container.getExecuter().getEventListener().addEventListener(
@@ -200,6 +214,10 @@ public class HeavyAttack extends WeaponInnateSkill {
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
                     if(!isStaff){
                         return;
+                    }
+                    //重置属于前摇的时间 （可惜没有普通动画的结束事件）
+                    if(chargeable && Arrays.stream(animations).toList().contains(event.getAnimation())){
+                        container.getDataManager().setDataSync(IS_CHARGING_PRE, false, player);
                     }
                     //如是轻击和衍生1则属于可以衍生阶段并重置衍生计算时间
                     if(isLightAttack && !isLastLightAttack) {
@@ -239,11 +257,22 @@ public class HeavyAttack extends WeaponInnateSkill {
             if(dataManager.getDataValue(IS_CHARGING)){
                 if(EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()){
                     container.getDataManager().setData(CHARGING_TIMER, container.getDataManager().getDataValue(CHARGING_TIMER)+1);
-                    if(!dataManager.getDataValue(IS_CHARGING_PRE)){//由定时事件来结束它
+                    if(!dataManager.getDataValue(IS_CHARGING_PRE)){
                         container.getExecuter().playAnimationSynchronized(charging,0);
                     }
                 }else {
-                    container.getExecuter().playAnimationSynchronized(post, 0);
+                    int starts = dataManager.getDataValue(STARTS_CONSUMED);
+                    final StaticAnimation old = post;//不知道这样能不能保住动画。。但是修改失败。。
+                    if(post != null){//byd编译器，明明不可能为null
+                        if(starts != 0){
+                            ((BasicAttackAnimation)post).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(starts==4 ? starts : starts/1.5F));
+                        }
+                        float chargedPower = Math.min(dataManager.getDataValue(CHARGING_TIMER) / 20.0F, 8);
+                        ((BasicAttackAnimation)post).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.adder(chargedPower));
+                    }
+                    final StaticAnimation animation = post;
+                    container.getExecuter().playAnimationSynchronized(animation, 0);
+                    post = old;//不知道这个有无用
                     container.getDataManager().setDataSync(IS_CHARGING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
                 }
             }
@@ -293,7 +322,8 @@ public class HeavyAttack extends WeaponInnateSkill {
         GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
 
         if(container.getDataManager().getDataValue(RED_TIMER) > 0){
-            ResourceLocation lightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/" + container.getDataManager().getDataValue(LIGHT) + ".png");//及时获取stack，新鲜的，热乎的
+            int start = Math.min(container.getDataManager().getDataValue(STARTS_CONSUMED), 3);
+            ResourceLocation lightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/" + start + ".png");//及时获取stack，新鲜的，热乎的
             RenderSystem.setShaderTexture(0, lightTexture);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);

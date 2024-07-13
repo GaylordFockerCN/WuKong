@@ -1,14 +1,23 @@
 package com.p1nero.wukong.epicfight.animation;
 
+import com.mojang.math.Vector3f;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.skill.HeavyAttack;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
+import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.property.AnimationEvent;
-import yesman.epicfight.api.animation.types.EntityState;
-import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.animation.property.AnimationProperty;
+import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
+import yesman.epicfight.api.utils.math.MathUtils;
+import yesman.epicfight.api.utils.math.OpenMatrix4f;
+import yesman.epicfight.api.utils.math.ValueModifier;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillSlots;
@@ -76,18 +85,38 @@ public class WukongAnimations {
 
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
-        POKE_CHARGED = new StaticAnimation(false, "biped/poke/poke_charged", biped);
-        POKE_CHARGING = new StaticAnimation(false, "biped/poke/poke_charging", biped)
-                .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, true)
-                .addStateRemoveOld(EntityState.INACTION, true);
-        POKE_PRE = new StaticAnimation(false, "biped/poke/poke_pre", biped)
-                .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, true)
-                .addStateRemoveOld(EntityState.INACTION, true).addEvents(AnimationEvent.TimeStampedEvent.create(0.25F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.IS_CHARGING_PRE, false, serverPlayerPatch.getOriginal());
-                    }
-                }), AnimationEvent.Side.SERVER));
+        POKE_CHARGED = new BasicAttackAnimation(0, 0.15F, 0.25F, 0.8F, null, biped.toolR, "biped/poke/poke_charged", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.1F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(5.0F))//TODO 根据星级来改
+                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, true)
+                .addState(EntityState.MOVEMENT_LOCKED, true);
+        //为了不移动所以改用BasicAttackAnimation
+        POKE_CHARGING = (new AttackAnimation(0, 0, 0, 0, 0.8F, null, biped.toolR,"biped/poke/poke_charging", biped))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.setter(0))
+                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, Animations.ReusableSources.CHARGING)
+                .addProperty(AnimationProperty.StaticAnimationProperty.POSE_MODIFIER, (self, pose, entityPatch, time, partialTicks) -> {
+            if (self.isStaticAnimation()) {
+                float xRot = Mth.clamp(entityPatch.getCameraXRot(), -60.0F, 50.0F);
+                float yRot = Mth.clamp(Mth.wrapDegrees(entityPatch.getCameraYRot() - entityPatch.getOriginal().getYRot()), -60.0F, 60.0F);
+                JointTransform chest = pose.getOrDefaultTransform("Chest");
+                chest.frontResult(JointTransform.getRotation(Vector3f.YP.rotationDegrees(yRot)), OpenMatrix4f::mulAsOriginFront);
+                JointTransform head = pose.getOrDefaultTransform("Head");
+                MathUtils.mulQuaternion(Vector3f.XP.rotationDegrees(xRot), head.rotation(), head.rotation());
+            }
+        }).newTimePair(0.0F, Float.MAX_VALUE)
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, true)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, true)
+                .addStateRemoveOld(EntityState.INACTION, false);
 
+        //为了被监听就加了伤害了qwq
+        POKE_PRE = new BasicMultipleAttackAnimation(0, "biped/poke/poke_pre", biped,
+        new AttackAnimation.Phase(0.0F, 0.05F, 0.15F, 0.75F, 0.25F , biped.toolR, null)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)),
+        new AttackAnimation.Phase(0.2F, 0.2F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)));
+//        STAFF_FLOWER = new GuardAnimation()
     }
 
 }
