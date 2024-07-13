@@ -48,6 +48,7 @@ public class WukongAnimations {
     public static StaticAnimation POKE_DERIVE1;
     public static StaticAnimation POKE_DERIVE2;
     //不同星级的重击
+    public static StaticAnimation POKE_CHARGING;
     public static StaticAnimation POKE_CHARGED0;
     public static StaticAnimation POKE_CHARGED1;
     public static StaticAnimation POKE_CHARGED2;

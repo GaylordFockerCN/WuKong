@@ -1,7 +1,7 @@
 package com.p1nero.wukong.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.p1nero.wukong.epicfight.skill.ChargedAttack;
+import com.p1nero.wukong.epicfight.skill.HeavyAttack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +18,7 @@ public class BattleModeGuiMixin {
      */
     @Inject(method = "drawWeaponInnateIcon", at = @At(value = "HEAD"), cancellable = true)
     private void modifyTexture(LocalPlayerPatch playerPatch, SkillContainer container, PoseStack matStack, float partialTicks, CallbackInfo ci){
-        if(container.getSkill() instanceof ChargedAttack){
+        if(container.getSkill() instanceof HeavyAttack){
             ci.cancel();
         }
     }
