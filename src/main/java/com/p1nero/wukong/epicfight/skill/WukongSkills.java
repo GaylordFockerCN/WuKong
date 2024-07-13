@@ -2,6 +2,7 @@ package com.p1nero.wukong.epicfight.skill;
 
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.item.WukongItems;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
@@ -26,7 +27,18 @@ public class WukongSkills {
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.CHOP), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "chop_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.STAND), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "stand_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.POKE), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "poke_style");
-        SkillManager.register(HeavyAttack::new, HeavyAttack.createChargedAttack(), WukongMoveset.MOD_ID, "chop_charged");
+        SkillManager.register(HeavyAttack::new, HeavyAttack.createChargedAttack()
+                .setChargeAnimation(()-> WukongAnimations.POKE_CHARGED)
+                .setChargingAnimation(()->WukongAnimations.POKE_CHARGING)
+                .setAnimationProviders(()->WukongAnimations.POKE_PRE,
+                        ()->WukongAnimations.POKE_PRE,
+                        ()->WukongAnimations.POKE_PRE,
+                        ()->WukongAnimations.POKE_PRE,
+                        ()->WukongAnimations.POKE_PRE,
+                        ()->WukongAnimations.STAFF_AUTO5,//最后一个轻攻击
+                        ()->WukongAnimations.POKE_DERIVE2,//
+                        ()->WukongAnimations.POKE_DERIVE1)
+                , WukongMoveset.MOD_ID, "chop_charged");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.CHOP).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "chop_style");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.POKE).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "poke_style");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.STAND).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "stand_style");

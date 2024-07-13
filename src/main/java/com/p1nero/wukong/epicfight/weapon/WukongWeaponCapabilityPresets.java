@@ -66,13 +66,13 @@ public class WukongWeaponCapabilityPresets {
 
             //劈棍
             .newStyleCombo(WukongStyles.CHOP,
-//                    WukongAnimations.CHOP_AUTO1,
-//                    WukongAnimations.CHOP_AUTO2,
-//                    WukongAnimations.CHOP_AUTO3,
-//                    WukongAnimations.CHOP_AUTO4,
+//                    WukongAnimations.STAFF_AUTO1,
+//                    WukongAnimations.STAFF_AUTO2,
+//                    WukongAnimations.STAFF_AUTO3,
+//                    WukongAnimations.STAFF_AUTO4,
 //                    WukongAnimations.CHOP_AUTO5,
 //                    WukongAnimations.CHOP_AUTO5,//冲刺
-//                    WukongAnimations.CHOP_AUTO1)//空中
+//                    WukongAnimations.STAFF_AUTO1)//空中
 
                     Animations.SPEAR_ONEHAND_AUTO,
                     Animations.SPEAR_TWOHAND_AUTO1,
@@ -98,13 +98,13 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.CHOP_WALK)
             //戳棍
             .newStyleCombo(WukongStyles.POKE,
-                    WukongAnimations.POKE_AUTO1,
-                    WukongAnimations.POKE_AUTO2,
-                    WukongAnimations.POKE_AUTO3,
-                    WukongAnimations.POKE_AUTO4,
-                    WukongAnimations.POKE_AUTO5,
-                    WukongAnimations.POKE_AUTO5,//冲刺
-                    WukongAnimations.POKE_AUTO1)//空中
+                    WukongAnimations.STAFF_AUTO1,
+                    WukongAnimations.STAFF_AUTO2,
+                    WukongAnimations.STAFF_AUTO3,
+                    WukongAnimations.STAFF_AUTO4,
+                    WukongAnimations.STAFF_AUTO5,
+                    WukongAnimations.STAFF_AUTO5,//冲刺
+                    WukongAnimations.STAFF_AUTO1)//空中
             .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.IDLE,
@@ -123,13 +123,13 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.POKE_WALK)
             //立棍
                 .newStyleCombo(WukongStyles.STAND,
-                    WukongAnimations.STAND_AUTO1,
-                    WukongAnimations.STAND_AUTO2,
-                    WukongAnimations.STAND_AUTO3,
-                    WukongAnimations.STAND_AUTO4,
-                    WukongAnimations.STAND_AUTO5,
-                    WukongAnimations.STAND_AUTO5,//冲刺
-                    WukongAnimations.STAND_AUTO1)//空中
+                        WukongAnimations.STAFF_AUTO1,
+                        WukongAnimations.STAFF_AUTO2,
+                        WukongAnimations.STAFF_AUTO3,
+                        WukongAnimations.STAFF_AUTO4,
+                        WukongAnimations.STAFF_AUTO5,
+                        WukongAnimations.STAFF_AUTO5,//冲刺
+                        WukongAnimations.STAFF_AUTO1)//空中
             .innateSkill(WukongStyles.STAND, (itemstack) -> WukongSkills.STAND_CHARGED)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.IDLE,
@@ -158,13 +158,13 @@ public class WukongWeaponCapabilityPresets {
                     .comboCancel((style) -> false)
                     //劈棍
                     .newStyleCombo(WukongStyles.CHOP,
-                            WukongAnimations.CHOP_AUTO1,
-                            WukongAnimations.CHOP_AUTO2,
-                            WukongAnimations.CHOP_AUTO3,
-                            WukongAnimations.CHOP_AUTO4,
-                            WukongAnimations.CHOP_AUTO5,
-                            WukongAnimations.CHOP_AUTO5,//冲刺
-                            WukongAnimations.CHOP_AUTO1)//空中
+                            WukongAnimations.STAFF_AUTO1,
+                            WukongAnimations.STAFF_AUTO2,
+                            WukongAnimations.STAFF_AUTO3,
+                            WukongAnimations.STAFF_AUTO4,
+                            WukongAnimations.STAFF_AUTO5,
+                            WukongAnimations.STAFF_AUTO5,//冲刺
+                            WukongAnimations.STAFF_AUTO1)//空中
                     .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
                     .livingMotionModifier(WukongStyles.CHOP,
                             LivingMotions.IDLE,
@@ -193,13 +193,13 @@ public class WukongWeaponCapabilityPresets {
 
                     //戳棍
                     .newStyleCombo(WukongStyles.POKE,
-                            WukongAnimations.POKE_AUTO1,
-                            WukongAnimations.POKE_AUTO2,
-                            WukongAnimations.POKE_AUTO3,
-                            WukongAnimations.POKE_AUTO4,
-                            WukongAnimations.POKE_AUTO5,
-                            WukongAnimations.POKE_AUTO5,//冲刺
-                            WukongAnimations.POKE_AUTO1)//空中
+                            WukongAnimations.STAFF_AUTO1,
+                            WukongAnimations.STAFF_AUTO2,
+                            WukongAnimations.STAFF_AUTO3,
+                            WukongAnimations.STAFF_AUTO4,
+                            WukongAnimations.STAFF_AUTO5,
+                            WukongAnimations.STAFF_AUTO5,//冲刺
+                            WukongAnimations.STAFF_AUTO1)//空中
                     .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
                     .livingMotionModifier(WukongStyles.POKE,
                             LivingMotions.IDLE,
@@ -228,13 +228,13 @@ public class WukongWeaponCapabilityPresets {
 
                     //立棍
                     .newStyleCombo(WukongStyles.STAND,
-                            WukongAnimations.STAND_AUTO1,
-                            WukongAnimations.STAND_AUTO2,
-                            WukongAnimations.STAND_AUTO3,
-                            WukongAnimations.STAND_AUTO4,
-                            WukongAnimations.STAND_AUTO5,
-                            WukongAnimations.STAND_AUTO5,//冲刺
-                            WukongAnimations.STAND_AUTO1)//空中
+                            WukongAnimations.STAFF_AUTO1,
+                            WukongAnimations.STAFF_AUTO2,
+                            WukongAnimations.STAFF_AUTO3,
+                            WukongAnimations.STAFF_AUTO4,
+                            WukongAnimations.STAFF_AUTO5,
+                            WukongAnimations.STAFF_AUTO5,//冲刺
+                            WukongAnimations.STAFF_AUTO1)//空中
                     .innateSkill(WukongStyles.STAND, (itemstack) -> WukongSkills.STAND_CHARGED)
                     .livingMotionModifier(WukongStyles.STAND,
                             LivingMotions.IDLE,
