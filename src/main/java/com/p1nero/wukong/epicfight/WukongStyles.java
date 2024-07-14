@@ -11,7 +11,7 @@ public enum WukongStyles implements Style {
     final boolean canUseOffhand;
     final int id;
 
-    WukongStyles(boolean canUseOffhand) {
+        WukongStyles(boolean canUseOffhand) {
         this.id = Style.ENUM_MANAGER.assign(this);
         this.canUseOffhand = canUseOffhand;
     }

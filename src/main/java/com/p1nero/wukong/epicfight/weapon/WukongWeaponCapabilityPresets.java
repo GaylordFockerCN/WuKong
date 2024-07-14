@@ -98,13 +98,18 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.CHOP_WALK)
             //戳棍
             .newStyleCombo(WukongStyles.POKE,
-                    WukongAnimations.STAFF_AUTO1,
-                    WukongAnimations.STAFF_AUTO2,
-                    WukongAnimations.STAFF_AUTO3,
-                    WukongAnimations.STAFF_AUTO4,
-                    WukongAnimations.STAFF_AUTO5,
-                    WukongAnimations.STAFF_AUTO5,//冲刺
-                    WukongAnimations.STAFF_AUTO1)//空中
+//                    WukongAnimations.STAFF_AUTO1,
+//                    WukongAnimations.STAFF_AUTO2,
+//                    WukongAnimations.STAFF_AUTO3,
+//                    WukongAnimations.STAFF_AUTO4,
+//                    WukongAnimations.STAFF_AUTO5,
+//                    WukongAnimations.STAFF_AUTO5,//冲刺
+//                    WukongAnimations.STAFF_AUTO1)//空中
+                    Animations.SPEAR_ONEHAND_AUTO,
+                    Animations.SPEAR_TWOHAND_AUTO1,
+                    Animations.SPEAR_TWOHAND_AUTO2,
+                    Animations.SPEAR_DASH,
+                    Animations.SPEAR_TWOHAND_AIR_SLASH)
             .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.IDLE,

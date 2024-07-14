@@ -38,7 +38,7 @@ public class WukongSkills {
                         ()->WukongAnimations.POKE_CHARGED4,
                         ()->WukongAnimations.POKE_DERIVE2,
                         ()->WukongAnimations.POKE_DERIVE1)
-                , WukongMoveset.MOD_ID, "chop_charged");
+                , WukongMoveset.MOD_ID, "poke_charged");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.CHOP).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "chop_style");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.POKE).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "poke_style");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.STAND).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "stand_style");
@@ -47,6 +47,7 @@ public class WukongSkills {
 
     public static void BuildSkills(SkillBuildEvent event){
         CHOP_CHARGED = event.build(WukongMoveset.MOD_ID, "chop_charged");
+        POKE_CHARGED = event.build(WukongMoveset.MOD_ID, "poke_charged");
 
         CHOP_STYLE = event.build(WukongMoveset.MOD_ID, "chop_style");
         POKE_STYLE = event.build(WukongMoveset.MOD_ID, "poke_style");

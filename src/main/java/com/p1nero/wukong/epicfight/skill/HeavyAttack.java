@@ -291,10 +291,13 @@ public class HeavyAttack extends WeaponInnateSkill {
         poseStack.pushPose();
         poseStack.translate(0.0, gui.getSlidingProgression(), 0.0);
         ResourceLocation progressTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/progress/" + progress + ".png");
-        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style" + style + ".png");
+        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style/" + style + (stack==0?"_0":"_1") + ".png");
         ResourceLocation stackTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/stack/" + stack + ".png");
         ResourceLocation goldenLightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/gold.png");
         RenderSystem.setShaderTexture(0, progressTexture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
+        RenderSystem.setShaderTexture(0, styleTexture);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
         RenderSystem.setShaderTexture(0, stackTexture);
