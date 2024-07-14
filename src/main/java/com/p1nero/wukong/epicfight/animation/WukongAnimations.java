@@ -1,27 +1,23 @@
 package com.p1nero.wukong.epicfight.animation;
 
 import com.mojang.math.Vector3f;
+import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.skill.HeavyAttack;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
 import yesman.epicfight.api.animation.JointTransform;
-import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -58,11 +54,17 @@ public class WukongAnimations {
     public static StaticAnimation POKE_RUN;
     //衍生 1 2
     public static StaticAnimation POKE_DERIVE1;
+    public static StaticAnimation POKE_DERIVE1_COMMON;
+    public static StaticAnimation POKE_DERIVE1_PLUS;
     public static StaticAnimation POKE_DERIVE2;
     //不同星级的重击
     public static StaticAnimation POKE_PRE;
     public static StaticAnimation POKE_CHARGING;
-    public static StaticAnimation POKE_CHARGED;
+    public static StaticAnimation POKE_CHARGED0;
+    public static StaticAnimation POKE_CHARGED1;
+    public static StaticAnimation POKE_CHARGED2;
+    public static StaticAnimation POKE_CHARGED3;
+    public static StaticAnimation POKE_CHARGED4;
 
     //立棍
     public static StaticAnimation STAND_IDLE;
@@ -85,17 +87,39 @@ public class WukongAnimations {
 
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
-        POKE_CHARGED = new BasicAttackAnimation(0, 0.15F, 0.25F, 0.8F, null, biped.toolR, "biped/poke/poke_charged", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.1F))
-                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(5.0F))//TODO 根据星级来改
-                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
-                .addStateRemoveOld(EntityState.TURNING_LOCKED, true)
-                .addState(EntityState.MOVEMENT_LOCKED, true);
+        POKE_CHARGED0 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, null, biped.toolR, "biped/poke/poke_charged", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(1.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+        POKE_CHARGED1 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, null, biped.toolR, "biped/poke/poke_charged", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.7F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(2.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F)).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+        POKE_CHARGED2 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, null, biped.toolR, "biped/poke/poke_charged", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(3.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+        POKE_CHARGED3 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, null, biped.toolR, "biped/poke/poke_charged", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.5F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(4.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+        POKE_CHARGED4 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, null, biped.toolR, "biped/poke/poke_charged", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(5.0F * Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(7.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
         //为了不移动所以改用BasicAttackAnimation
-        POKE_CHARGING = (new AttackAnimation(0, 0, 0, 0, 0.8F, null, biped.toolR,"biped/poke/poke_charging", biped))
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.setter(0))
+        POKE_CHARGING = (new ActionAnimation(1.0F, "biped/poke/poke_charging", biped))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, Animations.ReusableSources.CHARGING)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1))
                 .addProperty(AnimationProperty.StaticAnimationProperty.POSE_MODIFIER, (self, pose, entityPatch, time, partialTicks) -> {
             if (self.isStaticAnimation()) {
                 float xRot = Mth.clamp(entityPatch.getCameraXRot(), -60.0F, 50.0F);
@@ -106,16 +130,31 @@ public class WukongAnimations {
                 MathUtils.mulQuaternion(Vector3f.XP.rotationDegrees(xRot), head.rotation(), head.rotation());
             }
         }).newTimePair(0.0F, Float.MAX_VALUE)
-                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, true)
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, true)
-                .addStateRemoveOld(EntityState.INACTION, false);
+                .addStateRemoveOld(EntityState.INACTION, false)
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
 
         //为了被监听就加了伤害了qwq
         POKE_PRE = new BasicMultipleAttackAnimation(0, "biped/poke/poke_pre", biped,
         new AttackAnimation.Phase(0.0F, 0.05F, 0.15F, 0.75F, 0.25F , biped.toolR, null)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)),
         new AttackAnimation.Phase(0.2F, 0.2F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)));
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+
+        //TODO delete after test
+        POKE_DERIVE1 = (new ActionAnimation(1.0F, "biped/poke/poke_charging", biped));
+        POKE_DERIVE2 = (new ActionAnimation(1.0F, "biped/poke/poke_charging", biped));
+
+//        POKE_DERIVE1 = new SelectiveAnimation((entityPatch -> {
+//            if(entityPatch instanceof ServerPlayerPatch playerPatch){
+//                if(playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(HeavyAttack.STARTS_CONSUMED) > 0){
+//                    return 1;
+//                }
+//            }
+//            return 0;
+//        }), POKE_DERIVE1_COMMON, POKE_DERIVE1_PLUS);
 //        STAFF_FLOWER = new GuardAnimation()
     }
 

@@ -15,15 +15,12 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
-import yesman.epicfight.api.animation.property.AnimationProperty;
-import yesman.epicfight.api.animation.types.BasicAttackAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
@@ -51,10 +48,10 @@ public class HeavyAttack extends WeaponInnateSkill {
     private static boolean shouldRepeatDerive1;
     private static boolean chargeable;
     private static final SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
-    private static final SkillDataManager.SkillDataKey<Integer> STARTS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
+    public static final SkillDataManager.SkillDataKey<Integer> STARTS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING_PRE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
-    private static final SkillDataManager.SkillDataKey<Integer> CHARGING_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
+    public static final SkillDataManager.SkillDataKey<Integer> CHARGING_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
     private static final SkillDataManager.SkillDataKey<Boolean> IS_REPEATING_DERIVE1 = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final SkillDataManager.SkillDataKey<Integer> DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
     private static final SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
@@ -65,7 +62,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     @Nullable
     protected final StaticAnimation charging;
     @Nullable
-    protected StaticAnimation post;
+    protected StaticAnimation pre;
 
     public static Builder createChargedAttack(){
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE)
@@ -86,20 +83,20 @@ public class HeavyAttack extends WeaponInnateSkill {
         chargeable = builder.chargeable;
         if(chargeable){
             charging = builder.chargingAnimation.get();
-            post = builder.post.get();
+            pre = builder.pre.get();
         }else {
             charging = null;
-            post = null;
+            pre = null;
         }
         if(builder.animationProviders == null){
             this.animations = new StaticAnimation[builder.animationLocations.length];
-            for(int i = 0; i < builder.animationLocations.length; ++i) {
+            for(int i = 0; i < builder.animationLocations.length; i++) {
                 WukongMoveset.LOGGER.info("loading heavy attack animations from resource location: {}", builder.animationLocations[i].toString());
                 this.animations[i] = EpicFightMod.getInstance().animationManager.findAnimationByPath(builder.animationLocations[i].toString());
             }
         } else {
             this.animations = new StaticAnimation[builder.animationProviders.length];
-            for(int i = 0; i < builder.animationLocations.length; ++i) {
+            for(int i = 0; i < builder.animationProviders.length; i++) {
                 WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.animationProviders[i].get());
                 this.animations[i] = builder.animationProviders[i].get();
             }
@@ -122,8 +119,8 @@ public class HeavyAttack extends WeaponInnateSkill {
         boolean stackConsumed = container.getStack() > 0;
         if(stackConsumed){
             dataManager.setDataSync(RED_TIMER, MAX_TIMER, player);
-            dataManager.setDataSync(STARTS_CONSUMED, container.getStack(), player);
         }
+        dataManager.setDataSync(STARTS_CONSUMED, container.getStack(), player);//0星也是星！
         if(dataManager.getDataValue(DERIVE_TIMER) > 0){
             if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
                 if(stackConsumed){
@@ -139,17 +136,18 @@ public class HeavyAttack extends WeaponInnateSkill {
                 executer.getEventListener().triggerEvents(PlayerEventListener.EventType.ACTION_EVENT_SERVER, new ActionEvent<>(executer, deriveAnimation2));//TODO 删掉
             }
         } else {
+            switch (container.getStack()){
+                //TODO 根据棍势数量加特效和buff
+            }
             //重击，消耗所有星
             if(chargeable && !dataManager.getDataValue(IS_CHARGING)){
                 //开始蓄力，松手在客户端判断
                 dataManager.setDataSync(CHARGING_TIMER, 0, player);
                 dataManager.setDataSync(IS_CHARGING_PRE, true, player);
                 dataManager.setDataSync(IS_CHARGING, true, player);
-            }
-            executer.playAnimationSynchronized(animations[container.getStack()], 0.2F);
-
-            switch (container.getStack()){
-                //TODO 根据棍势数量加特效和buff
+                executer.playAnimationSynchronized(pre, 0.2F);
+            } else {
+                executer.playAnimationSynchronized(animations[container.getStack()], 0.2F);
             }
             this.setStackSynchronize(executer, 0);
         }
@@ -168,16 +166,6 @@ public class HeavyAttack extends WeaponInnateSkill {
         container.getDataManager().registerData(CAN_FIRST_DERIVE);
         container.getDataManager().registerData(CAN_SECOND_DERIVE);
         container.getDataManager().registerData(DERIVE_TIMER);
-
-
-//        //蓄力不能动，没有办法的办法。。
-//        container.getExecuter().getEventListener().addEventListener(
-//                PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
-//                    if(container.getDataManager().getDataValue(IS_CHARGING)){
-//                        Player player = event.getPlayerPatch().getOriginal();
-//                        player.teleportTo(player.getX(), player.getY(), player.getZ());
-//                    }
-//                }));
 
         //前三星不能破条
         container.getExecuter().getEventListener().addEventListener(
@@ -216,7 +204,7 @@ public class HeavyAttack extends WeaponInnateSkill {
                         return;
                     }
                     //重置属于前摇的时间 （可惜没有普通动画的结束事件）
-                    if(chargeable && Arrays.stream(animations).toList().contains(event.getAnimation())){
+                    if(chargeable && event.getAnimation().equals(pre)){
                         container.getDataManager().setDataSync(IS_CHARGING_PRE, false, player);
                     }
                     //如是轻击和衍生1则属于可以衍生阶段并重置衍生计算时间
@@ -245,7 +233,9 @@ public class HeavyAttack extends WeaponInnateSkill {
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
         //如果按着技能键而且在衍生或蓄力期间则一直循环，否则结束循环状态
-        if(container.getExecuter().isLogicalClient() && !container.getExecuter().getEntityState().inaction()){
+        if(container.getExecuter().isLogicalClient()
+//                && !container.getExecuter().getEntityState().inaction()
+        ){
             SkillDataManager dataManager = container.getDataManager();
             if(dataManager.getDataValue(IS_REPEATING_DERIVE1)){
                 if(EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()){
@@ -257,22 +247,12 @@ public class HeavyAttack extends WeaponInnateSkill {
             if(dataManager.getDataValue(IS_CHARGING)){
                 if(EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()){
                     container.getDataManager().setData(CHARGING_TIMER, container.getDataManager().getDataValue(CHARGING_TIMER)+1);
-                    if(!dataManager.getDataValue(IS_CHARGING_PRE)){
+                    if(!dataManager.getDataValue(IS_CHARGING_PRE) && !container.getExecuter().getEntityState().inaction()){
                         container.getExecuter().playAnimationSynchronized(charging,0);
                     }
                 }else {
-                    int starts = dataManager.getDataValue(STARTS_CONSUMED);
-                    final StaticAnimation old = post;//不知道这样能不能保住动画。。但是修改失败。。
-                    if(post != null){//byd编译器，明明不可能为null
-                        if(starts != 0){
-                            ((BasicAttackAnimation)post).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(starts==4 ? starts : starts/1.5F));
-                        }
-                        float chargedPower = Math.min(dataManager.getDataValue(CHARGING_TIMER) / 20.0F, 8);
-                        ((BasicAttackAnimation)post).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.adder(chargedPower));
-                    }
-                    final StaticAnimation animation = post;
-                    container.getExecuter().playAnimationSynchronized(animation, 0);
-                    post = old;//不知道这个有无用
+                    container.getExecuter().getEntityState().setState(EntityState.INACTION, false);
+                    container.getExecuter().playAnimationSynchronized(animations[dataManager.getDataValue(STARTS_CONSUMED)], 0.0F);
                     container.getDataManager().setDataSync(IS_CHARGING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
                 }
             }
@@ -322,7 +302,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
 
         if(container.getDataManager().getDataValue(RED_TIMER) > 0){
-            int start = Math.min(container.getDataManager().getDataValue(STARTS_CONSUMED), 3);
+            int start = Math.max(1,Math.min(container.getDataManager().getDataValue(STARTS_CONSUMED), 3));
             ResourceLocation lightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/" + start + ".png");//及时获取stack，新鲜的，热乎的
             RenderSystem.setShaderTexture(0, lightTexture);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -355,7 +335,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         @Nullable
         StaticAnimationProvider chargingAnimation;
         @Nullable
-        StaticAnimationProvider post;
+        StaticAnimationProvider pre;
         protected WukongStyles style;
         protected boolean repeatDerive1;
         protected boolean chargeable;
@@ -399,9 +379,9 @@ public class HeavyAttack extends WeaponInnateSkill {
             return this;
         }
 
-        public Builder setChargeAnimation(StaticAnimationProvider charged) {
-            this.chargeable = charged != null;
-            this.post = charged;
+        public Builder setChargePreAnimation(StaticAnimationProvider pre) {
+            this.chargeable = pre != null;
+            this.pre = pre;
             return this;
         }
 

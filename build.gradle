@@ -168,6 +168,7 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.18.2-40.2.17'
     implementation fg.deobf("libs:EpicFight:18.5.24")
     implementation fg.deobf("libs:WeaponsOfMiracles:18.1.7.38")
+    implementation fg.deobf("libs:MmmMmmMmmMmm-1.18.2:1.5.2")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

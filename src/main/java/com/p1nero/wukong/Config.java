@@ -22,7 +22,7 @@ import java.util.Set;
 public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-//    public static final ForgeConfigSpec.DoubleValue RAIN_SCREEN_COOLDOWN;
+    public static final ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
 //    public static final ForgeConfigSpec.DoubleValue RAIN_CUTTER_COOLDOWN;
 //    public static final ForgeConfigSpec.DoubleValue YAKSHAS_MASK_COOLDOWN;
 //    public static final ForgeConfigSpec.DoubleValue STELLAR_RESTORATION_COOLDOWN;
@@ -40,7 +40,7 @@ public class Config
     static {
 
 //        BUILDER.push("Skill Cooldown");
-//        RAIN_SCREEN_COOLDOWN = createDouble("the cooldown ticks of Rain Screen skill", "rain_screen_cooldown", 862);
+        DAMAGE_MULTIPLIER = createDouble("The damage multiplier of all Wukong Skill Attack", "damage_multiplier", 1.0);
 //        RAIN_CUTTER_COOLDOWN = createDouble("the cooldown ticks of Rain Cutter skill", "rain_cutter_cooldown", 816);
 //        YAKSHAS_MASK_COOLDOWN = createDouble("the cooldown ticks of Yaksha's Mask skill", "yaksha_mask_cooldown", 749);
 //        STELLAR_RESTORATION_COOLDOWN = createDouble("the cooldown ticks of Stellar Restoration skill", "stellar_restoration_cooldown", 312);
