@@ -8,6 +8,9 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
 
+/**
+ * 尝试修改动画播放的move lock
+ */
 public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
     public StaffFlowerAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
         super(convertTime, antic, contact, recovery, collider, colliderJoint, path, armature);
@@ -41,11 +44,14 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                 .addState(EntityState.PHASE_LEVEL, 1)
                 .newTimePair(phase.start, phase.contact + 0.01F)
                 .addState(EntityState.CAN_SKILL_EXECUTION, false)
-                .newTimePair(phase.start, phase.end)
-                .addState(EntityState.MOVEMENT_LOCKED, true)
+                .newTimePair(phase.start , phase.recovery)
                 .addState(EntityState.UPDATE_LIVING_MOTION, false)
-                .addState(EntityState.CAN_BASIC_ATTACK, false)
-                .newTimePair(phase.start, phase.end)
+                .addState(EntityState.CAN_BASIC_ATTACK, false);
+        if(phase.equals(phases[phases.length-1])){
+            this.stateSpectrumBlueprint.newTimePair(0, phase.end)
+                    .addState(EntityState.MOVEMENT_LOCKED, true);
+        }
+        this.stateSpectrumBlueprint.newTimePair(phase.start, phase.end)
                 .addState(EntityState.INACTION, true)
                 .newTimePair(phase.antic, phase.end)
                 .addState(EntityState.TURNING_LOCKED, true)
@@ -56,6 +62,5 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                 .addState(EntityState.PHASE_LEVEL, 3);
 
     }
-
 
 }

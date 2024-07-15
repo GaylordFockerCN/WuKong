@@ -129,6 +129,8 @@ public class StaffFlower extends Skill {
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER)){
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket());
                 container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, true, ((LocalPlayer) container.getExecuter().getOriginal()));
+            } else {
+                container.getExecuter().getOriginal().setDeltaMovement(0,0,0);//EntityState没用
             }
         } else {
             container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, false, ((LocalPlayer) container.getExecuter().getOriginal()));
