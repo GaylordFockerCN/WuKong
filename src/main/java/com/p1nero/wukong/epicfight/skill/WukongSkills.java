@@ -4,13 +4,17 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.item.WukongItems;
+import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
+import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
+import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 
 public class WukongSkills {
 
+    public static Skill COMMON;
     public static Skill CHOP_CHARGED;
     public static Skill POKE_CHARGED;
     public static Skill STAND_CHARGED;
@@ -23,7 +27,8 @@ public class WukongSkills {
 
     public static void registerSkills() {
 
-        SkillManager.register(StaffFlower::new, Skill.createBuilder().setCreativeTab(WukongItems.CREATIVE_MODE_TAB).setResource(Skill.Resource.NONE).setCategory(SkillCategories.GUARD), WukongMoveset.MOD_ID, "staff_flower");
+        SkillManager.register(SimpleWeaponInnateSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(new ResourceLocation("wukong", "staff_auto_5")), WukongMoveset.MOD_ID, "common");
+        SkillManager.register(StaffFlower::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.CHOP), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "chop_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.STAND), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "stand_style");
 //        SkillManager.register((styleBuilder)->new StaffStyle(styleBuilder, WukongStyles.POKE), StaffStyle.createStaffStyle(), WukongMoveset.MOD_ID, "poke_style");
@@ -46,8 +51,13 @@ public class WukongSkills {
 
 
     public static void BuildSkills(SkillBuildEvent event){
+        COMMON = event.build(WukongMoveset.MOD_ID, "common");
+
+        STAFF_FLOWER = event.build(WukongMoveset.MOD_ID, "staff_flower");
+
         CHOP_CHARGED = event.build(WukongMoveset.MOD_ID, "chop_charged");
         POKE_CHARGED = event.build(WukongMoveset.MOD_ID, "poke_charged");
+        STAND_CHARGED = event.build(WukongMoveset.MOD_ID, "stand_charged");
 
         CHOP_STYLE = event.build(WukongMoveset.MOD_ID, "chop_style");
         POKE_STYLE = event.build(WukongMoveset.MOD_ID, "poke_style");

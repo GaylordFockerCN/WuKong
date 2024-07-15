@@ -40,7 +40,6 @@ public class StaffStyle extends Skill {
      * 很奇怪，onInitiate里面setDataSync会出错
      */
     public WukongStyles getStyle(SkillContainer container) {
-//        return style;
         if(!container.getDataManager().hasData(STYLE)){
             container.getDataManager().registerData(STYLE);
             if(!container.getExecuter().isLogicalClient()){

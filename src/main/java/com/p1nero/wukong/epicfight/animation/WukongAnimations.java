@@ -3,12 +3,13 @@ package com.p1nero.wukong.epicfight.animation;
 import com.mojang.math.Vector3f;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
-import com.p1nero.wukong.epicfight.skill.HeavyAttack;
+import com.p1nero.wukong.epicfight.skill.StaffFlower;
 import net.minecraft.util.Mth;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
 import yesman.epicfight.api.animation.JointTransform;
+import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
@@ -23,7 +24,8 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
     //棍花
-    public static StaticAnimation STAFF_FLOWER;
+    public static StaticAnimation STAFF_FLOWER_ONE_HAND;
+    public static StaticAnimation STAFF_FLOWER_TWO_HAND;
 
     //轻击 1~5
     public static StaticAnimation STAFF_AUTO1;
@@ -87,6 +89,27 @@ public class WukongAnimations {
 
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
+
+        STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0, "biped/staff_flower/staff_flower_one_hand", biped,
+                new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.02F)),
+                new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 1.0F, 0.51F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.02F)),
+                new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 1.0F, 0.76F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.02F)),
+                new AttackAnimation.Phase(0.74F, 0.74F, 1.0F, 1.0F, 1.2F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.02F)))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(0.97F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                        if(serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(StaffFlower.PLAYING_STAFF_FLOWER)){
+                            serverPlayerPatch.reserveAnimation(STAFF_FLOWER_ONE_HAND);
+                        }
+                    }
+                }), AnimationEvent.Side.SERVER));
+
         POKE_CHARGED0 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, null, biped.toolR, "biped/poke/poke_charged", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(1.0F))

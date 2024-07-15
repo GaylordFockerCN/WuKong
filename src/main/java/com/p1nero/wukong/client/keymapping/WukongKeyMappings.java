@@ -1,14 +1,12 @@
 package com.p1nero.wukong.client.keymapping;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
-import com.p1nero.wukong.network.PacketHandler;
-import com.p1nero.wukong.network.PacketRelay;
-import com.p1nero.wukong.network.packet.client.ChangeStaffStylePacket;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
@@ -17,6 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
+import yesman.epicfight.client.input.CombatKeyMapping;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.client.CPChangeSkill;
 import yesman.epicfight.skill.Skill;
@@ -31,7 +30,7 @@ public class WukongKeyMappings {
     public static final MyKeyMapping CHOP_STYLE = new MyKeyMapping("key.wukong.chop_style", GLFW.GLFW_KEY_Z, "key.wukong.category");
     public static final MyKeyMapping STAND_STYLE = new MyKeyMapping("key.wukong.stand_style", GLFW.GLFW_KEY_X, "key.wukong.category");
     public static final MyKeyMapping POKE_STYLE = new MyKeyMapping("key.wukong.poke_style", GLFW.GLFW_KEY_C, "key.wukong.category");
-    public static final MyKeyMapping STAFF_FLOWER = new MyKeyMapping("key.wukong.staff_flower", GLFW.GLFW_KEY_V, "key.wukong.category");
+    public static final KeyMapping STAFF_FLOWER = new CombatKeyMapping("key.wukong.staff_flower", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.wukong.category");
 
     @SubscribeEvent
     public static void registerKeys(FMLClientSetupEvent event) {

@@ -29,7 +29,7 @@ import java.util.List;
 import static com.p1nero.wukong.epicfight.skill.HeavyAttack.CHARGING_TIMER;
 
 /**
- * 根据棍势加伤
+ * 根据棍势加伤，但是还没实现
  */
 public class WukongChargedAttackAnimation extends BasicAttackAnimation {
     public WukongChargedAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {

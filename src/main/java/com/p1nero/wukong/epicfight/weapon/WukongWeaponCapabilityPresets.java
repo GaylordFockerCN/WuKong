@@ -28,7 +28,7 @@ public class WukongWeaponCapabilityPresets {
     public static final Function<Item, CapabilityItem.Builder> STAFF = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
             .styleProvider((livingEntityPatch) -> {
-                if(livingEntityPatch instanceof PlayerPatch playerPatch){
+                if(livingEntityPatch instanceof PlayerPatch<?> playerPatch){
                     SkillContainer container = playerPatch.getSkill(WukongSkillSlots.STAFF_STYLE);
                     if(container.getSkill() instanceof StaffStyle style){
                         return style.getStyle(container);
@@ -40,14 +40,16 @@ public class WukongWeaponCapabilityPresets {
             .hitParticle(EpicFightParticles.HIT_BLUNT.get())
             .canBePlacedOffhand(false)
             .comboCancel((style) -> false)
-            //学棍势之前只是普通滴棍子（可以改成劈棍默认也行
+            .passiveSkill(WukongSkills.STAFF_FLOWER)
+            //学棍势之前第五段重击就是技能
             .newStyleCombo(WukongStyles.WUKONG_COMMON,
                     Animations.SPEAR_ONEHAND_AUTO,
                     Animations.SPEAR_TWOHAND_AUTO1,
                     Animations.SPEAR_TWOHAND_AUTO2,
+                    Animations.SPEAR_TWOHAND_AUTO2,
                     Animations.SPEAR_DASH,
                     Animations.SPEAR_TWOHAND_AIR_SLASH)
-            .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> EpicFightSkills.SWEEPING_EDGE)
+            .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> WukongSkills.COMMON)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.IDLE,
                     Animations.BIPED_HOLD_SPEAR)
@@ -80,7 +82,6 @@ public class WukongWeaponCapabilityPresets {
                     Animations.SPEAR_DASH,
                     Animations.SPEAR_TWOHAND_AIR_SLASH)
             .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
-//            .innateSkill(WukongStyles.CHOP, (itemstack) -> EpicFightSkills.SWEEPING_EDGE)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.IDLE,
                     WukongAnimations.CHOP_IDLE)

@@ -73,8 +73,7 @@ public class HeavyAttack extends WeaponInnateSkill {
                         new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_right"),
                         new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_forward"),
                         new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_backward"),
-                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_left"),
-                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_right"));
+                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_left"));
     }
 
     public HeavyAttack(Builder builder) {

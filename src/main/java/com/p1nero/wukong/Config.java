@@ -1,13 +1,12 @@
 package com.p1nero.wukong;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,49 +22,21 @@ public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
-//    public static final ForgeConfigSpec.DoubleValue RAIN_CUTTER_COOLDOWN;
-//    public static final ForgeConfigSpec.DoubleValue YAKSHAS_MASK_COOLDOWN;
-//    public static final ForgeConfigSpec.DoubleValue STELLAR_RESTORATION_COOLDOWN;
-//    public static final ForgeConfigSpec.BooleanValue FORCE_FLY_ANIM;
-//    public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA;
-//    public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE;
-//    public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE;
-//    public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK;
-//    public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK;
-//    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEMS_CAN_FLY;
-//    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEMS_CAN_NOT_FLY;
-//
-    static final ForgeConfigSpec SPEC;
+    public static final ForgeConfigSpec.DoubleValue STAFF_FLOWER_STAMINA_CONSUME;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER;
+    public static final ForgeConfigSpec SPEC;
+
+    public static Set<? extends EntityType<?>> entities_can_be_blocked = new HashSet<>();
 
     static {
 
-//        BUILDER.push("Skill Cooldown");
         DAMAGE_MULTIPLIER = createDouble("The damage multiplier of all Wukong Skill Attack", "damage_multiplier", 1.0);
-//        RAIN_CUTTER_COOLDOWN = createDouble("the cooldown ticks of Rain Cutter skill", "rain_cutter_cooldown", 816);
-//        YAKSHAS_MASK_COOLDOWN = createDouble("the cooldown ticks of Yaksha's Mask skill", "yaksha_mask_cooldown", 749);
-//        STELLAR_RESTORATION_COOLDOWN = createDouble("the cooldown ticks of Stellar Restoration skill", "stellar_restoration_cooldown", 312);
-//        BUILDER.pop();
-//
-//        BUILDER.push("Sword Soaring");
-//        FORCE_FLY_ANIM = createBool("force_fly_anim", false);
-//        ENABLE_INERTIA = createBool("enable_inertia", true);
-//        INERTIA_TICK_BEFORE = createDouble("the inertia end.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
-//        FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
-//        STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per end when flying" ,"stamina_consume_per_tick", 0.05);
-//        MAX_ANTICIPATION_TICK = createDouble("ticks of end taking off","max_anticipation_tick", 10);
-//        ITEMS_CAN_FLY = BUILDER
-//                .comment("A list of items considered as sword.")
-//                .defineListAllowEmpty(List.of("items can fly"), () -> List.of("minecraft:iron_ingot"), Config::validateItemName);
-//        ITEMS_CAN_NOT_FLY = BUILDER
-//                .comment("A list of items not considered as sword.")
-//                .defineListAllowEmpty(List.of("items can't fly"), () -> List.of("minecraft:iron_ingot"), Config::validateItemName);
-//        BUILDER.pop();
-//
+        STAFF_FLOWER_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Staff Flower", "staff_flower_stamina_consume", 2.0);
+        ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER = BUILDER
+                .comment("A list of items considered as sword.")
+                .defineListAllowEmpty(List.of("entities can be blocked by staff flower"), () -> List.of("minecraft:arrow"), Config::validateEntityName);
         SPEC = BUILDER.build();
     }
-
-    public static Set<Item> swordItems = new HashSet<>();
-    public static Set<Item> notSwordItems = new HashSet<>();
 
     private static ForgeConfigSpec.BooleanValue createBool(String key, boolean defaultValue){
         return BUILDER
@@ -86,8 +57,8 @@ public class Config
                 .defineInRange(key, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE);
     }
 
-    private static boolean validateItemName(final Object obj){
-        return obj instanceof final String itemName && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
+    private static boolean validateEntityName(final Object obj){
+        return obj instanceof final String itemName && ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(itemName));
     }
 
     @SubscribeEvent
