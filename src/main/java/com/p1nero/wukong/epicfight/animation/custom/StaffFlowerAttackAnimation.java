@@ -1,4 +1,4 @@
-package com.p1nero.wukong.epicfight.animation;
+package com.p1nero.wukong.epicfight.animation.custom;
 
 import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.Nullable;

@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
@@ -36,7 +37,7 @@ import java.util.UUID;
 public class StaffFlower extends Skill {
 
     public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_FLOWER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
-    private static final SkillDataManager.SkillDataKey<Boolean> MOVING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+    public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
 
     public StaffFlower(Builder<? extends Skill> builder) {
@@ -47,10 +48,9 @@ public class StaffFlower extends Skill {
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         container.getDataManager().registerData(PLAYING_STAFF_FLOWER);
-        container.getDataManager().registerData(MOVING);
+        container.getDataManager().registerData(KEY_PRESSING);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
-                container.getDataManager().setData(MOVING, true);
-            if (container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER)) {
+            if (container.getDataManager().getDataValue(KEY_PRESSING)) {
                 LocalPlayer clientPlayer = event.getPlayerPatch().getOriginal();
                 clientPlayer.setSprinting(false);
                 clientPlayer.sprintTime = -1;
@@ -76,7 +76,8 @@ public class StaffFlower extends Skill {
                 }
                 showBlockedEffect(event.getPlayerPatch(), event.getDamageSource().getDirectEntity());
                 SkillContainer skillContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
-                skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource(1.0F) + skillContainer.getMaxResource() / 5);
+                //成功格挡回能量
+                skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource() + skillContainer.getMaxResource() / 5);
             }
         }));
     }
@@ -124,16 +125,21 @@ public class StaffFlower extends Skill {
         if(!container.getExecuter().isLogicalClient() || !isWeaponValid(container.getExecuter())){
             return;
         }
-
+        Vec3 movement = container.getExecuter().getOriginal().getDeltaMovement();
+        if(!(movement.x <= 0.001 && movement.z <= 0.001)){
+            container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
+            return;
+        }
         if(container.getExecuter().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
+            container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER)){
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket());
                 container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, true, ((LocalPlayer) container.getExecuter().getOriginal()));
-            } else {
+            } else if(container.getExecuter().getOriginal().isOnGround()){
                 container.getExecuter().getOriginal().setDeltaMovement(0,0,0);//EntityState没用
             }
         } else {
-            container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, false, ((LocalPlayer) container.getExecuter().getOriginal()));
+            container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
         }
     }
 }
