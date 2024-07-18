@@ -8,6 +8,7 @@ import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -49,8 +50,15 @@ public class StaffFlower extends Skill {
         super.onInitiate(container);
         container.getDataManager().registerData(PLAYING_STAFF_FLOWER);
         container.getDataManager().registerData(KEY_PRESSING);
+
+        //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
-            if (container.getDataManager().getDataValue(KEY_PRESSING)) {
+            if (event.getPlayerPatch().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown()) {
+                Input input = event.getMovementInput();
+                input.down = false;
+                input.up = false;
+                input.left = false;
+                input.right = false;
                 LocalPlayer clientPlayer = event.getPlayerPatch().getOriginal();
                 clientPlayer.setSprinting(false);
                 clientPlayer.sprintTime = -1;
@@ -58,6 +66,7 @@ public class StaffFlower extends Skill {
                 ClientEngine.getInstance().controllEngine.setKeyBind(mc.options.keySprint, false);
             }
         }));
+
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
             if(container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER) && (WukongMoveset.canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
                 if(!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())){
@@ -125,19 +134,22 @@ public class StaffFlower extends Skill {
         if(!container.getExecuter().isLogicalClient() || !isWeaponValid(container.getExecuter())){
             return;
         }
-        Vec3 movement = container.getExecuter().getOriginal().getDeltaMovement();
-        if(!(movement.x <= 0.001 && movement.z <= 0.001)){
-            container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
-            return;
-        }
+        //改用调整input
+//        Vec3 movement = container.getExecuter().getOriginal().getDeltaMovement();
+//        if(!(movement.x <= 0.001 && movement.z <= 0.001)){
+//            container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
+//            return;
+//        }
         if(container.getExecuter().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
             container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER)){
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket());
                 container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, true, ((LocalPlayer) container.getExecuter().getOriginal()));
-            } else if(container.getExecuter().getOriginal().isOnGround()){
-                container.getExecuter().getOriginal().setDeltaMovement(0,0,0);//EntityState没用
             }
+            //改用调整input
+//            else if(container.getExecuter().getOriginal().isOnGround()){
+//                container.getExecuter().getOriginal().setDeltaMovement(0,0,0);//EntityState没用
+//            }
         } else {
             container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
         }
