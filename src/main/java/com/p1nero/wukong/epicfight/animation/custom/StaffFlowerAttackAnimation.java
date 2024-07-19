@@ -10,6 +10,7 @@ import yesman.epicfight.api.model.Armature;
 
 /**
  * 尝试修改动画播放的move lock
+ * 后面直接监听输入事件取消input了。。
  */
 public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
     public StaffFlowerAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {

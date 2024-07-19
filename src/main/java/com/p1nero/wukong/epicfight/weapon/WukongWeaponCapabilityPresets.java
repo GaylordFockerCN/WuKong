@@ -58,10 +58,10 @@ public class WukongWeaponCapabilityPresets {
                     Animations.BIPED_WALK_SPEAR)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.CHASE,
-                    Animations.BIPED_RUN_SPEAR)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.RUN,
-                    Animations.BIPED_RUN_SPEAR)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.SWIM,
                     Animations.BIPED_HOLD_SPEAR)
@@ -90,10 +90,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.CHOP_WALK)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.CHASE,
-                    WukongAnimations.CHOP_RUN)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.RUN,
-                    WukongAnimations.CHOP_RUN)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.SWIM,
                     WukongAnimations.CHOP_WALK)
@@ -120,10 +120,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.POKE_WALK)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.CHASE,
-                    WukongAnimations.POKE_RUN)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.RUN,
-                    WukongAnimations.POKE_RUN)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.SWIM,
                     WukongAnimations.POKE_WALK)
@@ -145,10 +145,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAND_WALK)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.CHASE,
-                    WukongAnimations.STAND_RUN)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.RUN,
-                    WukongAnimations.STAND_RUN)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.SWIM,
                     WukongAnimations.STAND_WALK)

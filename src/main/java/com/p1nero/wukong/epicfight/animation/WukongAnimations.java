@@ -29,6 +29,10 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
+
+    public static StaticAnimation IDLE;
+    public static StaticAnimation WALK;
+    public static StaticAnimation RUN;
     //棍花
     public static StaticAnimation STAFF_FLOWER_ONE_HAND;
     public static StaticAnimation STAFF_FLOWER_TWO_HAND;
@@ -96,6 +100,8 @@ public class WukongAnimations {
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
 
+        RUN = new StaticAnimation(true, "biped/run",biped);
+
         STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0, "biped/staff_flower/staff_flower_one_hand", biped,
                 new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
@@ -127,6 +133,38 @@ public class WukongAnimations {
                             passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, true, serverPlayerPatch.getOriginal());
                         }
                     }), AnimationEvent.Side.SERVER));
+
+        STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0, "biped/staff_flower/staff_flower_two_hand", biped,
+                new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
+                new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 1.0F, 0.51F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
+                new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 1.0F, 0.76F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
+                new AttackAnimation.Phase(0.74F, 0.74F, 1.0F, 1.0F, 1.2F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addEvents(
+                        AnimationEvent.TimeStampedEvent.create(0.90F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                                SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
+                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, false,serverPlayerPatch.getOriginal());
+                                if(passiveContainer.getDataManager().getDataValue(StaffFlower.KEY_PRESSING)){
+                                    if(serverPlayerPatch.hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
+                                        serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
+                                        serverPlayerPatch.reserveAnimation(STAFF_FLOWER_TWO_HAND);
+                                    }
+                                }
+                            }
+                        }), AnimationEvent.Side.SERVER),
+                        AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                                SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
+                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, true, serverPlayerPatch.getOriginal());
+                            }
+                        }), AnimationEvent.Side.SERVER));
 
         POKE_CHARGED0 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.POKE_0, biped.toolR, "biped/poke/poke_charged", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))

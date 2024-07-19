@@ -17,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.ClientEngine;
-import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
@@ -38,6 +37,7 @@ import java.util.UUID;
 public class StaffFlower extends Skill {
 
     public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_FLOWER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+    public static final SkillDataManager.SkillDataKey<Boolean> IS_ONE_HAND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
 
@@ -49,19 +49,24 @@ public class StaffFlower extends Skill {
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         container.getDataManager().registerData(PLAYING_STAFF_FLOWER);
+        container.getDataManager().registerData(IS_ONE_HAND);
         container.getDataManager().registerData(KEY_PRESSING);
 
         //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
             if (event.getPlayerPatch().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown()) {
                 Input input = event.getMovementInput();
+                input.forwardImpulse = 0.0F;
+                input.leftImpulse = 0.0F;
                 input.down = false;
                 input.up = false;
                 input.left = false;
                 input.right = false;
+                input.jumping = false;
+                input.shiftKeyDown = false;
                 LocalPlayer clientPlayer = event.getPlayerPatch().getOriginal();
                 clientPlayer.setSprinting(false);
-                clientPlayer.sprintTime = -1;
+//                clientPlayer.sprintTriggerTime = -1;
                 Minecraft mc = Minecraft.getInstance();
                 ClientEngine.getInstance().controllEngine.setKeyBind(mc.options.keySprint, false);
             }
@@ -131,27 +136,24 @@ public class StaffFlower extends Skill {
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if(!container.getExecuter().isLogicalClient() || !isWeaponValid(container.getExecuter())){
+        if(!container.getExecuter().isLogicalClient() || !isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode()){
             return;
         }
-        //改用调整input
-//        Vec3 movement = container.getExecuter().getOriginal().getDeltaMovement();
-//        if(!(movement.x <= 0.001 && movement.z <= 0.001)){
-//            container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
-//            return;
-//        }
-        if(container.getExecuter().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
+
+        if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
             container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER)){
-                PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket());
+                boolean isOneHand = container.getExecuter().getOriginal().getDeltaMovement().length() < 0.1;
+                if(!isOneHand){
+                    //不这样判断不知道为什么会播完双手就回去播单手
+                    container.getDataManager().setDataSync(IS_ONE_HAND, false, ((LocalPlayer) container.getExecuter().getOriginal()));
+                }
+                PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(isOneHand));
                 container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             }
-            //改用调整input
-//            else if(container.getExecuter().getOriginal().isOnGround()){
-//                container.getExecuter().getOriginal().setDeltaMovement(0,0,0);//EntityState没用
-//            }
         } else {
             container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
+            container.getDataManager().setDataSync(IS_ONE_HAND, true, ((LocalPlayer) container.getExecuter().getOriginal()));
         }
     }
 }
