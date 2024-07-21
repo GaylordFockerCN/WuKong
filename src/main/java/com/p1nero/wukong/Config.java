@@ -21,8 +21,10 @@ import java.util.Set;
 public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec.DoubleValue DERIVE_CHECK_TIME;
     public static final ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue STAFF_FLOWER_STAMINA_CONSUME;
+    public static final ForgeConfigSpec.DoubleValue DERIVE_STAMINA_CONSUME;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER;
     public static final ForgeConfigSpec SPEC;
 
@@ -30,8 +32,10 @@ public class Config
 
     static {
 
+        DERIVE_CHECK_TIME = createDouble("The time period that can use derive attack after basic attack.", "derive_check_time", 20.0);
         DAMAGE_MULTIPLIER = createDouble("The damage multiplier of all Wukong Skill Attack", "damage_multiplier", 1.0);
         STAFF_FLOWER_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Staff Flower", "staff_flower_stamina_consume", 2.0);
+        DERIVE_STAMINA_CONSUME = createDouble("Stamina consumed per use of the first Derive Attack", "derive_stamina_consume", 2.0);
         ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER = BUILDER
                 .comment("A list of items considered as sword.")
                 .defineListAllowEmpty(List.of("entities can be blocked by staff flower"), () -> List.of("minecraft:arrow"), Config::validateEntityName);

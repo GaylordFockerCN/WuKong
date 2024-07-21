@@ -5,10 +5,9 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.animation.custom.StaffFlowerAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation;
+import com.p1nero.wukong.epicfight.skill.HeavyAttack;
 import com.p1nero.wukong.epicfight.skill.StaffFlower;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +23,7 @@ import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
@@ -65,9 +65,9 @@ public class WukongAnimations {
     public static StaticAnimation POKE_WALK;
     public static StaticAnimation POKE_RUN;
     //衍生 1 2
+    public static StaticAnimation POKE_DERIVE_PRE;
     public static StaticAnimation POKE_DERIVE1;
-    public static StaticAnimation POKE_DERIVE1_COMMON;
-    public static StaticAnimation POKE_DERIVE1_PLUS;
+    public static StaticAnimation POKE_DERIVE1_BACKSWING;
     public static StaticAnimation POKE_DERIVE2;
     //不同星级的重击
     public static StaticAnimation POKE_PRE;
@@ -102,39 +102,21 @@ public class WukongAnimations {
 
         RUN = new StaticAnimation(true, "biped/run",biped);
 
-        STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0, "biped/staff_flower/staff_flower_one_hand", biped,
-                new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 1.0F, 0.51F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 1.0F, 0.76F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.74F, 0.74F, 1.0F, 1.0F, 1.2F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
-                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
-                .addEvents(
-                    AnimationEvent.TimeStampedEvent.create(0.97F, ((livingEntityPatch, staticAnimation, objects) -> {
-                        if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                            SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                            passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, false,serverPlayerPatch.getOriginal());
-                            if(passiveContainer.getDataManager().getDataValue(StaffFlower.KEY_PRESSING)){
-                                if(serverPlayerPatch.hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
-                                    serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
-                                    serverPlayerPatch.reserveAnimation(STAFF_FLOWER_ONE_HAND);
-                                }
-                            }
-                        }
-                    }), AnimationEvent.Side.SERVER),
-                    AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
-                        if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                            SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                            passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, true, serverPlayerPatch.getOriginal());
-                        }
-                    }), AnimationEvent.Side.SERVER));
+        STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0.97F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F);
+        STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
 
-        STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0, "biped/staff_flower/staff_flower_two_hand", biped,
+        //自动接后续
+        POKE_DERIVE_PRE = new StaticAnimation(false, "biped/poke/poke_derive_pre", biped)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                                serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
+                            }
+                }), AnimationEvent.Side.SERVER),
+                AnimationEvent.TimeStampedEvent.create(0.38F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    livingEntityPatch.reserveAnimation(POKE_DERIVE1);
+                }), AnimationEvent.Side.SERVER));
+
+        POKE_DERIVE1 = new BasicMultipleAttackAnimation(0, "biped/poke/poke_derive1", biped,
                 new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
                 new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 1.0F, 0.51F , biped.toolR, null)
@@ -147,24 +129,44 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addEvents(
-                        AnimationEvent.TimeStampedEvent.create(0.90F, ((livingEntityPatch, staticAnimation, objects) -> {
+                        AnimationEvent.TimeStampedEvent.create(0.95F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, false,serverPlayerPatch.getOriginal());
-                                if(passiveContainer.getDataManager().getDataValue(StaffFlower.KEY_PRESSING)){
-                                    if(serverPlayerPatch.hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
-                                        serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
-                                        serverPlayerPatch.reserveAnimation(STAFF_FLOWER_TWO_HAND);
+                                //如果还按着按钮而且有耐力就接着衍生1
+                                if(serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(HeavyAttack.KEY_PRESSING)){
+                                    if(serverPlayerPatch.hasStamina(Config.DERIVE_STAMINA_CONSUME.get().floatValue())){
+                                        serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.DERIVE_STAMINA_CONSUME.get().floatValue());
+                                        serverPlayerPatch.reserveAnimation(POKE_DERIVE1);
+                                        return;
                                     }
                                 }
+                                //松手或没耐力就后跳
+                                serverPlayerPatch.reserveAnimation(POKE_DERIVE1_BACKSWING);
                             }
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, true, serverPlayerPatch.getOriginal());
+                                serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
                             }
                         }), AnimationEvent.Side.SERVER));
+
+        POKE_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, true)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.13F, (livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
+                        SkillDataManager dataManager = playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                        dataManager.setDataSync(HeavyAttack.DERIVE_TIMER, HeavyAttack.MAX_TIMER, playerPatch.getOriginal());
+                        dataManager.setDataSync(HeavyAttack.CAN_SECOND_DERIVE, true, playerPatch.getOriginal());
+                    }
+                }, AnimationEvent.Side.SERVER));
+
+        POKE_DERIVE2 = new BasicAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.POKE_3, biped.toolR, "biped/poke/poke_derive2", biped)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_SECOND_DERIVE, false, serverPlayerPatch.getOriginal());
+                    }
+                }), AnimationEvent.Side.SERVER));
 
         POKE_CHARGED0 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.POKE_0, biped.toolR, "biped/poke/poke_charged", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
@@ -208,10 +210,6 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)))
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
-
-        //TODO delete after test
-        POKE_DERIVE1 = (new ActionAnimation(1.0F, "biped/poke/poke_charging", biped));
-        POKE_DERIVE2 = (new ActionAnimation(1.0F, "biped/poke/poke_charging", biped));
 
 //        POKE_DERIVE1 = new SelectiveAnimation((entityPatch -> {
 //            if(entityPatch instanceof ServerPlayerPatch playerPatch){
