@@ -164,7 +164,7 @@ public class HeavyAttack extends WeaponInnateSkill {
 
         //普攻后可以衍生
         container.getExecuter().getEventListener().addEventListener(
-                PlayerEventListener.EventType.ATTACK_ANIMATION_END_EVENT, EVENT_UUID, (event -> {
+                PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (event -> {
                     ServerPlayer player = event.getPlayerPatch().getOriginal();
                     CapabilityItem capabilityItem = EpicFightCapabilities.getItemStackCapability(player.getMainHandItem());
                     boolean isStaff = capabilityItem.getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF);
@@ -173,10 +173,6 @@ public class HeavyAttack extends WeaponInnateSkill {
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
                     if(!isStaff){
                         return;
-                    }
-                    //重置属于前摇的时间 （可惜没有普通动画的结束事件）
-                    if(chargeable && event.getAnimation().equals(chargePre)){
-                        container.getDataManager().setDataSync(IS_CHARGING_PRE, false, player);
                     }
                     //释放普攻后重置可衍生时间
                     if(isLightAttack && !isLastLightAttack) {
@@ -192,7 +188,6 @@ public class HeavyAttack extends WeaponInnateSkill {
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         PlayerEventListener listener = container.getExecuter().getEventListener();
-        listener.removeListener(PlayerEventListener.EventType.ATTACK_ANIMATION_END_EVENT, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
     }

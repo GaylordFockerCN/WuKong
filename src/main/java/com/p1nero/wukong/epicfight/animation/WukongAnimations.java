@@ -105,7 +105,7 @@ public class WukongAnimations {
         STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0.97F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F);
         STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
 
-        //自动接后续
+        //前摇完自动接下一个动作
         POKE_DERIVE_PRE = new StaticAnimation(false, "biped/poke/poke_derive_pre", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
@@ -155,6 +155,7 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, true)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(1.13F, (livingEntityPatch, staticAnimation, objects) -> {
                     if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
+                        //设为可二段衍生状态
                         SkillDataManager dataManager = playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
                         dataManager.setDataSync(HeavyAttack.DERIVE_TIMER, HeavyAttack.MAX_TIMER, playerPatch.getOriginal());
                         dataManager.setDataSync(HeavyAttack.CAN_SECOND_DERIVE, true, playerPatch.getOriginal());
@@ -166,7 +167,8 @@ public class WukongAnimations {
                     if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                         serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_SECOND_DERIVE, false, serverPlayerPatch.getOriginal());
                     }
-                }), AnimationEvent.Side.SERVER));
+                }), AnimationEvent.Side.SERVER))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
 
         POKE_CHARGED0 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.POKE_0, biped.toolR, "biped/poke/poke_charged", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
@@ -209,7 +211,12 @@ public class WukongAnimations {
         new AttackAnimation.Phase(0.2F, 0.2F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.2F)))
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.39F, (livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.IS_CHARGING_PRE, false, playerPatch.getOriginal());
+                    }
+                }, AnimationEvent.Side.SERVER));
 
 //        POKE_DERIVE1 = new SelectiveAnimation((entityPatch -> {
 //            if(entityPatch instanceof ServerPlayerPatch playerPatch){
