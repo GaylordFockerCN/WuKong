@@ -202,6 +202,8 @@ public class HeavyAttack extends WeaponInnateSkill {
             boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
 
+            //TODO 如果处于戳戳戳，则松手立即播放后摇动画，优化重击的蓄力判断
+
             if(dataManager.getDataValue(IS_CHARGING)){
                 if(isKeyDown){
                     container.getDataManager().setData(CHARGING_TIMER, container.getDataManager().getDataValue(CHARGING_TIMER)+1);

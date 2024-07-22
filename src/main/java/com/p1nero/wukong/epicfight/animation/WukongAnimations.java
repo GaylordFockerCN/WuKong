@@ -136,11 +136,11 @@ public class WukongAnimations {
                                     if(serverPlayerPatch.hasStamina(Config.DERIVE_STAMINA_CONSUME.get().floatValue())){
                                         serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.DERIVE_STAMINA_CONSUME.get().floatValue());
                                         serverPlayerPatch.reserveAnimation(POKE_DERIVE1);
-                                        return;
+                                    } else {
+                                        //没耐力就后跳
+                                        serverPlayerPatch.reserveAnimation(POKE_DERIVE1_BACKSWING);
                                     }
                                 }
-                                //松手或没耐力就后跳
-                                serverPlayerPatch.reserveAnimation(POKE_DERIVE1_BACKSWING);
                             }
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
