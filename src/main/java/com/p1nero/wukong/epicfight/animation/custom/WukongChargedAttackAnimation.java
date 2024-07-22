@@ -40,10 +40,11 @@ public class WukongChargedAttackAnimation extends BasicAttackAnimation {
         this.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
-        this.addEvents(AnimationEvent.TimeStampedEvent.create(antic, ((livingEntityPatch, staticAnimation, objects) -> {
+        this.addEvents(
+        AnimationEvent.TimeStampedEvent.create(antic, ((livingEntityPatch, staticAnimation, objects) -> {
             livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag().putBoolean("playing_wk_charged", true);
-        }), AnimationEvent.Side.SERVER));
-        this.addEvents(AnimationEvent.TimeStampedEvent.create(contact, ((livingEntityPatch, staticAnimation, objects) -> {
+        }), AnimationEvent.Side.SERVER),
+        AnimationEvent.TimeStampedEvent.create(contact, ((livingEntityPatch, staticAnimation, objects) -> {
             livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag().putBoolean("playing_wk_charged", false);
         }), AnimationEvent.Side.SERVER));
     }
