@@ -20,6 +20,7 @@ import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
+import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -152,7 +153,10 @@ public class WukongAnimations {
                                 dataManager.setDataSync(HeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
                                 dataManager.setDataSync(HeavyAttack.IS_REPEATING_DERIVE, true, serverPlayerPatch.getOriginal());
                             }
-                        }), AnimationEvent.Side.SERVER));
+                        }), AnimationEvent.Side.SERVER))
+                        .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 0.95F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            ClientEngine.getInstance().renderEngine.zoomIn();
+                        }), AnimationEvent.Side.CLIENT));
 
         POKE_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
@@ -165,7 +169,10 @@ public class WukongAnimations {
                         dataManager.setDataSync(HeavyAttack.DERIVE_TIMER, HeavyAttack.MAX_TIMER, playerPatch.getOriginal());
                         dataManager.setDataSync(HeavyAttack.CAN_SECOND_DERIVE, true, playerPatch.getOriginal());
                     }
-                }, AnimationEvent.Side.SERVER));
+                }, AnimationEvent.Side.SERVER),
+                AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    ClientEngine.getInstance().renderEngine.zoomOut(40);
+                }), AnimationEvent.Side.CLIENT));
 
         POKE_DERIVE2 = new BasicAttackAnimation(0, 0.75F, 0.85F, 1.5F, WukongColliders.POKE_3, biped.toolR, "biped/poke/poke_derive2", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
