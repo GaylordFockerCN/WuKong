@@ -3,6 +3,7 @@ package com.p1nero.wukong.epicfight.animation;
 import com.mojang.math.Vector3f;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.StaffFlowerAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation;
 import com.p1nero.wukong.epicfight.skill.HeavyAttack;
@@ -155,7 +156,7 @@ public class WukongAnimations {
                             }
                         }), AnimationEvent.Side.SERVER))
                         .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 0.95F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            ClientEngine.getInstance().renderEngine.zoomIn();
+                            CameraAnim.zoomIn();
                         }), AnimationEvent.Side.CLIENT));
 
         POKE_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
@@ -169,10 +170,7 @@ public class WukongAnimations {
                         dataManager.setDataSync(HeavyAttack.DERIVE_TIMER, HeavyAttack.MAX_TIMER, playerPatch.getOriginal());
                         dataManager.setDataSync(HeavyAttack.CAN_SECOND_DERIVE, true, playerPatch.getOriginal());
                     }
-                }, AnimationEvent.Side.SERVER),
-                AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    ClientEngine.getInstance().renderEngine.zoomOut(40);
-                }), AnimationEvent.Side.CLIENT));
+                }, AnimationEvent.Side.SERVER));
 
         POKE_DERIVE2 = new BasicAttackAnimation(0, 0.75F, 0.85F, 1.5F, WukongColliders.POKE_3, biped.toolR, "biped/poke/poke_derive2", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {

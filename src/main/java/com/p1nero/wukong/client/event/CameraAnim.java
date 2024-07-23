@@ -19,53 +19,41 @@ import yesman.epicfight.client.ClientEngine;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, value = Dist.CLIENT)
 public class CameraAnim {
+    private static final Vec3f AIMING_CORRECTION = new Vec3f(1.5F, 0.0F, 1.25F);
+    private static final int zoomMaxCount = 20;
+    private static boolean aiming;
+    private static int zoomOutTimer = 0;
+    private static int zoomCount;
 
-    private static final CameraAnim CAMERA_ANIM = new CameraAnim();
-    private static final Vec3f AIMING_CORRECTION = new Vec3f(-1.5F, 0.0F, 1.25F);
-    private int zoomMaxCount = 20;
-
-    private boolean aiming;
-    private int zoomCount;
-
-    public CameraAnim getInstance() {
-        return CAMERA_ANIM;
+    public static boolean isAiming() {
+        return aiming;
     }
 
-    private CameraAnim(){
-        
+    public static void zoomIn() {
+        aiming = true;
+        zoomCount = zoomCount == 0 ? 1 : zoomCount;
+        zoomOutTimer = 0;
     }
 
-    public void zoomIn() {
-        this.aiming = true;
-        this.zoomCount = this.zoomCount == 0 ? 1 : this.zoomCount;
-//        this.zoomOutTimer = 0;
+    public static void zoomOut(int timer) {
+        aiming = false;
+        zoomOutTimer = timer;
     }
 
-    public void zoomOut(int timer) {
-        this.aiming = false;
-//        this.zoomOutTimer = timer;
-    }
-
-
-
+    /**
+     * 实现过渡
+     */
     @SubscribeEvent
     public static void cameraSetupEvent(EntityViewRenderEvent.CameraSetup event) {
-        if (CAMERA_ANIM.zoomCount > 0) {
-            CAMERA_ANIM.setRangedWeaponThirdPerson(event, Minecraft.getInstance().options.getCameraType(), event.getPartialTicks());
-
-//            if (CAMERA_ANIM.zoomOutTimer > 0) {
-//                CAMERA_ANIM.zoomOutTimer--;
-//            } else {
-//                CAMERA_ANIM.zoomCount = CAMERA_ANIM.aiming ? CAMERA_ANIM.zoomCount + 1 : CAMERA_ANIM.zoomCount - 1;
-//            }
-
-            CAMERA_ANIM.zoomCount = Math.min(CAMERA_ANIM.zoomMaxCount, CAMERA_ANIM.zoomCount);
+        if (zoomCount > 0) {
+            setRangedWeaponThirdPerson(event, Minecraft.getInstance().options.getCameraType(), event.getPartialTicks());
+            zoomCount = aiming || zoomOutTimer --> 0 ? zoomCount + 1 : zoomCount - 1;
+            zoomCount = Math.min(zoomMaxCount, zoomCount);
         }
 
-//        CAMERA_ANIM.correctCamera(event, (float)event.getPartialTicks());
     }
 
-    private void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {
+    private static void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {
         if (ClientEngine.getInstance().getPlayerPatch() == null) {
             return;
         }
@@ -84,7 +72,7 @@ public class CameraAnim {
             double entityPosX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;
             double entityPosY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks + entity.getEyeHeight();
             double entityPosZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
-            float intpol = pov == CameraType.THIRD_PERSON_BACK ? ((float) zoomCount / (float) zoomMaxCount) : 0;
+            float intpol = (float) zoomCount / (float) zoomMaxCount;
             Vec3f interpolatedCorrection = new Vec3f(AIMING_CORRECTION.x * intpol, AIMING_CORRECTION.y * intpol, AIMING_CORRECTION.z * intpol);
             OpenMatrix4f rotationMatrix = ClientEngine.getInstance().getPlayerPatch().getMatrix((float)partialTicks);
             Vec3f rotateVec = OpenMatrix4f.transform3v(rotationMatrix, interpolatedCorrection, null);

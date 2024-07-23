@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
@@ -226,6 +227,10 @@ public class HeavyAttack extends WeaponInnateSkill {
 
             boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
+
+            if(!isKeyDown && CameraAnim.isAiming()){
+                CameraAnim.zoomOut(40);
+            }
 
             if(!isKeyDown && dataManager.getDataValue(IS_REPEATING_DERIVE)){
                 container.getExecuter().playAnimationSynchronized(WukongAnimations.POKE_DERIVE1_BACKSWING, 0.15F);
