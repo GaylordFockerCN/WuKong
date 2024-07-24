@@ -17,6 +17,9 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.ClientEngine;
 
+/**
+ * 抄ef原版的调视角，改了个方向，注意要取消动画的turning lock才不会被打断
+ */
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, value = Dist.CLIENT)
 public class CameraAnim {
     private static final Vec3f AIMING_CORRECTION = new Vec3f(1.5F, 0.0F, 1.25F);
@@ -28,7 +31,11 @@ public class CameraAnim {
     public static boolean isAiming() {
         return aiming;
     }
-
+    public static void zoomIn(int timer) {
+        aiming = true;
+        zoomCount = zoomCount == 0 ? 1 : zoomCount;
+        zoomOutTimer = timer;
+    }
     public static void zoomIn() {
         aiming = true;
         zoomCount = zoomCount == 0 ? 1 : zoomCount;
@@ -49,8 +56,10 @@ public class CameraAnim {
             setRangedWeaponThirdPerson(event, Minecraft.getInstance().options.getCameraType(), event.getPartialTicks());
             zoomCount = aiming || zoomOutTimer --> 0 ? zoomCount + 1 : zoomCount - 1;
             zoomCount = Math.min(zoomMaxCount, zoomCount);
+            if(zoomOutTimer < 0){
+                aiming = false;
+            }
         }
-        System.out.println(zoomCount);
     }
 
     private static void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {
