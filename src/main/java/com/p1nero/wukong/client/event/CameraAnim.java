@@ -50,7 +50,7 @@ public class CameraAnim {
             zoomCount = aiming || zoomOutTimer --> 0 ? zoomCount + 1 : zoomCount - 1;
             zoomCount = Math.min(zoomMaxCount, zoomCount);
         }
-
+        System.out.println(zoomCount);
     }
 
     private static void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {

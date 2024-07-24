@@ -154,15 +154,17 @@ public class WukongAnimations {
                                 dataManager.setDataSync(HeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
                                 dataManager.setDataSync(HeavyAttack.IS_REPEATING_DERIVE, true, serverPlayerPatch.getOriginal());
                             }
+                            CameraAnim.zoomIn();
                         }), AnimationEvent.Side.SERVER))
                         .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 0.95F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            CameraAnim.zoomIn();
+//                            CameraAnim.zoomIn();
                         }), AnimationEvent.Side.CLIENT));
 
         POKE_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, true)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)//解除锁视角的关键！
                 .addEvents(AnimationEvent.TimeStampedEvent.create(1.13F, (livingEntityPatch, staticAnimation, objects) -> {
                     if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
                         //设为可二段衍生状态

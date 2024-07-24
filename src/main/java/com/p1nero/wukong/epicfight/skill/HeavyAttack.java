@@ -229,7 +229,7 @@ public class HeavyAttack extends WeaponInnateSkill {
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
 
             if(!isKeyDown && CameraAnim.isAiming()){
-                CameraAnim.zoomOut(40);
+                CameraAnim.zoomOut(20);
             }
 
             if(!isKeyDown && dataManager.getDataValue(IS_REPEATING_DERIVE)){
