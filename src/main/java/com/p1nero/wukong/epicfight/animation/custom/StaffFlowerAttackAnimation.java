@@ -2,18 +2,12 @@ package com.p1nero.wukong.epicfight.animation.custom;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.epicfight.skill.StaffFlower;
-import net.minecraft.world.InteractionHand;
-import org.jetbrains.annotations.Nullable;
-import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
-import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
-import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.ValueModifier;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
@@ -23,7 +17,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
  * 尝试修改动画播放的move lock
  * 后面直接监听输入事件取消input了。。
  */
-public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
+public class StaffFlowerAttackAnimation extends AttackAnimation {
 
     public StaffFlowerAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier){
         super(0, path, biped,

@@ -70,14 +70,6 @@ public class HeavyAttack extends WeaponInnateSkill {
 
     public static Builder createChargedAttack(){
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE);
-//                //default animations for test
-//                .setAnimationLocation(new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_forward"),
-//                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_backward"),
-//                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_left"),
-//                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_right"),
-//                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_forward"),
-//                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_backward"),
-//                        new ResourceLocation(EpicFightMod.MODID, "biped/skill/step_left"));
     }
 
     public HeavyAttack(Builder builder) {
@@ -221,10 +213,9 @@ public class HeavyAttack extends WeaponInnateSkill {
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        //如果按着技能键而且在衍生或蓄力期间则一直循环，否则结束循环状态
         if(container.getExecuter().isLogicalClient()){
             SkillDataManager dataManager = container.getDataManager();
-
+            //KEY_PRESSING用于服务端判断是否继续播动画（感觉可以统一客户端操作的说
             boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
 

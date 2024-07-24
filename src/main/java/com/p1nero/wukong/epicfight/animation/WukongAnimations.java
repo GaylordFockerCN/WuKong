@@ -7,12 +7,10 @@ import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.StaffFlowerAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation;
 import com.p1nero.wukong.epicfight.skill.HeavyAttack;
-import com.p1nero.wukong.epicfight.skill.StaffFlower;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import net.minecraft.util.Mth;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
@@ -21,7 +19,6 @@ import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
-import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -108,7 +105,7 @@ public class WukongAnimations {
         STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
 
         //前摇完自动接下一个动作
-        POKE_DERIVE_PRE = new BasicAttackAnimation(0.00F, 0.0167F, 0.3F, 0.33F, null, biped.toolR,  "biped/poke/poke_derive_pre", biped)
+        POKE_DERIVE_PRE = new AttackAnimation(0.00F, 0.0167F, 0.0167F,0.3F, 0.33F, null, biped.toolR,  "biped/poke/poke_derive_pre", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                                 serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
@@ -119,7 +116,8 @@ public class WukongAnimations {
                         SkillDataManager dataManager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
                         //如果还按着按钮就接着戳
                         if(dataManager.getDataValue(HeavyAttack.KEY_PRESSING)){
-                            serverPlayerPatch.reserveAnimation(POKE_DERIVE1);
+//                            serverPlayerPatch.reserveAnimation(POKE_DERIVE1);
+                            serverPlayerPatch.playAnimationSynchronized(POKE_DERIVE1, 0.15F);//不是哥们，怎么改成这个就不会断了
                         } else {
                             serverPlayerPatch.reserveAnimation(POKE_DERIVE1_BACKSWING);
                         }
@@ -128,18 +126,16 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
 
-        POKE_DERIVE1 = new BasicMultipleAttackAnimation(0.15F, "biped/poke/poke_derive1", biped,
-                new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
+        POKE_DERIVE1 = new AttackAnimation(0.15F, "biped/poke/poke_derive1", biped,
+                new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 0.93F, 0.26F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 1.0F, 0.51F , biped.toolR, null)
+                new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 0.93F, 0.51F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 1.0F, 0.76F , biped.toolR, null)
+                new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 0.93F, 0.76F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.74F, 0.74F, 1.0F, 1.0F, 1.0F , biped.toolR, null)
+                new AttackAnimation.Phase(0.74F, 0.74F, 0.93F, 0.93F, 0.93F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 2.5F))
-                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addEvents(
                         AnimationEvent.TimeStampedEvent.create(0.93F, ((livingEntityPatch, staticAnimation, objects) -> {
@@ -152,10 +148,10 @@ public class WukongAnimations {
                                         serverPlayerPatch.reserveAnimation(POKE_DERIVE1);
                                     } else {
                                         //没耐力就后跳
+                                        dataManager.setDataSync(HeavyAttack.IS_REPEATING_DERIVE, false, serverPlayerPatch.getOriginal());
                                         serverPlayerPatch.reserveAnimation(POKE_DERIVE1_BACKSWING);
                                     }
                                 }
-                                dataManager.setDataSync(HeavyAttack.IS_REPEATING_DERIVE, false, serverPlayerPatch.getOriginal());
                             }
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
@@ -236,10 +232,10 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
 
-        POKE_PRE = new BasicMultipleAttackAnimation(0, "biped/poke/poke_pre", biped,
+        POKE_PRE = new AttackAnimation(0, "biped/poke/poke_pre", biped,
         new AttackAnimation.Phase(0.0F, 0.05F, 0.15F, 0.75F, 0.25F , biped.toolR, null)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.1F)),
-        new AttackAnimation.Phase(0.2F, 0.2F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
+        new AttackAnimation.Phase(0.2F, 0.25F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.1F)))
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
