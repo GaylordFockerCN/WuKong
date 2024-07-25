@@ -127,16 +127,12 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
 
         POKE_DERIVE1 = new AttackAnimation(0.15F, "biped/poke/poke_derive1", biped,
-                new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 0.93F, 0.26F , biped.toolR, null)
+                new AttackAnimation.Phase(0.0F, 0.00F, 0.50F, 0.93F, 0.50F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 0.93F, 0.51F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 0.93F, 0.76F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
-                new AttackAnimation.Phase(0.74F, 0.74F, 0.93F, 0.93F, 0.93F , biped.toolR, null)
+                new AttackAnimation.Phase(0.49F, 0.50F, 1.0F, 1.0F, 1.0F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 2.5F))
-                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)//防止视角变化无效
                 .addEvents(
                         AnimationEvent.TimeStampedEvent.create(0.93F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
@@ -180,6 +176,7 @@ public class WukongAnimations {
                 }, AnimationEvent.Side.SERVER));
 
         POKE_DERIVE2 = new BasicAttackAnimation(0.15F, 1.1667F, 1.55F, 1.55F, WukongColliders.POKE_3, biped.toolR, "biped/poke/poke_derive2", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                     if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                         serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_SECOND_DERIVE, false, serverPlayerPatch.getOriginal());
@@ -189,7 +186,7 @@ public class WukongAnimations {
                     CameraAnim.zoomIn(50);
                 }), AnimationEvent.Side.CLIENT))
                 .addStateRemoveOld(EntityState.TURNING_LOCKED, false)//为了用自己的视角...
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
 
         POKE_CHARGED0 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.POKE_0, biped.toolR, "biped/poke/poke_charged", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
