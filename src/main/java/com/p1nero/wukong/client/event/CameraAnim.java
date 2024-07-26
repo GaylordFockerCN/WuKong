@@ -5,8 +5,11 @@ import com.p1nero.wukong.WukongMoveset;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,7 +25,8 @@ import yesman.epicfight.client.ClientEngine;
  */
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, value = Dist.CLIENT)
 public class CameraAnim {
-    private static final Vec3f AIMING_CORRECTION = new Vec3f(1.5F, 0.0F, 1.25F);
+    public static final Vec3f DEFAULT_AIMING_CORRECTION = new Vec3f(1.5F, 0.0F, 1.25F);
+    private static Vec3f AIMING_CORRECTION = DEFAULT_AIMING_CORRECTION;
     private static final int zoomMaxCount = 20;
     private static boolean aiming;
     private static int zoomOutTimer = 0;
@@ -31,15 +35,17 @@ public class CameraAnim {
     public static boolean isAiming() {
         return aiming;
     }
-    public static void zoomIn(int timer) {
+    public static void zoomIn(Vec3f aimingCorrection, int timer) {
         aiming = true;
         zoomCount = zoomCount == 0 ? 1 : zoomCount;
         zoomOutTimer = timer;
+        AIMING_CORRECTION = aimingCorrection;
     }
-    public static void zoomIn() {
+    public static void zoomIn(Vec3f aimingCorrection) {
         aiming = true;
         zoomCount = zoomCount == 0 ? 1 : zoomCount;
         zoomOutTimer = 0;
+        AIMING_CORRECTION = aimingCorrection;
     }
 
     public static void zoomOut(int timer) {
@@ -67,9 +73,9 @@ public class CameraAnim {
             return;
         }
 
-        Camera cameraAnim = event.getCamera();
+        Camera camera = event.getCamera();
         Entity entity = Minecraft.getInstance().getCameraEntity();
-        Vec3 vector = cameraAnim.getPosition();
+        Vec3 vector = camera.getPosition();
         double totalX = vector.x();
         double totalY = vector.y();
         double totalZ = vector.z();
@@ -114,7 +120,12 @@ public class CameraAnim {
             totalZ += rotateVec.z * dist;
         }
 
-        cameraAnim.setPosition(totalX, totalY, totalZ);
+        BlockPos cameraPos= new BlockPos(totalX, totalY, totalZ);
+        if(Minecraft.getInstance().level.getBlockState(cameraPos).is(Blocks.AIR)){
+            camera.setPosition(totalX, totalY, totalZ);
+        } else {
+            //好像也不用干啥？
+        }
     }
 
 }

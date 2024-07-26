@@ -217,6 +217,9 @@ public class HeavyAttack extends WeaponInnateSkill {
             SkillDataManager dataManager = container.getDataManager();
             //KEY_PRESSING用于服务端判断是否继续播动画（感觉可以统一客户端操作的说
             boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
+            if(!dataManager.hasData(KEY_PRESSING)){
+                dataManager.registerData(KEY_PRESSING);//不知道为什么这个学棍式的时候会null
+            }
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
 
             if(!isKeyDown && CameraAnim.isAiming()){

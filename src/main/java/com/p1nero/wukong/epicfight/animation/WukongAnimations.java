@@ -19,6 +19,7 @@ import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
+import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -158,7 +159,7 @@ public class WukongAnimations {
                             }
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.00F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            CameraAnim.zoomIn();
+                            CameraAnim.zoomIn(CameraAnim.DEFAULT_AIMING_CORRECTION);
                         }), AnimationEvent.Side.CLIENT));
 
         POKE_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
@@ -183,7 +184,7 @@ public class WukongAnimations {
                     }
                 }), AnimationEvent.Side.SERVER),
                 AnimationEvent.TimeStampedEvent.create(0.00F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    CameraAnim.zoomIn(50);
+                    CameraAnim.zoomIn(new Vec3f(1.0F, 0, 1.35F), 50);
                 }), AnimationEvent.Side.CLIENT))
                 .addStateRemoveOld(EntityState.TURNING_LOCKED, false)//为了用自己的视角...
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
