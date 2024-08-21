@@ -44,6 +44,7 @@ public class WukongSkills {
                 .setDeriveAnimations(
                         ()->WukongAnimations.POKE_DERIVE_PRE,
                         ()->WukongAnimations.POKE_DERIVE2)
+                .setCanChargeWhenMove(false)
                 , WukongMoveset.MOD_ID, "poke_charged");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.CHOP).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "chop_style");
         SkillManager.register(StaffStyle::new, StaffStyle.createStaffStyle().setStyle(WukongStyles.POKE).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "poke_style");

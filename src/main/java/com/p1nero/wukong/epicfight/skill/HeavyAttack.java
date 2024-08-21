@@ -51,6 +51,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
     public static final int MAX_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
     private static boolean chargeable;
+    private static boolean canChargingWhenMove;
     public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//技能键是否按下
     public static final SkillDataManager.SkillDataKey<Boolean> IS_REPEATING_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按一段衍生
     private static final SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//亮灯时间
@@ -151,7 +152,7 @@ public class HeavyAttack extends WeaponInnateSkill {
 
         //长按期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
-            if (event.getPlayerPatch().isBattleMode() && EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()) {
+            if (event.getPlayerPatch().isBattleMode() && !canChargingWhenMove && EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()) {
                 Input input = event.getMovementInput();
                 input.forwardImpulse = 0.0F;
                 input.leftImpulse = 0.0F;
@@ -178,7 +179,7 @@ public class HeavyAttack extends WeaponInnateSkill {
                     }
                 }));
 
-        //普攻后可以衍生
+        //普攻后立即右键可以衍生
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (event -> {
                     ServerPlayer player = event.getPlayerPatch().getOriginal();
@@ -233,14 +234,22 @@ public class HeavyAttack extends WeaponInnateSkill {
 
             if(dataManager.getDataValue(IS_CHARGING)){
                 if(isKeyDown){
-                    container.getDataManager().setDataSync(CHARGING_TIMER, container.getDataManager().getDataValue(CHARGING_TIMER)+1, ((LocalPlayer) container.getExecuter().getOriginal()));
+                    //蓄力是加条不是额外计算hhhh
+//                    container.getDataManager().setDataSync(CHARGING_TIMER, container.getDataManager().getDataValue(CHARGING_TIMER)+1, ((LocalPlayer) container.getExecuter().getOriginal()));
                 }else {
                     container.getExecuter().getEntityState().setState(EntityState.INACTION, false);
                     container.getExecuter().playAnimationSynchronized(animations[dataManager.getDataValue(STARTS_CONSUMED)], 0.0F);
                     container.getDataManager().setDataSync(IS_CHARGING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
                 }
             }
+
+        } else {
+            //蓄力的加条
+            if(container.getDataManager().getDataValue(IS_CHARGING)){
+                this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getResource(1.0F) + 1);
+            }
         }
+
         //更新计时器
         container.getDataManager().setData(DERIVE_TIMER, Math.max(container.getDataManager().getDataValue(DERIVE_TIMER)-1, 0));
         container.getDataManager().setData(RED_TIMER, Math.max(container.getDataManager().getDataValue(RED_TIMER)-1, 0));
@@ -324,6 +333,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         StaticAnimationProvider pre;
         protected WukongStyles style;
         protected boolean chargeable;
+        protected boolean canChargingWhenMove;
 
         public Builder() {
         }
@@ -362,6 +372,11 @@ public class HeavyAttack extends WeaponInnateSkill {
         public Builder setChargePreAnimation(StaticAnimationProvider pre) {
             this.chargeable = pre != null;
             this.pre = pre;
+            return this;
+        }
+
+        public Builder setCanChargeWhenMove(boolean canChargeWhenMove){
+            this.canChargingWhenMove = canChargeWhenMove;
             return this;
         }
 
