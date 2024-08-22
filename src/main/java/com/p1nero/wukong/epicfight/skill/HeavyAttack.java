@@ -76,6 +76,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     public HeavyAttack(Builder builder) {
         super(builder);
         chargeable = builder.chargeable;
+        canChargingWhenMove = builder.canChargingWhenMove;
         if(chargeable){
             charging = builder.chargingAnimation.get();
             chargePre = builder.pre.get();
