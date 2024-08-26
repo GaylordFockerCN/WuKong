@@ -8,7 +8,9 @@ import com.p1nero.wukong.epicfight.animation.custom.StaffFlowerAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation;
 import com.p1nero.wukong.epicfight.skill.HeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
+import com.p1nero.wukong.listener.MovementInputListener;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.JointTransform;
@@ -16,16 +18,19 @@ import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
+import yesman.epicfight.api.utils.LevelUtil;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.world.damagesource.StunType;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
@@ -101,6 +106,53 @@ public class WukongAnimations {
         HumanoidArmature biped = Armatures.BIPED;
 
         RUN = new StaticAnimation(true, "biped/run",biped);
+
+        STAFF_AUTO1 = new BasicAttackAnimation(0.16F, 0.08F, 0.4F, 0.53F, null, biped.toolR,  "biped/auto_1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
+        STAFF_AUTO2 = new BasicAttackAnimation(0.16F, 0.35F, 0.68F, 0.68F, null, biped.toolR,  "biped/auto_2", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
+        STAFF_AUTO3 = new AttackAnimation(0.15F, "biped/auto_3", biped,
+                new AttackAnimation.Phase(0.0F, 0.1167F, 0.4167F, 0.4167F, 0.4167F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1F)),
+                new AttackAnimation.Phase(0.4167F, 0.4167F, 0.6667F, 0.7667F, 0.7667F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F)))
+                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
+        STAFF_AUTO4 = new AttackAnimation(0.15F, "biped/auto_4", biped,
+                new AttackAnimation.Phase(0.0F, 0.08F, 0.29F, 0.29F, 0.29F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
+                new AttackAnimation.Phase(0.29F, 0.29F, 0.58F, 0.58F, 0.58F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
+                new AttackAnimation.Phase(0.58F, 0.58F, 0.68F, 0.68F, 0.68F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
+                new AttackAnimation.Phase(0.68F, 0.68F, 0.7667F, 0.7667F, 0.7667F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
+                new AttackAnimation.Phase(0.7667F, 1.5167F, 1.8833F, 1.8833F, 1.8833F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.8F))
+                        .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
+                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
+        STAFF_AUTO5 = new BasicAttackAnimation(0.15F, 1.15F,1.56F, 1.56F, null, biped.toolR,  "biped/auto_5", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.5F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof LocalPlayerPatch playerPatch){
+                        LivingEntity target = playerPatch.getTarget();
+                        if(target != null){
+                            playerPatch.getOriginal().setDeltaMovement(target.position().subtract(playerPatch.getOriginal().position()).normalize());
+                        }
+                    }
+                }), AnimationEvent.Side.CLIENT))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.20F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
+                        LevelUtil.circleSlamFracture(playerPatch.getOriginal(), playerPatch.getOriginal().level, playerPatch.getOriginal().position().add(0, -1, 0), 3);
+                    }
+                }), AnimationEvent.Side.SERVER));
+
 
         STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0.97F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F);
         STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
