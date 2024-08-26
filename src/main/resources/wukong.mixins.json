@@ -8,6 +8,7 @@
     "ItemRendererMixin"
   ],
   "mixins": [
+    "ServerPlayerPatchMixin"
   ],
   "injectors": {
     "defaultRequire": 1

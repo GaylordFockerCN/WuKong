@@ -117,9 +117,10 @@ public class WukongAnimations {
                 new AttackAnimation.Phase(0.0F, 0.1167F, 0.4167F, 0.4167F, 0.4167F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1F)),
                 new AttackAnimation.Phase(0.4167F, 0.4167F, 0.6667F, 0.7667F, 0.7667F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F)))
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
         STAFF_AUTO4 = new AttackAnimation(0.15F, "biped/auto_4", biped,
                 new AttackAnimation.Phase(0.0F, 0.08F, 0.29F, 0.29F, 0.29F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
@@ -133,8 +134,9 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.8F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        STAFF_AUTO5 = new BasicAttackAnimation(0.15F, 1.15F,1.56F, 1.56F, null, biped.toolR,  "biped/auto_5", biped)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.95F));
+        STAFF_AUTO5 = new BasicAttackAnimation(0.15F, 1.20F,1.56F, 1.56F, null, biped.toolR,  "biped/auto_5", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
