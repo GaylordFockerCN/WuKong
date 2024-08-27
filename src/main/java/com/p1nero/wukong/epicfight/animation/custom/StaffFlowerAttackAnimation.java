@@ -17,7 +17,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
  * 尝试修改动画播放的move lock
  * 后面直接监听输入事件取消input了。。
  */
-public class StaffFlowerAttackAnimation extends AttackAnimation {
+public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
 
     public StaffFlowerAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier){
         super(0, path, biped,
