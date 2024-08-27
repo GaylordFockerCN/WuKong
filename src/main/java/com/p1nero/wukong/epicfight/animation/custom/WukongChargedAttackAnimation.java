@@ -1,12 +1,5 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
-import com.p1nero.wukong.Config;
-import com.p1nero.wukong.epicfight.skill.HeavyAttack;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationEvent;
@@ -15,20 +8,8 @@ import yesman.epicfight.api.animation.types.BasicAttackAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
-import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.HitEntityList;
 import yesman.epicfight.api.utils.math.ValueModifier;
-import yesman.epicfight.skill.SkillDataManager;
-import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
-import yesman.epicfight.world.damagesource.EpicFightDamageSource;
-import yesman.epicfight.world.entity.eventlistener.DealtDamageEvent;
-import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
-
-import java.util.List;
-
-import static com.p1nero.wukong.epicfight.skill.HeavyAttack.CHARGING_TIMER;
 
 /**
  * 在造成伤害的时间节点给物品添加nbt标签，方便做棍子的人操作缩放

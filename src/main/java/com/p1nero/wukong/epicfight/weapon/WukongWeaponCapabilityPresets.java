@@ -52,10 +52,10 @@ public class WukongWeaponCapabilityPresets {
             .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> WukongSkills.COMMON)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.IDLE,
-                    Animations.BIPED_HOLD_SPEAR)
+                    WukongAnimations.IDLE)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.WALK,
-                    Animations.BIPED_WALK_SPEAR)
+                    WukongAnimations.WALK)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
@@ -64,7 +64,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.SWIM,
-                    Animations.BIPED_HOLD_SPEAR)
+                    WukongAnimations.WALK)
+            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
+                    LivingMotions.JUMP,
+                    WukongAnimations.JUMP)
 
             //劈棍
             .newStyleCombo(WukongStyles.CHOP,
@@ -81,10 +84,10 @@ public class WukongWeaponCapabilityPresets {
             .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.IDLE,
-                    WukongAnimations.CHOP_IDLE)
+                    WukongAnimations.IDLE)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.WALK,
-                    WukongAnimations.CHOP_WALK)
+                    WukongAnimations.WALK)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
@@ -93,7 +96,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.SWIM,
-                    WukongAnimations.CHOP_WALK)
+                    WukongAnimations.WALK)
+            .livingMotionModifier(WukongStyles.CHOP,
+                    LivingMotions.JUMP,
+                    WukongAnimations.JUMP)
             //戳棍
             .newStyleCombo(WukongStyles.POKE,
                     WukongAnimations.STAFF_AUTO1,
@@ -111,10 +117,10 @@ public class WukongWeaponCapabilityPresets {
             .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.IDLE,
-                    WukongAnimations.POKE_IDLE)
+                    WukongAnimations.IDLE)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.WALK,
-                    WukongAnimations.POKE_WALK)
+                    WukongAnimations.WALK)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
@@ -123,7 +129,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.SWIM,
-                    WukongAnimations.POKE_WALK)
+                    WukongAnimations.WALK)
+            .livingMotionModifier(WukongStyles.POKE,
+                    LivingMotions.JUMP,
+                    WukongAnimations.JUMP)
             //立棍
                 .newStyleCombo(WukongStyles.STAND,
                         WukongAnimations.STAFF_AUTO1,
@@ -136,10 +145,10 @@ public class WukongWeaponCapabilityPresets {
             .innateSkill(WukongStyles.STAND, (itemstack) -> WukongSkills.STAND_CHARGED)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.IDLE,
-                    WukongAnimations.STAND_IDLE)
+                    WukongAnimations.IDLE)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.WALK,
-                    WukongAnimations.STAND_WALK)
+                    WukongAnimations.WALK)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
@@ -148,7 +157,10 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.SWIM,
-                    WukongAnimations.STAND_WALK)
+                    WukongAnimations.WALK)
+            .livingMotionModifier(WukongStyles.STAND,
+                    LivingMotions.JUMP,
+                    WukongAnimations.JUMP)
             ;
 
     public static final Function<Item, CapabilityItem.Builder> CHOP_ONLY = (item) ->

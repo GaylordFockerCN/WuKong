@@ -2,7 +2,7 @@ package com.p1nero.wukong.network.packet.server;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
-import com.p1nero.wukong.epicfight.skill.StaffFlower;
+import com.p1nero.wukong.epicfight.skill.custom.StaffFlower;
 import com.p1nero.wukong.network.packet.BasePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

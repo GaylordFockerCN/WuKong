@@ -1,8 +1,9 @@
-package com.p1nero.wukong.epicfight.skill;
+package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
+import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
@@ -48,9 +49,10 @@ public class StaffFlower extends Skill {
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
-        container.getDataManager().registerData(PLAYING_STAFF_FLOWER);
-        container.getDataManager().registerData(IS_ONE_HAND);
-        container.getDataManager().registerData(KEY_PRESSING);
+        SkillDataManager manager = container.getDataManager();
+        SkillDataRegister.register(manager, PLAYING_STAFF_FLOWER, false);
+        SkillDataRegister.register(manager, IS_ONE_HAND, false);
+        SkillDataRegister.register(manager, KEY_PRESSING, false);
 
         //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {

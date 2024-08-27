@@ -11,7 +11,7 @@ import yesman.epicfight.skill.SkillDataManager;
 
 public class StaffStyle extends Skill {
 
-    protected final WukongStyles style;//客户端无效，所以得有datakey
+    public final WukongStyles style;//客户端无效，所以得有datakey
     private static final SkillDataManager.SkillDataKey<Integer> STYLE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
 
     public StaffStyle(Builder builder) {

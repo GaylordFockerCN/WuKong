@@ -3,6 +3,8 @@ package com.p1nero.wukong.epicfight.skill;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
+import com.p1nero.wukong.epicfight.skill.custom.HeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.StaffFlower;
 import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.api.data.reloader.SkillManager;
@@ -10,7 +12,6 @@ import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
-import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 
 public class WukongSkills {
 

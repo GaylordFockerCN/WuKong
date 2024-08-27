@@ -1,7 +1,7 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
 import com.p1nero.wukong.Config;
-import com.p1nero.wukong.epicfight.skill.StaffFlower;
+import com.p1nero.wukong.epicfight.skill.custom.StaffFlower;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;

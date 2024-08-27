@@ -1,6 +1,6 @@
 package com.p1nero.wukong.mixin;
 
-import com.p1nero.wukong.epicfight.skill.HeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.HeavyAttack;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

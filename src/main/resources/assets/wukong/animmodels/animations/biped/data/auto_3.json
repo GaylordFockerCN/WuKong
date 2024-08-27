@@ -9,8 +9,7 @@
             "end_time": 0.76,
             "interpolations": 12,
             "joint": "Tool_R",
-            "item_skin_hand": "main_hand",
-            "texture_path": "epicfight:textures/particle/swing_trail.png"
+            "item_skin_hand": "main_hand"
         }
     ]
 }

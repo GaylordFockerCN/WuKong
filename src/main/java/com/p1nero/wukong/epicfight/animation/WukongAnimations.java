@@ -6,9 +6,8 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.StaffFlowerAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation;
-import com.p1nero.wukong.epicfight.skill.HeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.HeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
-import com.p1nero.wukong.listener.MovementInputListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,7 +22,6 @@ import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
-import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -38,6 +36,7 @@ public class WukongAnimations {
     public static StaticAnimation IDLE;
     public static StaticAnimation WALK;
     public static StaticAnimation RUN;
+    public static StaticAnimation JUMP;
     //棍花
     public static StaticAnimation STAFF_FLOWER_ONE_HAND;
     public static StaticAnimation STAFF_FLOWER_TWO_HAND;
@@ -105,14 +104,17 @@ public class WukongAnimations {
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
 
+        IDLE = new StaticAnimation(true, "biped/idle",biped);
+        WALK = new StaticAnimation(true, "biped/walk",biped);
         RUN = new StaticAnimation(true, "biped/run",biped);
+        JUMP = new StaticAnimation(true, "biped/jump",biped);
 
         STAFF_AUTO1 = new BasicAttackAnimation(0.16F, 0.08F, 0.4F, 0.53F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         STAFF_AUTO2 = new BasicAttackAnimation(0.16F, 0.35F, 0.68F, 0.68F, null, biped.toolR,  "biped/auto_2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         STAFF_AUTO3 = new AttackAnimation(0.15F, "biped/auto_3", biped,
                 new AttackAnimation.Phase(0.0F, 0.1167F, 0.4167F, 0.4167F, 0.4167F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1F)),
@@ -120,7 +122,7 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         STAFF_AUTO4 = new AttackAnimation(0.15F, "biped/auto_4", biped,
                 new AttackAnimation.Phase(0.0F, 0.08F, 0.29F, 0.29F, 0.29F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
@@ -135,12 +137,12 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.95F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.1F));
         STAFF_AUTO5 = new BasicAttackAnimation(0.15F, 1.20F,1.56F, 1.56F, null, biped.toolR,  "biped/auto_5", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                     if(livingEntityPatch instanceof LocalPlayerPatch playerPatch){
                         LivingEntity target = playerPatch.getTarget();

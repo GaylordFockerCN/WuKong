@@ -1,4 +1,4 @@
-package com.p1nero.wukong.epicfight.skill;
+package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,6 +10,8 @@ import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
+import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
+import com.p1nero.wukong.epicfight.skill.StaffStyle;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -19,6 +21,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -139,16 +142,18 @@ public class HeavyAttack extends WeaponInnateSkill {
 
     @Override
     public void onInitiate(SkillContainer container) {
-        container.getDataManager().registerData(IS_REPEATING_DERIVE);
-        container.getDataManager().registerData(KEY_PRESSING);
-        container.getDataManager().registerData(RED_TIMER);
-        container.getDataManager().registerData(STARS_CONSUMED);
-        container.getDataManager().registerData(IS_CHARGING);
-        container.getDataManager().registerData(CHARGING_TIMER);
-        container.getDataManager().registerData(CAN_FIRST_DERIVE);
-        container.getDataManager().registerData(CAN_SECOND_DERIVE);
-        container.getDataManager().registerData(DERIVE_TIMER);
-        container.getDataManager().registerData(CANCEL_NEXT_CONSUMPTION);
+        SkillDataManager manager = container.getDataManager();
+        SkillDataRegister.register(manager, IS_REPEATING_DERIVE, false);
+        SkillDataRegister.register(manager, KEY_PRESSING, false);
+        SkillDataRegister.register(manager, RED_TIMER, 0);
+        SkillDataRegister.register(manager, STARS_CONSUMED, 0);
+        SkillDataRegister.register(manager, IS_CHARGING, false);
+        SkillDataRegister.register(manager, CHARGING_TIMER, 0);
+        SkillDataRegister.register(manager, CAN_FIRST_DERIVE, false);
+        SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
+        SkillDataRegister.register(manager, DERIVE_TIMER, 0);
+        SkillDataRegister.register(manager, CANCEL_NEXT_CONSUMPTION, false);
+
 
         //长按期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
@@ -249,9 +254,11 @@ public class HeavyAttack extends WeaponInnateSkill {
                 }
             }
 
+            //破条则加stack清空蓄力条
             if(container.getStack() < 3 && Math.ceil(container.getResource(1.0F) * 20) > 10) {
                 this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
                 this.setStackSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getStack() + 1);
+                container.getExecuter().playSound(SoundEvents.EXPERIENCE_ORB_PICKUP,1.0F, 1.0F);
             }
         }
 
