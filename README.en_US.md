@@ -1,6 +1,6 @@
 # Source Installation Information for Modders
 
-## [简体中文](./README.zh_CN.md)
+## [简体中文](./README.md)
 
 This code follows the Minecraft Forge installation methodology. It will apply some small patches to the vanilla MCP source code, giving you and it access to some of the data and functions you need to build a successful mod.
 
