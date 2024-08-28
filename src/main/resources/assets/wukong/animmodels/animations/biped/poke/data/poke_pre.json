@@ -1,8 +1,6 @@
 {
     "trail_effects": [
         {
-            "begin_pos": [0.0, 0.0, -0.25],
-            "end_pos": [0.0, 0.0, -2.2],
             "lifetime": 6,
             "fade_time": 0.95,
             "start_time": 0.05,

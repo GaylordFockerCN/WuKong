@@ -108,7 +108,7 @@ public class WukongAnimations {
         IDLE = new StaticAnimation(true, "biped/idle",biped);
         WALK = new StaticAnimation(true, "biped/walk",biped);
         RUN = new StaticAnimation(true, "biped/run",biped);
-        JUMP = new StaticAnimation(true, "biped/jump",biped);
+        JUMP = new StaticAnimation(0.01F, false, "biped/jump",biped);
 
         STAFF_AUTO1 = new BasicAttackAnimation(0.16F, 0.08F, 0.4F, 0.53F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
@@ -125,15 +125,15 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         STAFF_AUTO4 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_4", biped,
-                new AttackAnimation.Phase(0.0F, 0.08F, 0.29F, 0.29F, 0.29F , biped.toolR, null)
+                new AttackAnimation.Phase(0.0F, 0.08F, 0.25F, 0.25F, 0.25F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
-                new AttackAnimation.Phase(0.29F, 0.29F, 0.58F, 0.58F, 0.58F , biped.toolR, null)
+                new AttackAnimation.Phase(0.29F, 0.29F, 0.5F, 0.5F, 0.5F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
-                new AttackAnimation.Phase(0.58F, 0.58F, 0.68F, 0.68F, 0.68F , biped.toolR, null)
+                new AttackAnimation.Phase(0.5F, 0.5F, 0.75F, 0.75F, 0.75F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
-                new AttackAnimation.Phase(0.68F, 0.68F, 0.7667F, 0.7667F, 0.7667F , biped.toolR, null)
+                new AttackAnimation.Phase(0.75F, 0.75F, 1, 1, 1 , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
-                new AttackAnimation.Phase(0.7667F, 1.5167F, 1.8833F, 1.8833F, 1.8833F , biped.toolR, null)
+                new AttackAnimation.Phase(1, 1.2F, 1.38F, 1.38F, 1.38F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.8F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)

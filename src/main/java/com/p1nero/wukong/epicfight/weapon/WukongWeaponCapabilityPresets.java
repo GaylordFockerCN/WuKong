@@ -65,9 +65,9 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.WUKONG_COMMON,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.JUMP,
-                    WukongAnimations.JUMP)
+//            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
+//                    LivingMotions.JUMP,
+//                    WukongAnimations.JUMP)
 
             //劈棍
             .newStyleCombo(WukongStyles.CHOP,
@@ -97,9 +97,9 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.CHOP,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.CHOP,
-                    LivingMotions.JUMP,
-                    WukongAnimations.JUMP)
+//            .livingMotionModifier(WukongStyles.CHOP,
+//                    LivingMotions.JUMP,
+//                    WukongAnimations.JUMP)
             //戳棍
             .newStyleCombo(WukongStyles.POKE,
                     WukongAnimations.STAFF_AUTO1,
@@ -130,9 +130,9 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.POKE,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.POKE,
-                    LivingMotions.JUMP,
-                    WukongAnimations.JUMP)
+//            .livingMotionModifier(WukongStyles.POKE,
+//                    LivingMotions.JUMP,
+//                    WukongAnimations.JUMP)
             //立棍
                 .newStyleCombo(WukongStyles.STAND,
                         WukongAnimations.STAFF_AUTO1,
@@ -158,9 +158,9 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.STAND,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.STAND,
-                    LivingMotions.JUMP,
-                    WukongAnimations.JUMP)
+//            .livingMotionModifier(WukongStyles.STAND,
+//                    LivingMotions.JUMP,
+//                    WukongAnimations.JUMP)
             ;
 
     public static final Function<Item, CapabilityItem.Builder> CHOP_ONLY = (item) ->

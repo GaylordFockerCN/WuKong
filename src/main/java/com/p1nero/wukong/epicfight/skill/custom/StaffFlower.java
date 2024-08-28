@@ -92,8 +92,11 @@ public class StaffFlower extends Skill {
                 }
                 showBlockedEffect(event.getPlayerPatch(), event.getDamageSource().getDirectEntity());
                 SkillContainer skillContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
-                //成功格挡回能量
-                skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource() + skillContainer.getMaxResource() / 5);
+                Skill skill = skillContainer.getSkill();
+                if(skill != null){
+                    //成功格挡回能量
+                    skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource() + skillContainer.getMaxResource() / 5);
+                }
             }
         }));
     }
