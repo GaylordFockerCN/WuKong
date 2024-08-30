@@ -123,7 +123,7 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
         STAFF_AUTO4 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_4", biped,
                 new AttackAnimation.Phase(0.0F, 0.08F, 0.25F, 0.25F, 0.25F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
@@ -146,6 +146,7 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                     if(livingEntityPatch instanceof LocalPlayerPatch playerPatch){
+
                         LivingEntity target = playerPatch.getTarget();
                         if(target != null){
                             playerPatch.getOriginal().setDeltaMovement(target.position().subtract(playerPatch.getOriginal().position()).normalize());
@@ -163,7 +164,7 @@ public class WukongAnimations {
         STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
 
         //前摇完自动接下一个动作
-        POKE_DERIVE_PRE = new BasicMultipleAttackAnimation(0.00F, 0.0167F, 0.0167F,0.3F, 0.33F, null, biped.toolR,  "biped/poke/poke_derive_pre", biped)
+        POKE_DERIVE_PRE = new AttackAnimation(0.00F, 0.0167F, 0.0167F,0.3F, 0.33F, null, biped.toolR,  "biped/poke/poke_derive_pre", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                                 serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(HeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
@@ -184,7 +185,7 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
 
-        POKE_DERIVE1 = new BasicMultipleAttackAnimation(0.15F, "biped/poke/poke_derive1", biped,
+        POKE_DERIVE1 = new AttackAnimation(0.15F, "biped/poke/poke_derive1", biped,
                 new AttackAnimation.Phase(0.0F, 0.00F, 0.50F, 0.93F, 0.50F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.05F)),
                 new AttackAnimation.Phase(0.49F, 0.50F, 1.0F, 1.0F, 1.0F , biped.toolR, null)
@@ -219,7 +220,7 @@ public class WukongAnimations {
                             CameraAnim.zoomIn(CameraAnim.DEFAULT_AIMING_CORRECTION);
                         }), AnimationEvent.Side.CLIENT));
 
-        POKE_DERIVE1_BACKSWING = new BasicMultipleAttackAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
+        POKE_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/poke/poke_derive_backswing", biped)
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, true)
