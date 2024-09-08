@@ -103,38 +103,45 @@ public class HeavyAttack extends WeaponInnateSkill {
         SkillContainer container = executer.getSkill(SkillSlots.WEAPON_INNATE);
         SkillDataManager dataManager = container.getDataManager();
         ServerPlayer player = executer.getOriginal();
-        //如果用了星则要强化衍生
-        boolean stackConsumed = container.getStack() > 0;
-        dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
-        if(dataManager.getDataValue(DERIVE_TIMER) > 0){
-            if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
-                if(stackConsumed){
-                    //TODO 消耗星加特效buff
-                }
-                executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
-            }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
-                if(stackConsumed){
-                    //TODO 消耗星加特效buff
-                }
-                executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
-            }
+
+        if(player.isOnGround()){
+            //跳跃攻击
+
         } else {
-            switch (container.getStack()){
-                //TODO 根据棍势数量加特效和buff
-            }
-            //重击，消耗所有星
-            if(chargeable) {
-                //开始蓄力，松手在客户端判断
-                if(!dataManager.getDataValue(IS_CHARGING)){
-                    dataManager.setDataSync(CHARGING_TIMER, 0, player);
-                    executer.playAnimationSynchronized(chargePre, 0.2F);
+            //如果用了星则要强化衍生
+            boolean stackConsumed = container.getStack() > 0;
+            dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
+            if(dataManager.getDataValue(DERIVE_TIMER) > 0){
+                if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
+                    if(stackConsumed){
+                        //TODO 消耗星加特效buff
+                    }
+                    executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
+                }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
+                    if(stackConsumed){
+                        //TODO 消耗星加特效buff
+                    }
+                    executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
                 }
             } else {
-                executer.playAnimationSynchronized(animations[container.getStack()], 0.2F);
-                this.setStackSynchronize(executer, 0);
-                this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
-                dataManager.setDataSync(RED_TIMER, MAX_TIMER, player);
+                switch (container.getStack()){
+                    //TODO 根据棍势数量加特效和buff
+                }
+                //重击，消耗所有星
+                if(chargeable) {
+                    //开始蓄力，松手在客户端判断
+                    if(!dataManager.getDataValue(IS_CHARGING)){
+                        dataManager.setDataSync(CHARGING_TIMER, 0, player);
+                        executer.playAnimationSynchronized(chargePre, 0.2F);
+                    }
+                } else {
+                    executer.playAnimationSynchronized(animations[container.getStack()], 0.2F);
+                    this.setStackSynchronize(executer, 0);
+                    this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
+                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, player);
+                }
             }
+
         }
 
         super.executeOnServer(executer, args);

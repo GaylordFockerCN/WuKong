@@ -2,6 +2,8 @@ package com.p1nero.wukong.epicfight.animation.custom;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.epicfight.skill.custom.StaffFlower;
+import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import net.minecraft.world.InteractionHand;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
@@ -35,8 +37,11 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                 .addEvents(
                         AnimationEvent.TimeStampedEvent.create(end, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                                if(!serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
+                                    return;
+                                }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, false,serverPlayerPatch.getOriginal());
+                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, false, serverPlayerPatch.getOriginal());
                                 if(passiveContainer.getDataManager().getDataValue(StaffFlower.KEY_PRESSING)){
                                     if(serverPlayerPatch.hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
                                         serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
@@ -47,6 +52,9 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                                if(!serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
+                                    return;
+                                }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
                                 passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, true, serverPlayerPatch.getOriginal());
                             }

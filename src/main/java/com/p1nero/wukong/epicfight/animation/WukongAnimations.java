@@ -110,12 +110,12 @@ public class WukongAnimations {
         RUN = new StaticAnimation(true, "biped/run",biped);
         JUMP = new StaticAnimation(0.01F, false, "biped/jump",biped);
 
-        STAFF_AUTO1 = new BasicAttackAnimation(0.16F, 0.08F, 0.4F, 0.53F, null, biped.toolR,  "biped/auto_1", biped)
+        STAFF_AUTO1 = new BasicAttackAnimation(0.01F, 0.08F, 0.4F, 0.53F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
-        STAFF_AUTO2 = new BasicAttackAnimation(0.16F, 0.35F, 0.68F, 0.68F, null, biped.toolR,  "biped/auto_2", biped)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        STAFF_AUTO2 = new BasicAttackAnimation(0.01F, 0.35F, 0.68F, 0.68F, null, biped.toolR,  "biped/auto_2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         STAFF_AUTO3 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_3", biped,
                 new AttackAnimation.Phase(0.0F, 0.1167F, 0.4167F, 0.4167F, 0.4167F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1F)),
@@ -284,9 +284,10 @@ public class WukongAnimations {
                         }
                     }, AnimationEvent.Side.SERVER))
                 .newTimePair(0.0F, Float.MAX_VALUE)
-                .addStateRemoveOld(EntityState.INACTION, false)
+                .addStateRemoveOld(EntityState.INACTION, true)
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addStateRemoveOld(EntityState.ATTACKING, true);
 
         POKE_PRE = new BasicMultipleAttackAnimation(0, "biped/poke/poke_pre", biped,
         new AttackAnimation.Phase(0.0F, 0.05F, 0.15F, 0.75F, 0.25F , biped.toolR, null)
