@@ -104,7 +104,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         SkillDataManager dataManager = container.getDataManager();
         ServerPlayer player = executer.getOriginal();
 
-        if(player.isOnGround()){
+        if(!player.isOnGround()){
             //跳跃攻击
 
         } else {

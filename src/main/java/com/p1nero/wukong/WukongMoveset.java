@@ -1,6 +1,7 @@
 package com.p1nero.wukong;
 
 import com.mojang.logging.LogUtils;
+import com.p1nero.wukong.client.particle.WuKongParticles;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
@@ -37,6 +38,7 @@ public class WukongMoveset
         WeaponCategory.ENUM_MANAGER.loadPreemptive(WukongWeaponCategories.class);
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         WukongItems.ITEMS.register(bus);
+        WuKongParticles.PARTICLES.register(bus);
         PacketHandler.register();
         WukongSkills.registerSkills();
 
