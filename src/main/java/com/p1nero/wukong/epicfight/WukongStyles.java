@@ -4,10 +4,9 @@ import yesman.epicfight.world.capabilities.item.Style;
 
 public enum WukongStyles implements Style {
 
-    CHOP(false),
-    POKE(false),
-    STAND(false),
-    WUKONG_COMMON(false);
+    SMASH(false),
+    THRUST(false),
+    PILLAR(false);
     final boolean canUseOffhand;
     final int id;
 

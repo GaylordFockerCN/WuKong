@@ -11,12 +11,12 @@ public class WukongItems {
 
     public static final CreativeModeTab CREATIVE_MODE_TAB = new CreativeModeTab("wukong.items") {
         public @NotNull ItemStack makeIcon() {
-            return new ItemStack(WukongItems.LOONG_ROAR.get());
+            return new ItemStack(WukongItems.STAFF.get());
         }
     };
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WukongMoveset.MOD_ID);
-    public static final RegistryObject<Item> LOONG_ROAR = ITEMS.register("staff", () -> new GoldBandedStaff(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.EPIC).tab(CREATIVE_MODE_TAB)));
+    public static final RegistryObject<Item> STAFF = ITEMS.register("staff", () -> new GoldBandedStaff(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.EPIC).tab(CREATIVE_MODE_TAB)));
 
 
 

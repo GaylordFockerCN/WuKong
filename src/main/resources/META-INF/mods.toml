@@ -64,3 +64,9 @@ description='''
     versionRange="[1.18.2,1.19)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.wukong]]
+    modId="epicfight"
+    mandatory=true
+    versionRange="[18.5.24,)"
+    ordering="NONE"
+    side="BOTH"

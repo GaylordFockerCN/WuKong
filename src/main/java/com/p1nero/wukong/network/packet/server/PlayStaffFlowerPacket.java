@@ -2,7 +2,7 @@ package com.p1nero.wukong.network.packet.server;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
-import com.p1nero.wukong.epicfight.skill.custom.StaffFlower;
+import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
 import com.p1nero.wukong.network.packet.BasePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +29,7 @@ public record PlayStaffFlowerPacket(boolean isOneHand) implements BasePacket {
         if(player != null){
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch -> {
                 if(entityPatch instanceof ServerPlayerPatch playerPatch){
-                    playerPatch.playAnimationSynchronized((isOneHand && playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(StaffFlower.IS_ONE_HAND))
+                    playerPatch.playAnimationSynchronized((isOneHand && playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(StaffSpin.IS_ONE_HAND))
                             ? WukongAnimations.STAFF_FLOWER_ONE_HAND : WukongAnimations.STAFF_FLOWER_TWO_HAND, 0);
                     playerPatch.consumeStamina(player.isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
                 }

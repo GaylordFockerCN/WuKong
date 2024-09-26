@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
@@ -49,6 +50,9 @@ public class WukongMoveset
     }
 
     public static boolean canBeBlocked(Entity entity){
+        if(entity == null){
+            return false;
+        }
         if(Config.entities_can_be_blocked.isEmpty()){
             Config.entities_can_be_blocked = Config.ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER.get().stream()
                     .map( entityName -> ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)))

@@ -2,7 +2,7 @@ package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
@@ -39,9 +39,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 重击 复制自劈棍，未改
+ * 劈棍重击
  */
-public class HeavyAttack extends WeaponInnateSkill {
+public class SmashHeavyAttack extends WeaponInnateSkill {
 
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
     public static final int MAX_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
@@ -67,7 +67,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE);
     }
 
-    public HeavyAttack(Builder builder) {
+    public SmashHeavyAttack(Builder builder) {
         super(builder);
         charging = builder.chargingAnimation.get();
         chargePre = builder.pre.get();
@@ -84,7 +84,7 @@ public class HeavyAttack extends WeaponInnateSkill {
 
     /**
      * 在计时周期内使用技能才算使用衍生，否则视为重击
-     * 长按循环第一段衍生的判断在{@link HeavyAttack#updateContainer(SkillContainer)}
+     * 长按循环第一段衍生的判断在{@link SmashHeavyAttack#updateContainer(SkillContainer)}
      */
     @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
@@ -184,24 +184,19 @@ public class HeavyAttack extends WeaponInnateSkill {
 
 
         } else {
-            //蓄力的松手判断
-            if(dataManager.getDataValue(IS_CHARGING)){
-                if(!dataManager.getDataValue(KEY_PRESSING)){
-                    dataManager.setDataSync(CANCEL_NEXT_CONSUMPTION, true, ((LocalPlayer) container.getExecuter().getOriginal()));//重击不加棍势
-                    container.getExecuter().playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
-                }
-            }
-
             //蓄力的加条
             if(dataManager.getDataValue(IS_CHARGING)){
                 this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getResource() + 0.5F);
                 //松手则清空棍势打重击
                 if(!dataManager.getDataValue(KEY_PRESSING)){
-                    ServerPlayer serverPlayer = (ServerPlayer) container.getExecuter().getOriginal();
-                    dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);
-                    this.setStackSynchronize(((ServerPlayerPatch) container.getExecuter()), 0);
-                    this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
-                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, serverPlayer);
+                    ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
+                    ServerPlayer serverPlayer =serverPlayerPatch.getOriginal();
+                    dataManager.setDataSync(CANCEL_NEXT_CONSUMPTION, true, serverPlayer);//重击不加棍势
+                    serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
+                    dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
+                    this.setStackSynchronize(serverPlayerPatch, 0);
+                    this.setConsumptionSynchronize(serverPlayerPatch, 1);
+                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, serverPlayer);//通知客户端该亮红灯了
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                 }
             }
@@ -288,13 +283,12 @@ public class HeavyAttack extends WeaponInnateSkill {
         return null;
     }
 
-    public static class Builder extends Skill.Builder<HeavyAttack> {
+    public static class Builder extends Skill.Builder<SmashHeavyAttack> {
         protected StaticAnimationProvider[] animationProviders;
         protected StaticAnimationProvider derive1;
         protected StaticAnimationProvider derive2;
         StaticAnimationProvider chargingAnimation;
         StaticAnimationProvider pre;
-        protected boolean canChargingWhenMove;
 
         public Builder() {
         }
@@ -304,12 +298,12 @@ public class HeavyAttack extends WeaponInnateSkill {
             return this;
         }
 
-        public Builder setActivateType(ActivateType activateType) {
+        public Builder setActivateType(Skill.ActivateType activateType) {
             this.activateType = activateType;
             return this;
         }
 
-        public Builder setResource(Resource resource) {
+        public Builder setResource(Skill.Resource resource) {
             this.resource = resource;
             return this;
         }
@@ -329,15 +323,10 @@ public class HeavyAttack extends WeaponInnateSkill {
             return this;
         }
 
-        public Builder setCanChargeWhenMove(boolean canChargeWhenMove){
-            this.canChargingWhenMove = canChargeWhenMove;
-            return this;
-        }
-
         /**
          * 0~4星重击
          */
-        public Builder setAnimationProviders(StaticAnimationProvider... animationProviders) {
+        public Builder setHeavyAttacks(StaticAnimationProvider... animationProviders) {
             this.animationProviders = animationProviders;
             return this;
         }

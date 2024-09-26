@@ -32,7 +32,7 @@ public class StaffStyle extends Skill {
 
     @Override
     public void onRemoved(SkillContainer container) {
-        container.getDataManager().setData(STYLE, WukongStyles.WUKONG_COMMON.ordinal());
+        container.getDataManager().setData(STYLE, WukongStyles.SMASH.ordinal());
     }
 
     /**

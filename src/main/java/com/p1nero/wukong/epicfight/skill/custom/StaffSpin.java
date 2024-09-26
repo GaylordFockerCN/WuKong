@@ -35,14 +35,14 @@ import java.util.UUID;
 /**
  * 防守技能棍花
  */
-public class StaffFlower extends Skill {
+public class StaffSpin extends Skill {
 
-    public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_FLOWER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+    public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     public static final SkillDataManager.SkillDataKey<Boolean> IS_ONE_HAND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
 
-    public StaffFlower(Builder<? extends Skill> builder) {
+    public StaffSpin(Builder<? extends Skill> builder) {
         super(builder);
     }
 
@@ -50,7 +50,7 @@ public class StaffFlower extends Skill {
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
-        SkillDataRegister.register(manager, PLAYING_STAFF_FLOWER, false);
+        SkillDataRegister.register(manager, PLAYING_STAFF_SPIN, false);
         SkillDataRegister.register(manager, IS_ONE_HAND, false);
         SkillDataRegister.register(manager, KEY_PRESSING, false);
 
@@ -75,7 +75,7 @@ public class StaffFlower extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
-            if(container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER) && (WukongMoveset.canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
+            if(container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (WukongMoveset.canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
                 if(!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())){
                     return;
                 }
@@ -147,14 +147,14 @@ public class StaffFlower extends Skill {
 
         if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
             container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
-            if(!container.getDataManager().getDataValue(PLAYING_STAFF_FLOWER)){
+            if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN)){
                 boolean isOneHand = container.getExecuter().getOriginal().getDeltaMovement().length() < 0.1;
                 if(!isOneHand){
                     //不这样判断不知道为什么会播完双手就回去播单手
                     container.getDataManager().setDataSync(IS_ONE_HAND, false, ((LocalPlayer) container.getExecuter().getOriginal()));
                 }
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(isOneHand));
-                container.getDataManager().setDataSync(PLAYING_STAFF_FLOWER, true, ((LocalPlayer) container.getExecuter().getOriginal()));
+                container.getDataManager().setDataSync(PLAYING_STAFF_SPIN, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             }
         } else {
             container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));

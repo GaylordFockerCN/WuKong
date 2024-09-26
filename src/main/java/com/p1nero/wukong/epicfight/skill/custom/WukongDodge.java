@@ -25,9 +25,9 @@ public class WukongDodge extends DodgeSkill {
 //            event.getPlayerPatch().playSound();TODO 播放音效 播动画
             SkillContainer weaponInnateContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
             weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + 5);//获得棍势
-            player.level.addParticle(EpicFightParticles.ENTITY_AFTER_IMAGE.get(), player.getX(), player.getY(), player.getZ(), Double.longBitsToDouble(player.getId()), 0.0, 0.0);
             if(player.level instanceof ServerLevel serverLevel){
 //                serverLevel.sendParticles();//留下残影
+               serverLevel.sendParticles(EpicFightParticles.ENTITY_AFTER_IMAGE.get(), player.getX(), player.getY(), player.getZ(), 1, Double.longBitsToDouble(player.getId()), 0.0, 0.0, 0.0);
             }
         }));
     }

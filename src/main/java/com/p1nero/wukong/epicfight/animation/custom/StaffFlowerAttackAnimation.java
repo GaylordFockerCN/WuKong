@@ -1,7 +1,7 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
 import com.p1nero.wukong.Config;
-import com.p1nero.wukong.epicfight.skill.custom.StaffFlower;
+import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.world.InteractionHand;
 import yesman.epicfight.api.animation.property.AnimationEvent;
@@ -41,8 +41,8 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                                     return;
                                 }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, false, serverPlayerPatch.getOriginal());
-                                if(passiveContainer.getDataManager().getDataValue(StaffFlower.KEY_PRESSING)){
+                                passiveContainer.getDataManager().setDataSync(StaffSpin.PLAYING_STAFF_SPIN, false, serverPlayerPatch.getOriginal());
+                                if(passiveContainer.getDataManager().getDataValue(StaffSpin.KEY_PRESSING)){
                                     if(serverPlayerPatch.hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
                                         serverPlayerPatch.consumeStamina(serverPlayerPatch.getOriginal().isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
                                         serverPlayerPatch.reserveAnimation(staticAnimation);
@@ -56,7 +56,7 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                                     return;
                                 }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-                                passiveContainer.getDataManager().setDataSync(StaffFlower.PLAYING_STAFF_FLOWER, true, serverPlayerPatch.getOriginal());
+                                passiveContainer.getDataManager().setDataSync(StaffSpin.PLAYING_STAFF_SPIN, true, serverPlayerPatch.getOriginal());
                             }
                         }), AnimationEvent.Side.SERVER));
 

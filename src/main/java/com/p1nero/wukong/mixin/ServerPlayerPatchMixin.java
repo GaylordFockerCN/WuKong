@@ -1,6 +1,6 @@
 package com.p1nero.wukong.mixin;
 
-import com.p1nero.wukong.epicfight.skill.custom.HeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,8 +20,8 @@ public abstract class ServerPlayerPatchMixin extends PlayerPatch<ServerPlayer> {
     @Inject(method = "gatherDamageDealt", at = @At(value = "HEAD"), cancellable = true)
     private void inject(EpicFightDamageSource source, float amount, CallbackInfo ci){
         SkillDataManager manager = this.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-        if(manager.hasData(HeavyAttack.CANCEL_NEXT_CONSUMPTION) && manager.getDataValue(HeavyAttack.CANCEL_NEXT_CONSUMPTION)){
-            manager.setDataSync(HeavyAttack.CANCEL_NEXT_CONSUMPTION, false, this.getOriginal());
+        if(manager.hasData(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION) && manager.getDataValue(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION)){
+            manager.setDataSync(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION, false, this.getOriginal());
             ci.cancel();
         }
     }

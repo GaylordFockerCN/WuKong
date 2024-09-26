@@ -55,12 +55,12 @@ public class WukongKeyMappings {
             localPlayer.getCapability(EpicFightCapabilities.CAPABILITY_SKILL).ifPresent(capabilitySkill -> {
                 Collection<Skill> styles = capabilitySkill.getLearnedSkills(WukongSkillCategories.STAFF_STYLE);
                 Skill skill;
-                if (CHOP_STYLE.isRelease() && styles.contains(WukongSkills.CHOP_STYLE)) {
-                    skill = WukongSkills.CHOP_STYLE;
-                } else if (POKE_STYLE.isRelease() && styles.contains(WukongSkills.POKE_STYLE)) {
-                    skill = WukongSkills.POKE_STYLE;
-                } else if (STAND_STYLE.isRelease() && styles.contains(WukongSkills.STAND_STYLE)) {
-                    skill = WukongSkills.STAND_STYLE;
+                if (CHOP_STYLE.isRelease() && styles.contains(WukongSkills.SMASH_STYLE)) {
+                    skill = WukongSkills.SMASH_STYLE;
+                } else if (POKE_STYLE.isRelease() && styles.contains(WukongSkills.THRUST_STYLE)) {
+                    skill = WukongSkills.THRUST_STYLE;
+                } else if (STAND_STYLE.isRelease() && styles.contains(WukongSkills.PILLAR_STYLE)) {
+                    skill = WukongSkills.PILLAR_STYLE;
                 } else {
                     return;
                 }

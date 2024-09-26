@@ -12,7 +12,6 @@ import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.SkillContainer;
@@ -34,43 +33,15 @@ public class WukongWeaponCapabilityPresets {
                         return style.getStyle(container);
                     }
                 }
-                return WukongStyles.WUKONG_COMMON;
+                return WukongStyles.SMASH;//默认劈棍
             }).collider(WukongColliders.WK_STAFF)
             .hitSound(EpicFightSounds.BLUNT_HIT)
             .hitParticle(EpicFightParticles.HIT_BLUNT.get())
             .canBePlacedOffhand(false)
             .comboCancel((style) -> false)
-            .passiveSkill(WukongSkills.STAFF_FLOWER)
-            .newStyleCombo(WukongStyles.WUKONG_COMMON,
-                    WukongAnimations.STAFF_AUTO1,
-                    WukongAnimations.STAFF_AUTO2,
-                    WukongAnimations.STAFF_AUTO3,
-                    WukongAnimations.STAFF_AUTO4,
-                    WukongAnimations.STAFF_AUTO5,
-                    WukongAnimations.STAFF_AUTO1,//去除冲刺攻击
-                    Animations.SPEAR_TWOHAND_AIR_SLASH)//跳跃攻击
-            .innateSkill(WukongStyles.WUKONG_COMMON, (itemstack) -> WukongSkills.COMMON)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.IDLE,
-                    WukongAnimations.IDLE)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.WALK,
-                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.CHASE,
-                    WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.RUN,
-                    WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-                    LivingMotions.SWIM,
-                    WukongAnimations.WALK)
-//            .livingMotionModifier(WukongStyles.WUKONG_COMMON,
-//                    LivingMotions.JUMP,
-//                    WukongAnimations.JUMP)
-
+            .passiveSkill(WukongSkills.STAFF_SPIN)
             //劈棍
-            .newStyleCombo(WukongStyles.CHOP,
+            .newStyleCombo(WukongStyles.SMASH,
                     WukongAnimations.STAFF_AUTO1,
                     WukongAnimations.STAFF_AUTO2,
                     WukongAnimations.STAFF_AUTO3,
@@ -78,27 +49,27 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO5,
                     WukongAnimations.STAFF_AUTO1,
                     Animations.SPEAR_TWOHAND_AIR_SLASH)
-            .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
-            .livingMotionModifier(WukongStyles.CHOP,
+            .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
+            .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.IDLE,
                     WukongAnimations.IDLE)
 //            .livingMotionModifier(WukongStyles.CHOP,
 //                    LivingMotions.WALK,
 //                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.CHOP,
+            .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.CHOP,
+            .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.RUN,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.CHOP,
+            .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
 //            .livingMotionModifier(WukongStyles.CHOP,
 //                    LivingMotions.JUMP,
 //                    WukongAnimations.JUMP)
             //戳棍
-            .newStyleCombo(WukongStyles.POKE,
+            .newStyleCombo(WukongStyles.THRUST,
                     WukongAnimations.STAFF_AUTO1,
                     WukongAnimations.STAFF_AUTO2,
                     WukongAnimations.STAFF_AUTO3,
@@ -106,27 +77,27 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO5,
                     WukongAnimations.STAFF_AUTO1,
                     Animations.SPEAR_TWOHAND_AIR_SLASH)
-            .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
-            .livingMotionModifier(WukongStyles.POKE,
+            .innateSkill(WukongStyles.THRUST, (itemstack) -> WukongSkills.THRUST_HEAVY_ATTACK)
+            .livingMotionModifier(WukongStyles.THRUST,
                     LivingMotions.IDLE,
                     WukongAnimations.IDLE)
-//            .livingMotionModifier(WukongStyles.POKE,
+//            .livingMotionModifier(WukongStyles.THRUST,
 //                    LivingMotions.WALK,
 //                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.POKE,
+            .livingMotionModifier(WukongStyles.THRUST,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.POKE,
+            .livingMotionModifier(WukongStyles.THRUST,
                     LivingMotions.RUN,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.POKE,
+            .livingMotionModifier(WukongStyles.THRUST,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
-//            .livingMotionModifier(WukongStyles.POKE,
+//            .livingMotionModifier(WukongStyles.THRUST,
 //                    LivingMotions.JUMP,
 //                    WukongAnimations.JUMP)
             //立棍
-            .newStyleCombo(WukongStyles.STAND,
+            .newStyleCombo(WukongStyles.PILLAR,
                     WukongAnimations.STAFF_AUTO1,
                     WukongAnimations.STAFF_AUTO2,
                     WukongAnimations.STAFF_AUTO3,
@@ -134,20 +105,20 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO5,
                     WukongAnimations.STAFF_AUTO1,
                     WukongAnimations.STAFF_AUTO1)
-            .innateSkill(WukongStyles.STAND, (itemstack) -> WukongSkills.STAND_CHARGED)
-            .livingMotionModifier(WukongStyles.STAND,
+            .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
+            .livingMotionModifier(WukongStyles.PILLAR,
                     LivingMotions.IDLE,
                     WukongAnimations.IDLE)
 //            .livingMotionModifier(WukongStyles.STAND,
 //                    LivingMotions.WALK,
 //                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.STAND,
+            .livingMotionModifier(WukongStyles.PILLAR,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.STAND,
+            .livingMotionModifier(WukongStyles.PILLAR,
                     LivingMotions.RUN,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.STAND,
+            .livingMotionModifier(WukongStyles.PILLAR,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
 //            .livingMotionModifier(WukongStyles.STAND,
@@ -157,14 +128,14 @@ public class WukongWeaponCapabilityPresets {
 
     public static final Function<Item, CapabilityItem.Builder> CHOP_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
-                    .styleProvider((entityPatch) -> WukongStyles.CHOP)
+                    .styleProvider((entityPatch) -> WukongStyles.SMASH)
                     .collider(WukongColliders.WK_STAFF)
                     .hitSound(EpicFightSounds.BLUNT_HIT)
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)
                     .comboCancel((style) -> false)
                     //劈棍
-                    .newStyleCombo(WukongStyles.CHOP,
+                    .newStyleCombo(WukongStyles.SMASH,
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO2,
                             WukongAnimations.STAFF_AUTO3,
@@ -172,26 +143,26 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.STAFF_AUTO5,
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO1)//空中
-                    .innateSkill(WukongStyles.CHOP, (itemstack) -> WukongSkills.CHOP_CHARGED)
-                    .livingMotionModifier(WukongStyles.CHOP,
+                    .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
+                    .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.IDLE,
                             WukongAnimations.CHOP_IDLE)
-                    .livingMotionModifier(WukongStyles.CHOP,
+                    .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.WALK,
                             WukongAnimations.CHOP_WALK)
-                    .livingMotionModifier(WukongStyles.CHOP,
+                    .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.CHASE,
                             WukongAnimations.CHOP_RUN)
-                    .livingMotionModifier(WukongStyles.CHOP,
+                    .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.RUN,
                             WukongAnimations.CHOP_RUN)
-                    .livingMotionModifier(WukongStyles.CHOP,
+                    .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.SWIM,
                             WukongAnimations.CHOP_WALK);
 
-    public static final Function<Item, CapabilityItem.Builder> POKE_ONLY = (item) ->
+    public static final Function<Item, CapabilityItem.Builder> THRUST_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
-                    .styleProvider((entityPatch) -> WukongStyles.POKE)
+                    .styleProvider((entityPatch) -> WukongStyles.THRUST)
                     .collider(WukongColliders.WK_STAFF)
                     .hitSound(EpicFightSounds.BLUNT_HIT)
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
@@ -199,7 +170,7 @@ public class WukongWeaponCapabilityPresets {
                     .comboCancel((style) -> false)
 
                     //戳棍
-                    .newStyleCombo(WukongStyles.POKE,
+                    .newStyleCombo(WukongStyles.THRUST,
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO2,
                             WukongAnimations.STAFF_AUTO3,
@@ -207,26 +178,26 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.STAFF_AUTO5,
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO1)//空中
-                    .innateSkill(WukongStyles.POKE, (itemstack) -> WukongSkills.POKE_CHARGED)
-                    .livingMotionModifier(WukongStyles.POKE,
+                    .innateSkill(WukongStyles.THRUST, (itemstack) -> WukongSkills.THRUST_HEAVY_ATTACK)
+                    .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.IDLE,
-                            WukongAnimations.POKE_IDLE)
-                    .livingMotionModifier(WukongStyles.POKE,
+                            WukongAnimations.THRUST_IDLE)
+                    .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.WALK,
-                            WukongAnimations.POKE_WALK)
-                    .livingMotionModifier(WukongStyles.POKE,
+                            WukongAnimations.THRUST_WALK)
+                    .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.CHASE,
-                            WukongAnimations.POKE_RUN)
-                    .livingMotionModifier(WukongStyles.POKE,
+                            WukongAnimations.THRUST_RUN)
+                    .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.RUN,
-                            WukongAnimations.POKE_RUN)
-                    .livingMotionModifier(WukongStyles.POKE,
+                            WukongAnimations.THRUST_RUN)
+                    .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.SWIM,
-                            WukongAnimations.POKE_WALK);
+                            WukongAnimations.THRUST_WALK);
 
     public static final Function<Item, CapabilityItem.Builder> STAND_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
-                    .styleProvider((entityPatch) -> WukongStyles.STAND)
+                    .styleProvider((entityPatch) -> WukongStyles.PILLAR)
                     .collider(WukongColliders.WK_STAFF)
                     .hitSound(EpicFightSounds.BLUNT_HIT)
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
@@ -234,7 +205,7 @@ public class WukongWeaponCapabilityPresets {
                     .comboCancel((style) -> false)
 
                     //立棍
-                    .newStyleCombo(WukongStyles.STAND,
+                    .newStyleCombo(WukongStyles.PILLAR,
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO2,
                             WukongAnimations.STAFF_AUTO3,
@@ -242,20 +213,20 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.STAFF_AUTO5,
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO1)//空中
-                    .innateSkill(WukongStyles.STAND, (itemstack) -> WukongSkills.STAND_CHARGED)
-                    .livingMotionModifier(WukongStyles.STAND,
+                    .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
+                    .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.IDLE,
                             WukongAnimations.STAND_IDLE)
-                    .livingMotionModifier(WukongStyles.STAND,
+                    .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.WALK,
                             WukongAnimations.STAND_WALK)
-                    .livingMotionModifier(WukongStyles.STAND,
+                    .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.CHASE,
                             WukongAnimations.STAND_RUN)
-                    .livingMotionModifier(WukongStyles.STAND,
+                    .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.RUN,
                             WukongAnimations.STAND_RUN)
-                    .livingMotionModifier(WukongStyles.STAND,
+                    .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.SWIM,
                             WukongAnimations.STAND_WALK)
             ;
@@ -265,7 +236,7 @@ public class WukongWeaponCapabilityPresets {
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
         event.getTypeEntry().put("wk_staff", STAFF);
         event.getTypeEntry().put("chop_only", CHOP_ONLY);
-        event.getTypeEntry().put("poke_only", POKE_ONLY);
+        event.getTypeEntry().put("thrust_only", THRUST_ONLY);
         event.getTypeEntry().put("stand_only", STAND_ONLY);
     }
 
