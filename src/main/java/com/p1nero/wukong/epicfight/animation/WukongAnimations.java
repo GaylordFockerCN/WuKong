@@ -97,16 +97,16 @@ public class WukongAnimations {
         RUN = new StaticAnimation(true, "biped/run",biped);
         JUMP = new StaticAnimation(0.01F, false, "biped/jump",biped);
 
-        STAFF_AUTO1 = new BasicAttackAnimation(0.15F, 0.15F, 0.5667F, 0.5667F, null, biped.toolR,  "biped/auto_1", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
-        STAFF_AUTO2 = new BasicAttackAnimation(0.01F, 0.1F, 0.5333F, 0.4333F, null, biped.toolR,  "biped/auto_2", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
+        STAFF_AUTO1 = new BasicAttackAnimation(0.1F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        STAFF_AUTO2 = new BasicAttackAnimation(0, 0.6667F, 0.875F, 0.875F, null, biped.toolR,  "biped/auto_2", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         STAFF_AUTO3 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_3", biped,
-                new AttackAnimation.Phase(0.0F, 0.0667F, 0.2333F, 0.2333F, 0.2333F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1F)),
-                new AttackAnimation.Phase(0.2333F, 0.2333F, 0.3667F, 0.4667F, 1.7667F , biped.toolR, null)
+                new AttackAnimation.Phase(0.0F, 0.25F, 0.4583F, 0.4583F, 0.4583F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)),
+                new AttackAnimation.Phase(0.4583F, 0.4583F, 0.7083F, 0.7083F, 3.3333F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)))
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
@@ -120,31 +120,19 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
                 new AttackAnimation.Phase(0.6F, 0.6F, 0.8F, 0.8F, 0.8F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
-                new AttackAnimation.Phase(0.8F, 1.16667F, 1.30F, 1.30F, 2.1667F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.8F))
+                new AttackAnimation.Phase(0.8F, 1.0416F, 1.125F, 1.2583F, 2.5F , biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
+                        .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
 //                        .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, )
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
-        STAFF_AUTO5 = new BasicAttackAnimation(0.15F, 1.0F,1.2F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.5F))
+        STAFF_AUTO5 = new BasicAttackAnimation(0.01F, 0.9166F,1.25F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.15F))
-                .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if(livingEntityPatch instanceof LocalPlayerPatch playerPatch){
-                        LivingEntity target = playerPatch.getTarget();
-                        if(target != null){
-                            playerPatch.getOriginal().setDeltaMovement(target.position().subtract(playerPatch.getOriginal().position()).normalize());
-                        }
-                    }
-                }), AnimationEvent.Side.CLIENT))
-                .addEvents(AnimationEvent.TimeStampedEvent.create(1.1F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
-                        LevelUtil.circleSlamFracture(playerPatch.getOriginal(), playerPatch.getOriginal().level, playerPatch.getOriginal().position().add(0, -1, 0), 3);
-                    }
-                }), AnimationEvent.Side.SERVER));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
 
 
         STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0.97F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F);
