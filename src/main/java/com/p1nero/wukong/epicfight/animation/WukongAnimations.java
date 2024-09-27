@@ -1,26 +1,22 @@
 package com.p1nero.wukong.epicfight.animation;
 
-import com.mojang.math.Vector3f;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.BasicMultipleAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.StaffFlowerAttackAnimation;
 import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.utils.LevelUtil;
-import yesman.epicfight.api.utils.math.MathUtils;
-import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
@@ -51,10 +47,6 @@ public class WukongAnimations {
     public static StaticAnimation[] STATIC_ANIMATIONS;
 
     //劈棍
-    public static StaticAnimation CHOP_IDLE;
-    public static StaticAnimation CHOP_WALK;
-    public static StaticAnimation CHOP_RUN;
-
     //衍生 1 2
     public static StaticAnimation CHOP_DERIVE1;
     public static StaticAnimation CHOP_DERIVE2;
@@ -66,9 +58,6 @@ public class WukongAnimations {
     public static StaticAnimation CHOP_CHARGED4;
 
     //戳棍
-    public static StaticAnimation THRUST_IDLE;
-    public static StaticAnimation THRUST_WALK;
-    public static StaticAnimation THRUST_RUN;
     //衍生 1 2
     public static StaticAnimation THRUST_DERIVE_PRE;
     public static StaticAnimation THRUST_DERIVE1;
@@ -84,9 +73,6 @@ public class WukongAnimations {
     public static StaticAnimation THRUST_CHARGED4;
 
     //立棍
-    public static StaticAnimation STAND_IDLE;
-    public static StaticAnimation STAND_WALK;
-    public static StaticAnimation STAND_RUN;
     //衍生 1 2
     public static StaticAnimation STAND_DERIVE1;
     public static StaticAnimation STAND_DERIVE2;
@@ -289,20 +275,21 @@ public class WukongAnimations {
 //                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
 //                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
 //                .addStateRemoveOld(EntityState.ATTACKING, true);
-//
-//        THRUST_PRE = new BasicMultipleAttackAnimation(0, "biped/thrust/thrust_pre", biped,
-//        new AttackAnimation.Phase(0.0F, 0.05F, 0.15F, 0.75F, 0.25F , biped.toolR, null)
-//                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.1F)),
-//        new AttackAnimation.Phase(0.2F, 0.25F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
-//                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.1F)))
-//                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
-//                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
-//                .addEvents(AnimationEvent.TimeStampedEvent.create(1.39F, (livingEntityPatch, staticAnimation, objects) -> {
-//                    livingEntityPatch.reserveAnimation(THRUST_CHARGING);
-//                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch){
-//                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, playerPatch.getOriginal());
-//                    }
-//                }, AnimationEvent.Side.SERVER));
+        THRUST_CHARGING = new StaticAnimation(true, "biped/thrust/thrust_charging", biped);
+
+        THRUST_PRE = new BasicMultipleAttackAnimation(0, "biped/thrust/thrust_pre", biped,
+        new AttackAnimation.Phase(0.0F, 0.05F, 0.15F, 0.75F, 0.25F , biped.toolR, null)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.1F)),
+        new AttackAnimation.Phase(0.2F, 0.25F, 0.35F, 0.75F, 0.75F , biped.toolR, null)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.1F)))
+                .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.39F, (livingEntityPatch, staticAnimation, objects) -> {
+                    livingEntityPatch.reserveAnimation(THRUST_CHARGING);
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_INNATE).hasSkill(WukongSkills.SMASH_HEAVY_ATTACK)){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, playerPatch.getOriginal());
+                    }
+                }, AnimationEvent.Side.SERVER));
 
 //        THRUST_DERIVE1 = new SelectiveAnimation((entityPatch -> {
 //            if(entityPatch instanceof ServerPlayerPatch playerPatch){

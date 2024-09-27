@@ -146,19 +146,19 @@ public class WukongWeaponCapabilityPresets {
                     .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.IDLE,
-                            WukongAnimations.CHOP_IDLE)
-                    .livingMotionModifier(WukongStyles.SMASH,
-                            LivingMotions.WALK,
-                            WukongAnimations.CHOP_WALK)
+                            WukongAnimations.IDLE)
+//                    .livingMotionModifier(WukongStyles.SMASH,
+//                            LivingMotions.WALK,
+//                            WukongAnimations.SMASH_WALK)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.CHASE,
-                            WukongAnimations.CHOP_RUN)
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.RUN,
-                            WukongAnimations.CHOP_RUN)
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.SWIM,
-                            WukongAnimations.CHOP_WALK);
+                            WukongAnimations.WALK);
 
     public static final Function<Item, CapabilityItem.Builder> THRUST_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
@@ -181,19 +181,19 @@ public class WukongWeaponCapabilityPresets {
                     .innateSkill(WukongStyles.THRUST, (itemstack) -> WukongSkills.THRUST_HEAVY_ATTACK)
                     .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.IDLE,
-                            WukongAnimations.THRUST_IDLE)
+                            WukongAnimations.IDLE)
                     .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.WALK,
-                            WukongAnimations.THRUST_WALK)
+                            WukongAnimations.WALK)
                     .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.CHASE,
-                            WukongAnimations.THRUST_RUN)
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.RUN,
-                            WukongAnimations.THRUST_RUN)
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.SWIM,
-                            WukongAnimations.THRUST_WALK);
+                            WukongAnimations.WALK);
 
     public static final Function<Item, CapabilityItem.Builder> STAND_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
@@ -216,19 +216,19 @@ public class WukongWeaponCapabilityPresets {
                     .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.IDLE,
-                            WukongAnimations.STAND_IDLE)
+                            WukongAnimations.IDLE)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.WALK,
-                            WukongAnimations.STAND_WALK)
+                            WukongAnimations.WALK)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.CHASE,
-                            WukongAnimations.STAND_RUN)
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.RUN,
-                            WukongAnimations.STAND_RUN)
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.SWIM,
-                            WukongAnimations.STAND_WALK)
+                            WukongAnimations.WALK)
             ;
 
 

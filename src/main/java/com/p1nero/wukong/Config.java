@@ -32,7 +32,7 @@ public class Config
 
     static {
 
-        DERIVE_CHECK_TIME = createDouble("The time period that can use derive attack after basic attack.", "derive_check_time", 20.0);
+        DERIVE_CHECK_TIME = createDouble("The time period that can use derive attack after basic attack.", "derive_check_time", 40.0);
         DAMAGE_MULTIPLIER = createDouble("The damage multiplier of all Wukong Skill Attack", "damage_multiplier", 1.0);
         STAFF_FLOWER_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Staff Flower", "staff_flower_stamina_consume", 2.0);
         DERIVE_STAMINA_CONSUME = createDouble("Stamina consumed per use of the first Derive Attack", "derive_stamina_consume", 2.0);
