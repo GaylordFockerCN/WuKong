@@ -9,23 +9,26 @@ import com.p1nero.wukong.epicfight.animation.custom.WukongChargedAttackAnimation
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.client.player.Input;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
-import yesman.epicfight.api.utils.LevelUtil;
+import yesman.epicfight.api.utils.TimePairList;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.model.armature.HumanoidArmature;
+import yesman.epicfight.skill.BasicAttack;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.StunType;
+import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
@@ -33,29 +36,60 @@ public class WukongAnimations {
     public static StaticAnimation IDLE;
     public static StaticAnimation WALK;
     public static StaticAnimation RUN;
+    public static StaticAnimation DASH;
     public static StaticAnimation JUMP;
+    public static StaticAnimation FALL;
+    public static StaticAnimation JUMP_ATTACK_LIGHT;
+    public static StaticAnimation JUMP_ATTACK_LIGHT_HIT;
+    public static StaticAnimation JUMP_ATTACK_LIGHT_FALL;
+    public static StaticAnimation JUMP_ATTACK_HEAVY_START;
+    public static StaticAnimation JUMP_ATTACK_HEAVY_END;
+    public static StaticAnimation DODGE_F1;
+    public static StaticAnimation DODGE_F2;
+    public static StaticAnimation DODGE_F3;
+    public static StaticAnimation DODGE_F;
+    public static StaticAnimation DODGE_B1;
+    public static StaticAnimation DODGE_B2;
+    public static StaticAnimation DODGE_B3;
+    public static StaticAnimation DODGE_B;
+    public static StaticAnimation DODGE_L1;
+    public static StaticAnimation DODGE_L2;
+    public static StaticAnimation DODGE_L3;
+    public static StaticAnimation DODGE_L;
+    public static StaticAnimation DODGE_R1;
+    public static StaticAnimation DODGE_R2;
+    public static StaticAnimation DODGE_R3;
+    public static StaticAnimation DODGE_R;
     //棍花
-    public static StaticAnimation STAFF_FLOWER_ONE_HAND;
-    public static StaticAnimation STAFF_FLOWER_TWO_HAND;
+    public static StaticAnimation STAFF_FLOWER_ONE_HAND_PRE;
+    public static StaticAnimation STAFF_FLOWER_ONE_HAND_LOOP;
+    public static StaticAnimation STAFF_FLOWER_ONE_HAND_END;
+    public static StaticAnimation STAFF_FLOWER_ONE_HAND_TO_TWO_HAND;
+    public static StaticAnimation STAFF_FLOWER_TWO_HAND_PRE;
+    public static StaticAnimation STAFF_FLOWER_TWO_HAND_LOOP;
+    public static StaticAnimation STAFF_FLOWER_TWO_HAND_END;
+    public static StaticAnimation STAFF_FLOWER_TWO_HAND_TO_ONE_HAND;
 
     //轻击 1~5
+    public static StaticAnimation STAFF_AUTO1_DASH;
     public static StaticAnimation STAFF_AUTO1;
     public static StaticAnimation STAFF_AUTO2;
     public static StaticAnimation STAFF_AUTO3;
     public static StaticAnimation STAFF_AUTO4;
     public static StaticAnimation STAFF_AUTO5;
-    public static StaticAnimation[] STATIC_ANIMATIONS;
 
     //劈棍
     //衍生 1 2
-    public static StaticAnimation CHOP_DERIVE1;
-    public static StaticAnimation CHOP_DERIVE2;
+    public static StaticAnimation SMASH_DERIVE1;
+    public static StaticAnimation SMASH_DERIVE2;
+    public static StaticAnimation SMASH_CHARGING_PRE;
+    public static StaticAnimation SMASH_CHARGING_LOOP;
     //不同星级的重击
-    public static StaticAnimation CHOP_CHARGED0;
-    public static StaticAnimation CHOP_CHARGED1;
-    public static StaticAnimation CHOP_CHARGED2;
-    public static StaticAnimation CHOP_CHARGED3;
-    public static StaticAnimation CHOP_CHARGED4;
+    public static StaticAnimation SMASH_CHARGED0;
+    public static StaticAnimation SMASH_CHARGED1;
+    public static StaticAnimation SMASH_CHARGED2;
+    public static StaticAnimation SMASH_CHARGED3;
+    public static StaticAnimation SMASH_CHARGED4;
 
     //戳棍
     //衍生 1 2
@@ -74,15 +108,14 @@ public class WukongAnimations {
 
     //立棍
     //衍生 1 2
-    public static StaticAnimation STAND_DERIVE1;
-    public static StaticAnimation STAND_DERIVE2;
+    public static StaticAnimation PILLAR_DERIVE1;
+    public static StaticAnimation PILLAR_DERIVE2;
     //不同星级的重击
-    public static StaticAnimation STAND_CHARGED0;
-    public static StaticAnimation STAND_CHARGED1;
-    public static StaticAnimation STAND_CHARGED2;
-    public static StaticAnimation STAND_CHARGED3;
-    public static StaticAnimation STAND_CHARGED4;
-    public static StaticAnimation BLOCK_TEST;
+    public static StaticAnimation PILLAR_CHARGED0;
+    public static StaticAnimation PILLAR_CHARGED1;
+    public static StaticAnimation PILLAR_CHARGED2;
+    public static StaticAnimation PILLAR_CHARGED3;
+    public static StaticAnimation PILLAR_CHARGED4;
 
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
@@ -92,15 +125,43 @@ public class WukongAnimations {
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
 
-        IDLE = new StaticAnimation(true, "biped/idle",biped);
-        WALK = new StaticAnimation(true, "biped/walk",biped);
-        RUN = new StaticAnimation(true, "biped/run",biped);
-        JUMP = new StaticAnimation(0.01F, false, "biped/jump",biped);
+        //专治各种因为移动导致的动画取消
+        AnimationEvent.TimePeriodEvent allStopMovement = AnimationEvent.TimePeriodEvent.create(0.00F, Float.MAX_VALUE, ((livingEntityPatch, staticAnimation, objects) -> {
+            if(livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch){
+                Input input = localPlayerPatch.getOriginal().input;
+                input.forwardImpulse = 0.0F;
+                input.leftImpulse = 0.0F;
+                input.down = false;
+                input.up = false;
+                input.left = false;
+                input.right = false;
+                input.jumping = false;
+                input.shiftKeyDown = false;
+                LocalPlayer clientPlayer = localPlayerPatch.getOriginal();
+                clientPlayer.setSprinting(false);
+            }
+        }), AnimationEvent.Side.CLIENT);
 
-        STAFF_AUTO1 = new BasicAttackAnimation(0.1F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
+        IDLE = new StaticAnimation(true, "biped/idle",biped);
+        WALK = new StaticAnimation(true, "biped/walk",biped)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.3F));
+        RUN = new StaticAnimation(true, "biped/run",biped);
+        JUMP = new StaticAnimation(0.15F, false, "biped/jump",biped);
+        FALL = new StaticAnimation(0.15F, true, "biped/fall",biped);
+
+        STAFF_AUTO1_DASH = new BasicAttackAnimation(0.1F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1_dash", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                        //冲刺攻击重置普攻计数器
+                        BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.BASIC_ATTACK_COUNT, serverPlayerPatch, serverPlayerPatch.getSkill(SkillSlots.BASIC_ATTACK), staticAnimation, 1);
+                    }
+                }), AnimationEvent.Side.SERVER));
+        STAFF_AUTO1 = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
-        STAFF_AUTO2 = new BasicAttackAnimation(0, 0.6667F, 0.875F, 0.875F, null, biped.toolR,  "biped/auto_2", biped)
+        STAFF_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR,  "biped/auto_2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         STAFF_AUTO3 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_3", biped,
@@ -108,7 +169,6 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)),
                 new AttackAnimation.Phase(0.4583F, 0.4583F, 0.7083F, 0.7083F, 3.3333F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)))
-                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         STAFF_AUTO4 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_4", biped,
@@ -125,20 +185,56 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
 //                        .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, )
-                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         STAFF_AUTO5 = new BasicAttackAnimation(0.01F, 0.9166F,1.25F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.9833F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
 
-
-        STAFF_FLOWER_ONE_HAND = new StaffFlowerAttackAnimation(0.97F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F);
-        STAFF_FLOWER_TWO_HAND = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
+        STAFF_FLOWER_ONE_HAND_LOOP = new StaffFlowerAttackAnimation(0.97F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F);
+        STAFF_FLOWER_TWO_HAND_LOOP = new StaffFlowerAttackAnimation(0.90F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F);
 
         //前摇完自动接下一个动作
+        SMASH_CHARGING_PRE = new StaticAnimation(0.15F, false, "biped/smash/smash_charge_pre", biped)
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                    livingEntityPatch.reserveAnimation(SMASH_CHARGING_LOOP);
+                    if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
+                    }
+                }), AnimationEvent.Side.SERVER));
+        SMASH_CHARGING_LOOP = new StaticAnimation(0.15F, true, "biped/smash/smash_charging", biped);
+
+        SMASH_CHARGED0 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 1.67F, null, biped.toolR,  "biped/smash/smash_heavy1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.6F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.67F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addEvents(allStopMovement);
+        SMASH_CHARGED1 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 1.67F, null, biped.toolR,  "biped/smash/smash_heavy1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(5.6F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.67F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addEvents(allStopMovement);
+        SMASH_CHARGED2 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 5.0F, null, biped.toolR,  "biped/smash/smash_heavy2", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(8.8F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.67F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+//        SMASH_CHARGED3 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 5.0F, null, biped.toolR,  "biped/smash/smash_heavy3", biped)
+//                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(11))
+//                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+//                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.67F))
+//                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+//        SMASH_CHARGED4 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 5.0F, null, biped.toolR,  "biped/smash/smash_heavy4", biped)
+//                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(15.5F))
+//                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+//                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.67F))
+//                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+
         THRUST_DERIVE_PRE = new AttackAnimation(0.00F, 0.0167F, 0.0167F,0.3F, 0.33F, null, biped.toolR,  "biped/thrust/thrust_derive_pre", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
@@ -223,19 +319,19 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
 
         THRUST_CHARGED0 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.THRUST_0, biped.toolR, "biped/thrust/thrust_charged", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.3F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(1.0F));
         THRUST_CHARGED1 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.THRUST_1, biped.toolR, "biped/thrust/thrust_charged", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.7F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.7F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(2.0F));
         THRUST_CHARGED2 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.THRUST_2, biped.toolR, "biped/thrust/thrust_charged", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(3.0F));
         THRUST_CHARGED3 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.THRUST_3, biped.toolR, "biped/thrust/thrust_charged", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.5F* Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(4.0F));
         THRUST_CHARGED4 = new WukongChargedAttackAnimation(0, 0.15F, 0.25F, 1.5F, WukongColliders.THRUST_4, biped.toolR, "biped/thrust/thrust_charged", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(5.0F * Config.DAMAGE_MULTIPLIER.get().floatValue()))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(5.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(7.0F));
 
 //        THRUST_CHARGING = (new ActionAnimation(0.5F, "biped/thrust/thrust_charging", biped))

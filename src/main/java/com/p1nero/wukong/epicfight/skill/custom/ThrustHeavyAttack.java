@@ -249,7 +249,7 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         } else {
             //蓄力的加条
             if(container.getDataManager().getDataValue(IS_CHARGING)){
-                this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getResource() + 0.5F);
+                this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getResource() + Config.CHARGING_SPEED.get().floatValue());
                 //松手则清空棍势打重击
                 if(!container.getDataManager().getDataValue(KEY_PRESSING)){
                     ServerPlayer serverPlayer = (ServerPlayer) container.getExecuter().getOriginal();
@@ -270,8 +270,8 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         }
 
         //更新计时器
-        container.getDataManager().setData(DERIVE_TIMER, Math.max(container.getDataManager().getDataValue(DERIVE_TIMER)-1, 0));
-        container.getDataManager().setData(RED_TIMER, Math.max(container.getDataManager().getDataValue(RED_TIMER)-1, 0));
+        container.getDataManager().setData(DERIVE_TIMER, Math.max(container.getDataManager().getDataValue(DERIVE_TIMER) - 1, 0));
+        container.getDataManager().setData(RED_TIMER, Math.max(container.getDataManager().getDataValue(RED_TIMER) - 1, 0));
         if(container.getDataManager().getDataValue(DERIVE_TIMER) <= 0){
             container.getDataManager().setData(CAN_FIRST_DERIVE, false);
             container.getDataManager().setData(CAN_SECOND_DERIVE, false);

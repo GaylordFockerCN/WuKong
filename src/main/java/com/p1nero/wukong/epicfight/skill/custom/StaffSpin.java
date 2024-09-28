@@ -11,11 +11,13 @@ import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -31,6 +33,7 @@ import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * 防守技能棍花
@@ -75,7 +78,7 @@ public class StaffSpin extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
-            if(container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (WukongMoveset.canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
+            if(container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
                 if(!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())){
                     return;
                 }
@@ -99,6 +102,18 @@ public class StaffSpin extends Skill {
                 }
             }
         }));
+    }
+
+    public static boolean canBeBlocked(Entity entity){
+        if(entity == null){
+            return false;
+        }
+        if(Config.entities_can_be_blocked.isEmpty()){
+            Config.entities_can_be_blocked = Config.ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER.get().stream()
+                    .map( entityName -> ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)))
+                    .collect(Collectors.toSet());
+        }
+        return Config.entities_can_be_blocked.contains(entity.getType());
     }
 
     /**

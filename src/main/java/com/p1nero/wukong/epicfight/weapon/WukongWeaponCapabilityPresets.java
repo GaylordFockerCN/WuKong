@@ -47,15 +47,15 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO3,
                     WukongAnimations.STAFF_AUTO4,
                     WukongAnimations.STAFF_AUTO5,
-                    WukongAnimations.STAFF_AUTO1,
+                    WukongAnimations.STAFF_AUTO1_DASH,
                     Animations.SPEAR_TWOHAND_AIR_SLASH)
             .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.IDLE,
                     WukongAnimations.IDLE)
-//            .livingMotionModifier(WukongStyles.CHOP,
-//                    LivingMotions.WALK,
-//                    WukongAnimations.WALK)
+            .livingMotionModifier(WukongStyles.SMASH,
+                    LivingMotions.WALK,
+                    WukongAnimations.WALK)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.CHASE,
                     WukongAnimations.RUN)
@@ -65,9 +65,12 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)
-//            .livingMotionModifier(WukongStyles.CHOP,
-//                    LivingMotions.JUMP,
-//                    WukongAnimations.JUMP)
+            .livingMotionModifier(WukongStyles.SMASH,
+                    LivingMotions.JUMP,
+                    WukongAnimations.JUMP)
+            .livingMotionModifier(WukongStyles.SMASH,
+                    LivingMotions.FALL,
+                    WukongAnimations.FALL)
             //戳棍
             .newStyleCombo(WukongStyles.THRUST,
                     WukongAnimations.STAFF_AUTO1,

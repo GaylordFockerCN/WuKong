@@ -8,12 +8,18 @@ import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
+import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WukongSkills {
     public static Skill SMASH_STYLE;
@@ -24,16 +30,25 @@ public class WukongSkills {
     public static Skill PILLAR_HEAVY_ATTACK;
     public static Skill STAFF_SPIN;
     public static Skill Ding;//定身术
+    public static int getCurrentStack(Player player){
+        AtomicInteger stack = new AtomicInteger(0);
+        player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
+            if(entityPatch instanceof PlayerPatch<?> patch){
+                stack.set(patch.getSkill(SkillSlots.WEAPON_INNATE).getStack());
+            }
+        });
+        return stack.get();
+    }
 
     public static void registerSkills() {
         SkillManager.register(StaffSpin::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
         SkillManager.register(SmashHeavyAttack::new, SmashHeavyAttack.createChargedAttack()
-                        .setChargePreAnimation(()-> WukongAnimations.THRUST_PRE)
-                        .setChargingAnimation(()->WukongAnimations.THRUST_CHARGING)
+                        .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
+                        .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)
                         .setHeavyAttacks(
-                                () -> WukongAnimations.THRUST_CHARGED0,
-                                () -> WukongAnimations.THRUST_CHARGED1,
-                                () -> WukongAnimations.THRUST_CHARGED2,
+                                () -> WukongAnimations.SMASH_CHARGED0,
+                                () -> WukongAnimations.SMASH_CHARGED1,
+                                () -> WukongAnimations.SMASH_CHARGED2,
                                 () -> WukongAnimations.THRUST_CHARGED3,
                                 () -> WukongAnimations.THRUST_CHARGED4)
                         .setDeriveAnimations(

@@ -10,6 +10,7 @@ import com.p1nero.wukong.item.WukongItems;
 import com.p1nero.wukong.network.PacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -17,18 +18,23 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
+import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Mod("wukong")
 public class WukongMoveset
 {
     public static final String MOD_ID = "wukong";
+    public static final String ITEM_HAS_EFFECT_TIMER_KEY = "wukong_has_effect_timer";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public WukongMoveset()
@@ -47,18 +53,6 @@ public class WukongMoveset
         fg_bus.addListener(WukongSkills::BuildSkills);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    public static boolean canBeBlocked(Entity entity){
-        if(entity == null){
-            return false;
-        }
-        if(Config.entities_can_be_blocked.isEmpty()){
-            Config.entities_can_be_blocked = Config.ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER.get().stream()
-                    .map( entityName -> ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)))
-                    .collect(Collectors.toSet());
-        }
-        return Config.entities_can_be_blocked.contains(entity.getType());
     }
 
 }

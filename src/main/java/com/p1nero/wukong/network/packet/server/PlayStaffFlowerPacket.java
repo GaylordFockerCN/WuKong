@@ -30,7 +30,7 @@ public record PlayStaffFlowerPacket(boolean isOneHand) implements BasePacket {
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch -> {
                 if(entityPatch instanceof ServerPlayerPatch playerPatch){
                     playerPatch.playAnimationSynchronized((isOneHand && playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(StaffSpin.IS_ONE_HAND))
-                            ? WukongAnimations.STAFF_FLOWER_ONE_HAND : WukongAnimations.STAFF_FLOWER_TWO_HAND, 0);
+                            ? WukongAnimations.STAFF_FLOWER_ONE_HAND_LOOP : WukongAnimations.STAFF_FLOWER_TWO_HAND_LOOP, 0);
                     playerPatch.consumeStamina(player.isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
                 }
             }));
