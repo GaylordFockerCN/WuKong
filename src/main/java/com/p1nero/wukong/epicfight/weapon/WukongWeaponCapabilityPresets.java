@@ -4,7 +4,7 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
-import com.p1nero.wukong.epicfight.skill.StaffStyle;
+import com.p1nero.wukong.epicfight.skill.custom.StaffStyle;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -48,20 +48,20 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO4,
                     WukongAnimations.STAFF_AUTO5,
                     WukongAnimations.STAFF_AUTO1_DASH,
-                    Animations.SPEAR_TWOHAND_AIR_SLASH)
+                    WukongAnimations.JUMP_ATTACK_LIGHT)
             .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.IDLE,
                     WukongAnimations.IDLE)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.WALK,
-                    WukongAnimations.WALK)
+                    WukongAnimations.RUN)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.CHASE,
-                    WukongAnimations.RUN)
+                    WukongAnimations.DASH)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.RUN,
-                    WukongAnimations.RUN)
+                    WukongAnimations.DASH)
             .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.SWIM,
                     WukongAnimations.WALK)

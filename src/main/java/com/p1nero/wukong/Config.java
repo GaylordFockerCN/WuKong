@@ -34,7 +34,7 @@ public class Config
         BASIC_ATTACK_INTERVAL_TICKS = createDouble("Custom time interval between basic attack (ordinal interval is too long!)", "basic_attack_time_interval", 16.0);
         DERIVE_CHECK_TIME = createDouble("The time period that can use derive attack after basic attack.", "derive_check_time", 40.0);
         CHARGING_SPEED = createDouble("The consumption increase or decrease per tick", "charging_speed", 0.5);
-        STAFF_FLOWER_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Staff Spin", "staff_flower_stamina_consume", 2.0);
+        STAFF_FLOWER_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Staff Spin", "staff_flower_stamina_consume", 0.5);
         DERIVE_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Special Attack Loop in Thrust or Pillar", "derive_stamina_consume", 2.0);
         ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER = BUILDER
                 .comment("A list of items considered as sword.")

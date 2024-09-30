@@ -23,21 +23,22 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
 
     public StaffFlowerAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier){
         super(0, path, biped,
-                        new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, 1.0F, 0.26F , biped.toolR, null)
+                        new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, end, 0.26F , biped.toolR, null)
                                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(damageMultiplier)),
-                        new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, 1.0F, 0.51F , biped.toolR, null)
+                        new AttackAnimation.Phase(0.24F, 0.25F, 0.50F, end, 0.51F , biped.toolR, null)
                                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(damageMultiplier)),
-                        new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, 1.0F, 0.76F , biped.toolR, null)
+                        new AttackAnimation.Phase(0.49F, 0.50F, 0.75F, end, 0.76F , biped.toolR, null)
                                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(damageMultiplier)),
-                        new AttackAnimation.Phase(0.74F, 0.74F, 1.0F, 1.0F, 1.2F , biped.toolR, null)
+                        new AttackAnimation.Phase(0.74F, 0.74F, 1.0F, end, end , biped.toolR, null)
                                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(damageMultiplier)));
+        this.addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
         this.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addEvents(
-                        AnimationEvent.TimeStampedEvent.create(end, ((livingEntityPatch, staticAnimation, objects) -> {
+                        AnimationEvent.TimeStampedEvent.create(end - 0.1F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                if(!serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
+                                if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
                                     return;
                                 }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
@@ -52,7 +53,7 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                if(!serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
+                                if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
                                     return;
                                 }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
@@ -60,10 +61,6 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                             }
                         }), AnimationEvent.Side.SERVER));
 
-    }
-
-    public StaffFlowerAttackAnimation(float convertTime, String path, Armature armature, Phase... phases) {
-        super(convertTime, path, armature, phases);
     }
 
     protected void bindPhaseState(Phase phase) {

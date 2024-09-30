@@ -7,15 +7,13 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
-import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
-import com.p1nero.wukong.epicfight.skill.StaffStyle;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,13 +21,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.client.animation.Layer;
+import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.config.ConfigurationIngame;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
@@ -47,25 +47,29 @@ import java.util.UUID;
 public class SmashHeavyAttack extends WeaponInnateSkill {
 
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
-    public static final int MAX_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
-    public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//技能键是否按下
+    public static final int MAX_DERIVE_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
+    public static SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//技能键是否按下
     public static final SkillDataManager.SkillDataKey<Boolean> IS_REPEATING_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按一段衍生
     private static final SkillDataManager.SkillDataKey<Integer> CHARGED4_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//四段棍势持续时间
     public static final int MAX_CHARGED4_TICKS = 300;//15s
     private static final SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//亮灯时间
     public static final SkillDataManager.SkillDataKey<Integer> STARS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//本次攻击是否消耗星（是否强化）
+    public static final SkillDataManager.SkillDataKey<Boolean> IS_IN_SPECIAL_ATTACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在切手技
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在蓄力
     public static final SkillDataManager.SkillDataKey<Integer> CHARGING_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//蓄力计时器
     public static final SkillDataManager.SkillDataKey<Integer> DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//衍生合法时间计时器
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第一段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_SECOND_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第二段衍生
+    public static final SkillDataManager.SkillDataKey<Boolean> CAN_JUMP_HEAVY = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用跳跃重击
     public static final SkillDataManager.SkillDataKey<Boolean> CANCEL_NEXT_CONSUMPTION = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否取消下次棍势吸取
     protected final StaticAnimation[] animations;//0~4共有五种重击
     protected StaticAnimation deriveAnimation1;
     protected StaticAnimation deriveAnimation2;
-    @Nullable
+    @NotNull
+    protected StaticAnimation jumpAttackHeavy;
+    @NotNull
     protected StaticAnimation charging;
-    @Nullable
+    @NotNull
     protected StaticAnimation chargePre;
 
     public static Builder createChargedAttack(){
@@ -85,6 +89,16 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
         deriveAnimation1 = builder.derive1.get();
         deriveAnimation2 = builder.derive2.get();
+        jumpAttackHeavy = builder.jumpAttackHeavy.get();
+    }
+
+    /**
+     * 保险，yesman官方提供的解法
+     */
+    public static void register(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            SmashHeavyAttack.KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+        });
     }
 
     /**
@@ -97,23 +111,23 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataManager dataManager = container.getDataManager();
         ServerPlayer player = executer.getOriginal();
 
-        if(!player.isOnGround()){
-            //跳跃攻击
-
+        dataManager.setDataSync(CANCEL_NEXT_CONSUMPTION, true, player);//无论何种攻击都不加棍势
+        dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
+        if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
+            //跳跃攻击，也消耗所有棍势
+            dataManager.setDataSync(CAN_JUMP_HEAVY, false, player);
+            executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);
+            resetConsumption(container, executer);
         } else {
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
-            dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
             if(dataManager.getDataValue(DERIVE_TIMER) > 0){
-                this.setStackSynchronize(executer, container.getStack() - 1);//切手技直接消耗星，无需松手判断
                 if(dataManager.getDataValue(CAN_FIRST_DERIVE) && stackConsumed){//有星才能用破棍式
-                    //TODO 消耗星加特效buff
-                    CompoundTag data = player.getMainHandItem().getOrCreateTag();
-
+                    this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
                 }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
                     if(stackConsumed){
-                        //TODO 消耗星加特效buff
+                        this.setStackSynchronize(executer, container.getStack() - 1);//斩棍式有无星都可用，有星则消耗
                     }
                     executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
                 }
@@ -130,6 +144,12 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         super.executeOnServer(executer, args);
     }
 
+    private void resetConsumption(SkillContainer container, ServerPlayerPatch executer){
+        this.setStackSynchronize(executer, 0);
+        this.setConsumptionSynchronize(executer, 1);
+        container.getDataManager().setDataSync(RED_TIMER, MAX_DERIVE_TIMER, executer.getOriginal());//通知客户端该亮红灯了
+    }
+
     @Override
     public void onInitiate(SkillContainer container) {
         SkillDataManager manager = container.getDataManager();
@@ -139,11 +159,33 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, RED_TIMER, 0);
         SkillDataRegister.register(manager, STARS_CONSUMED, 0);
         SkillDataRegister.register(manager, IS_CHARGING, false);
+        SkillDataRegister.register(manager, IS_IN_SPECIAL_ATTACK, false);
         SkillDataRegister.register(manager, CHARGING_TIMER, 0);
         SkillDataRegister.register(manager, CAN_FIRST_DERIVE, false);
         SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
+        SkillDataRegister.register(manager, CAN_JUMP_HEAVY, false);
         SkillDataRegister.register(manager, DERIVE_TIMER, 0);
         SkillDataRegister.register(manager, CANCEL_NEXT_CONSUMPTION, false);
+
+        //长按期间禁止跳跃
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
+            if (event.getPlayerPatch().isBattleMode() && EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()) {
+                Input input = event.getMovementInput();
+                input.jumping = false;
+            }
+        }));
+
+        //成功识破加棍势并且可以二段
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
+            if(container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)){
+                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + 10);//获得棍势
+                event.getPlayerPatch().playSound(EpicFightSounds.CLASH, 1.0f, 1.0f);
+                event.setCanceled(true);
+                //见到才能切
+                container.getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, true, event.getPlayerPatch().getOriginal());
+                container.getDataManager().setDataSync(SmashHeavyAttack.DERIVE_TIMER, SmashHeavyAttack.MAX_DERIVE_TIMER, event.getPlayerPatch().getOriginal());
+            }
+        }));
 
         //普攻后立即右键可以衍生
         container.getExecuter().getEventListener().addEventListener(
@@ -161,7 +203,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     //释放普攻后重置可衍生时间
                     if(isLightAttack && !isLastLightAttack) {
                         container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
-                        container.getDataManager().setDataSync(DERIVE_TIMER, MAX_TIMER, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
                     }
 
                 }));
@@ -174,6 +216,34 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                         container.getDataManager().setDataSync(CHARGED4_TIMER, MAX_CHARGED4_TICKS, player);
                     }
                 }));
+
+        //根据星数改跳跃重击和破、斩棍式伤害
+        container.getExecuter().getEventListener().addEventListener(
+                PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
+                    int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);
+                    if(event.getDamageSource().getAnimation().equals(jumpAttackHeavy)){
+                        float mul = switch (starCnt) {
+                            case 1 -> 3;
+                            case 2 -> 4.5F;
+                            case 3 -> 6.2F;
+                            case 4 -> 8.75F;
+                            default -> 1.45F;
+                        };
+                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
+                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation1)){
+                        float mul = starCnt == 0 ? 1.0F : 1.96F;
+                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
+                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation2)){
+                        float mul = switch (starCnt) {
+                            case 1 -> 4.7F;
+                            case 2 -> 4.9F;
+                            case 3, 4 -> 5.1F;
+                            default -> 4.48F;
+                        };
+                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
+                    }
+                }));
+
         super.onInitiate(container);
     }
 
@@ -182,6 +252,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         super.onRemoved(container);
         PlayerEventListener listener = container.getExecuter().getEventListener();
         listener.removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
     }
 
     @Override
@@ -199,8 +273,13 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
-            //更新计时器
+            if(!serverPlayer.isOnGround()){
+                dataManager.setDataSync(CAN_JUMP_HEAVY, true, serverPlayer);
+            } else if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
+                dataManager.setDataSync(CAN_JUMP_HEAVY, false, serverPlayer);
+            }
 
+            //更新计时器
             dataManager.setDataSync(DERIVE_TIMER, Math.max(dataManager.getDataValue(DERIVE_TIMER) - 1, 0), serverPlayer);//切手技有效时间计算
             dataManager.setDataSync(RED_TIMER, Math.max(dataManager.getDataValue(RED_TIMER) - 1, 0), serverPlayer);//使用技能星数显示
             if(dataManager.getDataValue(DERIVE_TIMER) <= 0){
@@ -210,15 +289,17 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
             //蓄力的加条
             if(dataManager.getDataValue(IS_CHARGING)){
-                this.setConsumptionSynchronize( serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
+                if(container.getStack() < 3){
+                    this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
+                }
                 //松手则清空棍势打重击
                 if(!dataManager.getDataValue(KEY_PRESSING)){
                     dataManager.setDataSync(CANCEL_NEXT_CONSUMPTION, true, serverPlayer);//重击不加棍势
-                    serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
+                    if(WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+                        serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
+                    }
                     dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
-                    this.setStackSynchronize(serverPlayerPatch, 0);
-                    this.setConsumptionSynchronize(serverPlayerPatch, 1);
-                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, serverPlayer);//通知客户端该亮红灯了
+                    resetConsumption(container, serverPlayerPatch);
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                 }
             }
@@ -244,8 +325,6 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             }
 
         }
-
-
 
     }
 
@@ -317,6 +396,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         protected StaticAnimationProvider[] animationProviders;
         protected StaticAnimationProvider derive1;
         protected StaticAnimationProvider derive2;
+        protected StaticAnimationProvider jumpAttackHeavy;
         StaticAnimationProvider chargingAnimation;
         StaticAnimationProvider pre;
 
@@ -367,6 +447,11 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         public Builder setDeriveAnimations(StaticAnimationProvider derive1, StaticAnimationProvider derive2) {
             this.derive1 = derive1;
             this.derive2 = derive2;
+            return this;
+        }
+
+        public Builder setJumpAttackHeavy(StaticAnimationProvider jumpAttackHeavy){
+            this.jumpAttackHeavy = jumpAttackHeavy;
             return this;
         }
     }

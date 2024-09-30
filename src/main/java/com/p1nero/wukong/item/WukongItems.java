@@ -18,6 +18,4 @@ public class WukongItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WukongMoveset.MOD_ID);
     public static final RegistryObject<Item> STAFF = ITEMS.register("staff", () -> new GoldBandedStaff(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.EPIC).tab(CREATIVE_MODE_TAB)));
 
-
-
 }

@@ -3,11 +3,13 @@ package com.p1nero.wukong.epicfight.skill.custom;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
+import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
@@ -17,7 +19,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.settings.KeyBindingMap;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.lwjgl.glfw.GLFW;
+import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -98,10 +103,30 @@ public class StaffSpin extends Skill {
                 Skill skill = skillContainer.getSkill();
                 if(skill != null){
                     //成功格挡回能量
-                    skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource() + skillContainer.getMaxResource() / 5);
+                    skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource() + Config.CHARGING_SPEED.get().floatValue());
                 }
             }
         }));
+
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (dealtDamageEvent -> {
+            StaticAnimation animation = dealtDamageEvent.getDamageSource().getAnimation();
+            if(animation.equals(WukongAnimations.STAFF_FLOWER_ONE_HAND_LOOP) || animation.equals(WukongAnimations.STAFF_FLOWER_TWO_HAND_LOOP)){
+                //打中加棍势（因为加的要比造成的伤害多）
+                SkillContainer skillContainer = dealtDamageEvent.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
+                Skill skill = skillContainer.getSkill();
+                if(skill != null){
+                    skillContainer.getSkill().setConsumptionSynchronize(dealtDamageEvent.getPlayerPatch(), skillContainer.getResource() + Config.CHARGING_SPEED.get().floatValue());
+                }
+            }
+        }));
+    }
+
+    @Override
+    public void onRemoved(SkillContainer container) {
+        super.onRemoved(container);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
     }
 
     public static boolean canBeBlocked(Entity entity){
@@ -139,31 +164,17 @@ public class StaffSpin extends Skill {
         EpicFightParticles.HIT_BLUNT.get().spawnParticleWithArgument(serverPlayer.getLevel(), HitParticleType.FRONT_OF_EYES, HitParticleType.ZERO, serverPlayer, directEntity);
     }
 
-    /**
-     * 判断武器是否是悟空棍子类型
-     */
-    public static boolean isWeaponValid(PlayerPatch<?> playerPatch){
-        return playerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF);
-    }
-
-    @Override
-    public void onRemoved(SkillContainer container) {
-        super.onRemoved(container);
-        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
-        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
-    }
-
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if(!container.getExecuter().isLogicalClient() || !isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode()){
+        if(!container.getExecuter().isLogicalClient() || !WukongWeaponCategories.isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode()){
             return;
         }
 
         if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
             container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN)){
-                boolean isOneHand = container.getExecuter().getOriginal().getDeltaMovement().length() < 0.1;
+                boolean isOneHand = container.getExecuter().getOriginal().getDeltaMovement().length() < 0.1 && !WukongKeyMappings.W.isDown();//按w可变双手棍花
                 if(!isOneHand){
                     //不这样判断不知道为什么会播完双手就回去播单手
                     container.getDataManager().setDataSync(IS_ONE_HAND, false, ((LocalPlayer) container.getExecuter().getOriginal()));

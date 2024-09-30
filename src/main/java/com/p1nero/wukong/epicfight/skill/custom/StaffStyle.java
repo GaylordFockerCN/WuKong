@@ -1,4 +1,4 @@
-package com.p1nero.wukong.epicfight.skill;
+package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongStyles;

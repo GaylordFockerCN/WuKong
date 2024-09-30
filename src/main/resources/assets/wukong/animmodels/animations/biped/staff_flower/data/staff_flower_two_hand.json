@@ -4,7 +4,7 @@
             "lifetime": 6,
             "fade_time": 0.95,
             "start_time": 0.01,
-            "end_time": 1.2,
+            "end_time": 0.83,
             "interpolations": 12,
             "joint": "Tool_R",
             "item_skin_hand": "main_hand"

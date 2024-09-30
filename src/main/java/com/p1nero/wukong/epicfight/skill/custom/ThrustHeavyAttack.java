@@ -11,7 +11,6 @@ import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
-import com.p1nero.wukong.epicfight.skill.StaffStyle;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -49,7 +48,7 @@ import java.util.UUID;
  */
 public class ThrustHeavyAttack extends WeaponInnateSkill {
 
-    private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114515");
+    private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-33ed-a05b-0242ac114515");
     public static final int MAX_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
     private static boolean chargeable;
     private static boolean canChargingWhenMove;
@@ -124,21 +123,10 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
                     executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
                 }
             } else {
-                switch (container.getStack()){
-                    //TODO 根据棍势数量加特效和buff
-                }
                 //重击，消耗所有星
-                if(chargeable) {
-                    //开始蓄力，松手在客户端判断
-                    if(!dataManager.getDataValue(IS_CHARGING)){
-                        dataManager.setDataSync(CHARGING_TIMER, 0, player);
-                        executer.playAnimationSynchronized(chargePre, 0.2F);
-                    }
-                } else {
-                    executer.playAnimationSynchronized(animations[container.getStack()], 0.2F);
-                    this.setStackSynchronize(executer, 0);
-                    this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
-                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, player);
+                if(!dataManager.getDataValue(IS_CHARGING)){
+                    dataManager.setDataSync(CHARGING_TIMER, 0, player);
+                    executer.playAnimationSynchronized(chargePre, 0.15F);
                 }
             }
 

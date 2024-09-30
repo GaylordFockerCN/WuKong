@@ -11,8 +11,10 @@ import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,6 +25,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.math.Vec2i;
+import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.config.ConfigurationIngame;
@@ -38,14 +41,16 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 准备提公因式hh
+ * 劈棍重击
  */
-public class HeavyAttack extends WeaponInnateSkill {
+public class PillarHeavyAttack extends WeaponInnateSkill {
 
-    private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
+    private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-22ed-a05b-0242ac114514");
     public static final int MAX_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
     public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//技能键是否按下
     public static final SkillDataManager.SkillDataKey<Boolean> IS_REPEATING_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按一段衍生
+    private static final SkillDataManager.SkillDataKey<Integer> CHARGED4_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//四段棍势持续时间
+    public static final int MAX_CHARGED4_TICKS = 300;//15s
     private static final SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//亮灯时间
     public static final SkillDataManager.SkillDataKey<Integer> STARS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//本次攻击是否消耗星（是否强化）
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在蓄力
@@ -66,7 +71,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE);
     }
 
-    public HeavyAttack(Builder builder) {
+    public PillarHeavyAttack(Builder builder) {
         super(builder);
         charging = builder.chargingAnimation.get();
         chargePre = builder.pre.get();
@@ -83,7 +88,7 @@ public class HeavyAttack extends WeaponInnateSkill {
 
     /**
      * 在计时周期内使用技能才算使用衍生，否则视为重击
-     * 长按循环第一段衍生的判断在{@link HeavyAttack#updateContainer(SkillContainer)}
+     * 长按循环第一段衍生的判断在{@link PillarHeavyAttack#updateContainer(SkillContainer)}
      */
     @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
@@ -98,12 +103,12 @@ public class HeavyAttack extends WeaponInnateSkill {
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
             dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
-            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用切手技
+            if(dataManager.getDataValue(DERIVE_TIMER) > 0){
                 this.setStackSynchronize(executer, container.getStack() - 1);//切手技直接消耗星，无需松手判断
-                if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
-                    if(stackConsumed){
-                        //TODO 消耗星加特效buff
-                    }
+                if(dataManager.getDataValue(CAN_FIRST_DERIVE) && stackConsumed){//有星才能用破棍式
+                    //TODO 消耗星加特效buff
+                    CompoundTag data = player.getMainHandItem().getOrCreateTag();
+
                     executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
                 }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
                     if(stackConsumed){
@@ -129,6 +134,7 @@ public class HeavyAttack extends WeaponInnateSkill {
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, IS_REPEATING_DERIVE, false);
         SkillDataRegister.register(manager, KEY_PRESSING, false);
+        SkillDataRegister.register(manager, CHARGED4_TIMER, 0);
         SkillDataRegister.register(manager, RED_TIMER, 0);
         SkillDataRegister.register(manager, STARS_CONSUMED, 0);
         SkillDataRegister.register(manager, IS_CHARGING, false);
@@ -137,6 +143,26 @@ public class HeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
         SkillDataRegister.register(manager, DERIVE_TIMER, 0);
         SkillDataRegister.register(manager, CANCEL_NEXT_CONSUMPTION, false);
+
+        //长按期间禁止移动
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
+            if (event.getPlayerPatch().isBattleMode() && EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()) {
+                Input input = event.getMovementInput();
+                input.forwardImpulse = 0.0F;
+                input.leftImpulse = 0.0F;
+                input.down = false;
+                input.up = false;
+                input.left = false;
+                input.right = false;
+                input.jumping = false;
+                input.shiftKeyDown = false;
+                LocalPlayer clientPlayer = event.getPlayerPatch().getOriginal();
+                clientPlayer.setSprinting(false);
+//                clientPlayer.sprintTriggerTime = -1;
+                Minecraft mc = Minecraft.getInstance();
+                ClientEngine.getInstance().controllEngine.setKeyBind(mc.options.keySprint, false);
+            }
+        }));
 
         //普攻后立即右键可以衍生
         container.getExecuter().getEventListener().addEventListener(
@@ -158,6 +184,15 @@ public class HeavyAttack extends WeaponInnateSkill {
                     }
 
                 }));
+
+        //刷新四蓄计时器
+        container.getExecuter().getEventListener().addEventListener(
+                PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (event -> {
+                    ServerPlayer player = event.getPlayerPatch().getOriginal();
+                    if(container.isFull()){
+                        container.getDataManager().setDataSync(CHARGED4_TIMER, MAX_CHARGED4_TICKS, player);
+                    }
+                }));
         super.onInitiate(container);
     }
 
@@ -166,61 +201,76 @@ public class HeavyAttack extends WeaponInnateSkill {
         super.onRemoved(container);
         PlayerEventListener listener = container.getExecuter().getEventListener();
         listener.removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
     }
 
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
         SkillDataManager dataManager = container.getDataManager();
+        if(!dataManager.hasData(KEY_PRESSING)){
+            dataManager.registerData(KEY_PRESSING);
+        }
         if(container.getExecuter().isLogicalClient()){
-            //KEY_PRESSING用于服务端判断是否继续播动画（感觉可以统一客户端操作的说
+            //KEY_PRESSING用于服务端判断是否继续播动画
             boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
-            if(!dataManager.hasData(KEY_PRESSING)){
-                dataManager.registerData(KEY_PRESSING);//不知道为什么这个学棍式的时候会null
-            }
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
-
-
-
         } else {
-            //蓄力的松手判断
-            if(dataManager.getDataValue(IS_CHARGING)){
-                if(!dataManager.getDataValue(KEY_PRESSING)){
-                    dataManager.setDataSync(CANCEL_NEXT_CONSUMPTION, true, ((LocalPlayer) container.getExecuter().getOriginal()));//重击不加棍势
-                    container.getExecuter().playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
-                }
+            ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
+            ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
+
+            //更新计时器
+            dataManager.setDataSync(DERIVE_TIMER, Math.max(dataManager.getDataValue(DERIVE_TIMER) - 1, 0), serverPlayer);//切手技有效时间计算
+            dataManager.setDataSync(RED_TIMER, Math.max(dataManager.getDataValue(RED_TIMER) - 1, 0), serverPlayer);//使用技能星数显示
+            if(dataManager.getDataValue(DERIVE_TIMER) <= 0){
+                dataManager.setDataSync(CAN_FIRST_DERIVE, false, serverPlayer);
+                dataManager.setDataSync(CAN_SECOND_DERIVE, false, serverPlayer);
             }
 
             //蓄力的加条
             if(dataManager.getDataValue(IS_CHARGING)){
-                this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getResource() + 0.5F);
+                int stackOld = container.getStack();
+                this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
+                int stackNew = container.getStack();
+                if(stackNew > stackOld){
+//                    serverPlayerPatch.playAnimationSynchronized(); TODO 播对应的升星动画，生星动画里播对应的loop
+                }
                 //松手则清空棍势打重击
                 if(!dataManager.getDataValue(KEY_PRESSING)){
-                    ServerPlayer serverPlayer = (ServerPlayer) container.getExecuter().getOriginal();
-                    dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);
-                    this.setStackSynchronize(((ServerPlayerPatch) container.getExecuter()), 0);
-                    this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
-                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, serverPlayer);
+                    dataManager.setDataSync(CANCEL_NEXT_CONSUMPTION, true, serverPlayer);//重击不加棍势
+                    serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
+                    dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
+                    this.setStackSynchronize(serverPlayerPatch, 0);
+                    this.setConsumptionSynchronize(serverPlayerPatch, 1);
+                    dataManager.setDataSync(RED_TIMER, MAX_TIMER, serverPlayer);//通知客户端该亮红灯了
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                 }
             }
 
             //破条则加stack清空蓄力条
             if(container.getStack() < 3 && Math.ceil(container.getResource(1.0F) * 20) > 10) {
-                this.setConsumptionSynchronize(((ServerPlayerPatch) container.getExecuter()), 1);
-                this.setStackSynchronize(((ServerPlayerPatch) container.getExecuter()), container.getStack() + 1);
+                this.setConsumptionSynchronize( serverPlayerPatch, 1);
+                this.setStackSynchronize( serverPlayerPatch, container.getStack() + 1);
                 container.getExecuter().playSound(SoundEvents.EXPERIENCE_ORB_PICKUP,1.0F, 1.0F);
             }
+
+            int current = dataManager.getDataValue(CHARGED4_TIMER);
+            //四蓄的时间判断
+            if(container.isFull() && current > 0){
+                dataManager.setDataSync(CHARGED4_TIMER, current - 1, serverPlayer);
+            }
+            if(current == 1){
+                this.setStackSynchronize(serverPlayerPatch, 3);
+                this.setConsumptionSynchronize(serverPlayerPatch, container.getMaxResource() - Config.CHARGING_SPEED.get().floatValue());
+            }
+            if(current == 0 && container.getStack() >= 3 && container.getResource() > Config.CHARGING_SPEED.get().floatValue() / 2 + 0.1){
+                this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() - Config.CHARGING_SPEED.get().floatValue() / 2);
+            }
+
         }
 
-        //更新计时器
-        dataManager.setData(DERIVE_TIMER, Math.max(dataManager.getDataValue(DERIVE_TIMER)-1, 0));
-        dataManager.setData(RED_TIMER, Math.max(dataManager.getDataValue(RED_TIMER)-1, 0));
-        if(dataManager.getDataValue(DERIVE_TIMER) <= 0){
-            dataManager.setData(CAN_FIRST_DERIVE, false);
-            dataManager.setData(CAN_SECOND_DERIVE, false);
-        }
-        //第四段棍势会随时间减少 TODO
+
+
     }
 
 
@@ -287,13 +337,12 @@ public class HeavyAttack extends WeaponInnateSkill {
         return null;
     }
 
-    public static class Builder extends Skill.Builder<HeavyAttack> {
+    public static class Builder extends Skill.Builder<PillarHeavyAttack> {
         protected StaticAnimationProvider[] animationProviders;
         protected StaticAnimationProvider derive1;
         protected StaticAnimationProvider derive2;
         StaticAnimationProvider chargingAnimation;
         StaticAnimationProvider pre;
-        protected boolean canChargingWhenMove;
 
         public Builder() {
         }
@@ -328,15 +377,10 @@ public class HeavyAttack extends WeaponInnateSkill {
             return this;
         }
 
-        public Builder setCanChargeWhenMove(boolean canChargeWhenMove){
-            this.canChargingWhenMove = canChargeWhenMove;
-            return this;
-        }
-
         /**
          * 0~4星重击
          */
-        public Builder setAnimationProviders(StaticAnimationProvider... animationProviders) {
+        public Builder setHeavyAttacks(StaticAnimationProvider... animationProviders) {
             this.animationProviders = animationProviders;
             return this;
         }

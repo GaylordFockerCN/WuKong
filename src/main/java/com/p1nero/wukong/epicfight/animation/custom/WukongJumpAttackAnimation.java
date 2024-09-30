@@ -60,9 +60,7 @@ public class WukongJumpAttackAnimation extends BasicAttackAnimation {
             }
 
             this.hurtCollidingEntities(entityPatch, prevElapsedTime, elapsedTime, prevState, state, phase);
-            if(entityPatch.getCurrenltyAttackedEntities().isEmpty()){
-                entityPatch.playAnimationSynchronized(WukongAnimations.JUMP_ATTACK_LIGHT_FALL, 0.15F);
-            } else {
+            if(!entityPatch.getCurrenltyAttackedEntities().isEmpty()){
                 entityPatch.playAnimationSynchronized(WukongAnimations.JUMP_ATTACK_LIGHT_HIT, 0.15F);
             }
         }

@@ -13,11 +13,11 @@
         },
         {
             "livingmotion":"WALK",
-            "type":"root_upper_joints"
+            "type":"arms"
         },
         {
             "livingmotion":"RUN",
-            "type":"root_upper_joints"
+            "type":"arms"
         }
     ]
 }

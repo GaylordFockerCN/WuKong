@@ -5,9 +5,9 @@ import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
+import com.p1nero.wukong.epicfight.skill.custom.StaffStyle;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.item.WukongItems;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
@@ -15,7 +15,6 @@ import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
@@ -49,11 +48,12 @@ public class WukongSkills {
                                 () -> WukongAnimations.SMASH_CHARGED0,
                                 () -> WukongAnimations.SMASH_CHARGED1,
                                 () -> WukongAnimations.SMASH_CHARGED2,
-                                () -> WukongAnimations.THRUST_CHARGED3,
-                                () -> WukongAnimations.THRUST_CHARGED4)
+                                () -> WukongAnimations.SMASH_CHARGED3,
+                                () -> WukongAnimations.SMASH_CHARGED4)
                         .setDeriveAnimations(
-                                () -> Animations.SWORD_AUTO1,
-                                () -> Animations.SWORD_AUTO1)
+                                () -> WukongAnimations.SMASH_DERIVE1,
+                                () -> WukongAnimations.SMASH_DERIVE2)
+                        .setJumpAttackHeavy(() -> WukongAnimations.JUMP_ATTACK_HEAVY)
                 , WukongMoveset.MOD_ID, "smash_charged");
         SkillManager.register(ThrustHeavyAttack::new, ThrustHeavyAttack.createChargedAttack()
                 .setChargePreAnimation(()-> WukongAnimations.THRUST_PRE)
