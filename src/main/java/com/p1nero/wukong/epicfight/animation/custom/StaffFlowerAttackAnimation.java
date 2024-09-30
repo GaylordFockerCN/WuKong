@@ -1,18 +1,22 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
 import com.p1nero.wukong.Config;
+import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.world.InteractionHand;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.ValueModifier;
+import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 /**
@@ -21,7 +25,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
  */
 public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
 
-    public StaffFlowerAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier){
+    public StaffFlowerAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier, boolean isTwoHand){
         super(0, path, biped,
                         new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, end, 0.26F , biped.toolR, null)
                                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(damageMultiplier)),
@@ -59,8 +63,29 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
                                 passiveContainer.getDataManager().setDataSync(StaffSpin.PLAYING_STAFF_SPIN, true, serverPlayerPatch.getOriginal());
                             }
-                        }), AnimationEvent.Side.SERVER));
+                        }), AnimationEvent.Side.SERVER),
+                        AnimationEvent.TimeStampedEvent.create(end - 0.1F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            if(isTwoHand){
+                                CameraAnim.zoomOut(20);
+                            }
 
+                        }), AnimationEvent.Side.CLIENT),
+                        AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            if(isTwoHand){
+                                CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
+                                CameraAnim.lock = true;
+                            }
+
+                        }), AnimationEvent.Side.CLIENT));
+
+    }
+
+    @Override
+    public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
+        super.end(entityPatch, nextAnimation, isEnd);
+        if(entityPatch.isLogicalClient()){
+            CameraAnim.lock = false;
+        }
     }
 
     protected void bindPhaseState(Phase phase) {

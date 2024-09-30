@@ -1,0 +1,10 @@
+{
+  "perfect_dodge": {
+    "subtitle": "sounds.wukong.perfect_dodge",
+    "sounds": [
+      "wukong:perfect_dodge1",
+      "wukong:perfect_dodge2",
+      "wukong:perfect_dodge3"
+    ]
+  }
+}

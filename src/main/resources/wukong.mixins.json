@@ -9,6 +9,7 @@
   ],
   "mixins": [
     "BasicAttackMixin",
+    "OpenMatrix4fMixin",
     "ServerPlayerPatchMixin"
   ],
   "injectors": {

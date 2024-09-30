@@ -31,6 +31,7 @@ public class CameraAnim {
     private static boolean aiming;
     private static int zoomOutTimer = 0;
     private static int zoomCount;
+    public static boolean lock;//防止共用的情况下出现bug
 
     public static boolean isAiming() {
         return aiming;
@@ -49,6 +50,9 @@ public class CameraAnim {
     }
 
     public static void zoomOut(int timer) {
+        if(lock){
+            return;
+        }
         aiming = false;
         zoomOutTimer = timer;
     }

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
+import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
@@ -18,6 +19,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,6 +38,7 @@ import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.List;
@@ -121,14 +124,12 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         } else {
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
-            if(dataManager.getDataValue(DERIVE_TIMER) > 0){
-                if(dataManager.getDataValue(CAN_FIRST_DERIVE) && stackConsumed){//有星才能用破棍式
+            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用破棍式
+                if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
                 }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
-                    if(stackConsumed){
-                        this.setStackSynchronize(executer, container.getStack() - 1);//斩棍式有无星都可用，有星则消耗
-                    }
+                    this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
                 }
             } else {
@@ -175,15 +176,14 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             }
         }));
 
-        //成功识破加棍势并且可以二段
+        //成功识破加棍势，并重置普攻计数器，下次从三段普攻开始
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
             if(container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)){
                 container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + 10);//获得棍势
-                event.getPlayerPatch().playSound(EpicFightSounds.CLASH, 1.0f, 1.0f);
+                event.getPlayerPatch().playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.5F, 1.2f, 1.4f);
+                BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
+                event.setAmount(0);
                 event.setCanceled(true);
-                //见到才能切
-                container.getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, true, event.getPlayerPatch().getOriginal());
-                container.getDataManager().setDataSync(SmashHeavyAttack.DERIVE_TIMER, SmashHeavyAttack.MAX_DERIVE_TIMER, event.getPlayerPatch().getOriginal());
             }
         }));
 
@@ -208,12 +208,16 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
                 }));
 
-        //刷新四蓄计时器
+        //刷新四蓄计时器，识破打中则可接二段
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (event -> {
                     ServerPlayer player = event.getPlayerPatch().getOriginal();
                     if(container.isFull()){
                         container.getDataManager().setDataSync(CHARGED4_TIMER, MAX_CHARGED4_TICKS, player);
+                    }
+                    if(event.getDamageSource().getAnimation().equals(deriveAnimation1)){
+                        container.getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, true, event.getPlayerPatch().getOriginal());
+                        container.getDataManager().setDataSync(SmashHeavyAttack.DERIVE_TIMER, SmashHeavyAttack.MAX_DERIVE_TIMER, event.getPlayerPatch().getOriginal());
                     }
                 }));
 
@@ -346,7 +350,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     @Override
     public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
         int stack = container.getStack();
-        int style = ((StaffStyle) container.getExecuter().getSkill(WukongSkillSlots.STAFF_STYLE).getSkill()).style.ordinal();
+        int style = container.getExecuter().getHoldingItemCapability(InteractionHand.MAIN_HAND).getStyle(container.getExecuter()).universalOrdinal() - WukongStyles.SMASH.universalOrdinal();
         float cooldownRatio = !container.isFull() && !container.isActivated() ? container.getResource(1.0F) : 1.0F;
         int progress = ((int) Math.ceil(cooldownRatio * 20));
         ConfigurationIngame config = EpicFightMod.CLIENT_INGAME_CONFIG;
@@ -357,7 +361,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         poseStack.pushPose();
         poseStack.translate(0.0, gui.getSlidingProgression(), 0.0);
         ResourceLocation progressTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/progress/" + progress + ".png");
-        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style/" + style + (stack==0?"_0":"_1") + ".png");
+        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style/" + style + (stack == 4?"_1":"_0") + ".png");
         ResourceLocation stackTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/stack/" + stack + ".png");
         ResourceLocation goldenLightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/gold.png");
         RenderSystem.setShaderTexture(0, progressTexture);

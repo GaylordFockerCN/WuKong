@@ -4,7 +4,7 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
-import com.p1nero.wukong.epicfight.skill.custom.StaffStyle;
+import com.p1nero.wukong.epicfight.skill.custom.StaffStance;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,7 +29,7 @@ public class WukongWeaponCapabilityPresets {
             .styleProvider((livingEntityPatch) -> {
                 if(livingEntityPatch instanceof PlayerPatch<?> playerPatch){
                     SkillContainer container = playerPatch.getSkill(WukongSkillSlots.STAFF_STYLE);
-                    if(container.getSkill() instanceof StaffStyle style){
+                    if(container.getSkill() instanceof StaffStance style){
                         return style.getStyle(container);
                     }
                 }
@@ -129,7 +129,7 @@ public class WukongWeaponCapabilityPresets {
 //                    WukongAnimations.JUMP)
             ;
 
-    public static final Function<Item, CapabilityItem.Builder> CHOP_ONLY = (item) ->
+    public static final Function<Item, CapabilityItem.Builder> SMASH_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.SMASH)
                     .collider(WukongColliders.WK_STAFF)
@@ -144,24 +144,30 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.STAFF_AUTO3,
                             WukongAnimations.STAFF_AUTO4,
                             WukongAnimations.STAFF_AUTO5,
-                            WukongAnimations.STAFF_AUTO1,
-                            WukongAnimations.STAFF_AUTO1)//空中
+                            WukongAnimations.STAFF_AUTO1_DASH,
+                            WukongAnimations.JUMP_ATTACK_LIGHT)
                     .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.IDLE,
                             WukongAnimations.IDLE)
-//                    .livingMotionModifier(WukongStyles.SMASH,
-//                            LivingMotions.WALK,
-//                            WukongAnimations.SMASH_WALK)
+                    .livingMotionModifier(WukongStyles.SMASH,
+                            LivingMotions.WALK,
+                            WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.CHASE,
-                            WukongAnimations.RUN)
+                            WukongAnimations.DASH)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.RUN,
-                            WukongAnimations.RUN)
+                            WukongAnimations.DASH)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.SWIM,
-                            WukongAnimations.WALK);
+                            WukongAnimations.WALK)
+                    .livingMotionModifier(WukongStyles.SMASH,
+                            LivingMotions.JUMP,
+                            WukongAnimations.JUMP)
+                    .livingMotionModifier(WukongStyles.SMASH,
+                            LivingMotions.FALL,
+                            WukongAnimations.FALL);
 
     public static final Function<Item, CapabilityItem.Builder> THRUST_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
@@ -198,7 +204,7 @@ public class WukongWeaponCapabilityPresets {
                             LivingMotions.SWIM,
                             WukongAnimations.WALK);
 
-    public static final Function<Item, CapabilityItem.Builder> STAND_ONLY = (item) ->
+    public static final Function<Item, CapabilityItem.Builder> PILLAR_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.PILLAR)
                     .collider(WukongColliders.WK_STAFF)
@@ -238,9 +244,9 @@ public class WukongWeaponCapabilityPresets {
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
         event.getTypeEntry().put("wk_staff", STAFF);
-        event.getTypeEntry().put("chop_only", CHOP_ONLY);
+        event.getTypeEntry().put("smash_only", SMASH_ONLY);
         event.getTypeEntry().put("thrust_only", THRUST_ONLY);
-        event.getTypeEntry().put("stand_only", STAND_ONLY);
+        event.getTypeEntry().put("pillar_only", PILLAR_ONLY);
     }
 
 }

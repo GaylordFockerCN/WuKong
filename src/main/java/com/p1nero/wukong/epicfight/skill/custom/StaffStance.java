@@ -9,12 +9,12 @@ import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillDataManager;
 
-public class StaffStyle extends Skill {
+public class StaffStance extends Skill {
 
     public final WukongStyles style;//客户端无效，所以得有datakey
     private static final SkillDataManager.SkillDataKey<Integer> STYLE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
 
-    public StaffStyle(Builder builder) {
+    public StaffStance(Builder builder) {
         super(builder);
         this.style = builder.style;
     }
@@ -49,7 +49,7 @@ public class StaffStyle extends Skill {
         return WukongStyles.values()[container.getDataManager().getDataValue(STYLE)];
     }
 
-    public static class Builder extends Skill.Builder<StaffStyle>{
+    public static class Builder extends Skill.Builder<StaffStance>{
         protected WukongStyles style;
 
         public Builder setStyle(WukongStyles style){

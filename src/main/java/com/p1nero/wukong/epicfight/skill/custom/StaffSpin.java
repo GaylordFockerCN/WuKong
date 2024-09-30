@@ -2,6 +2,7 @@ package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
@@ -185,6 +186,7 @@ public class StaffSpin extends Skill {
         } else {
             container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
             container.getDataManager().setDataSync(IS_ONE_HAND, true, ((LocalPlayer) container.getExecuter().getOriginal()));
+            CameraAnim.zoomOut(20);
         }
     }
 }

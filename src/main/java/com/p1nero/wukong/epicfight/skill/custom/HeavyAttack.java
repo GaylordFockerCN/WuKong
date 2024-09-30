@@ -241,7 +241,7 @@ public class HeavyAttack extends WeaponInnateSkill {
     @Override
     public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
         int stack = container.getStack();
-        int style = ((StaffStyle) container.getExecuter().getSkill(WukongSkillSlots.STAFF_STYLE).getSkill()).style.ordinal();
+        int style = ((StaffStance) container.getExecuter().getSkill(WukongSkillSlots.STAFF_STYLE).getSkill()).style.ordinal();
         float cooldownRatio = !container.isFull() && !container.isActivated() ? container.getResource(1.0F) : 1.0F;
         int progress = ((int) Math.ceil(cooldownRatio * 20));
         ConfigurationIngame config = EpicFightMod.CLIENT_INGAME_CONFIG;
