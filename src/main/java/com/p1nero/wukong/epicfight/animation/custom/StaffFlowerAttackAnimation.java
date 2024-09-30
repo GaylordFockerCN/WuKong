@@ -68,24 +68,14 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                             if(isTwoHand){
                                 CameraAnim.zoomOut(20);
                             }
-
                         }), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(isTwoHand){
                                 CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
-                                CameraAnim.lock = true;
                             }
 
                         }), AnimationEvent.Side.CLIENT));
 
-    }
-
-    @Override
-    public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
-        super.end(entityPatch, nextAnimation, isEnd);
-        if(entityPatch.isLogicalClient()){
-            CameraAnim.lock = false;
-        }
     }
 
     protected void bindPhaseState(Phase phase) {
