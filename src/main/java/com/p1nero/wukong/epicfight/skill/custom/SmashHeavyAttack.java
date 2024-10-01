@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
@@ -56,10 +57,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     private static final SkillDataManager.SkillDataKey<Integer> CHARGED4_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//四段棍势持续时间
     public static final int MAX_CHARGED4_TICKS = 300;//15s
     private static final SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//亮灯时间
+    public static final SkillDataManager.SkillDataKey<Integer> LAST_STACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//上一次的层数，用于判断是否加层
     public static final SkillDataManager.SkillDataKey<Integer> STARS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//本次攻击是否消耗星（是否强化）
     public static final SkillDataManager.SkillDataKey<Boolean> IS_IN_SPECIAL_ATTACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在切手技
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在蓄力
-    public static final SkillDataManager.SkillDataKey<Integer> CHARGING_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//蓄力计时器
     public static final SkillDataManager.SkillDataKey<Integer> DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//衍生合法时间计时器
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第一段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_SECOND_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第二段衍生
@@ -126,16 +127,17 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             boolean stackConsumed = container.getStack() > 0;
             if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用破棍式
                 if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
+                    executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
                 }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
+                    executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
                 }
             } else {
                 //重击，消耗所有星，开始蓄力，松手在客户端判断
                 if(!dataManager.getDataValue(IS_CHARGING)){
-                    dataManager.setDataSync(CHARGING_TIMER, 0, player);
                     executer.playAnimationSynchronized(chargePre, 0.2F);
                 }
             }
@@ -146,6 +148,9 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     }
 
     private void resetConsumption(SkillContainer container, ServerPlayerPatch executer){
+        if(container.getStack() > 0){
+            executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
+        }
         this.setStackSynchronize(executer, 0);
         this.setConsumptionSynchronize(executer, 1);
         container.getDataManager().setDataSync(RED_TIMER, MAX_DERIVE_TIMER, executer.getOriginal());//通知客户端该亮红灯了
@@ -158,10 +163,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, KEY_PRESSING, false);
         SkillDataRegister.register(manager, CHARGED4_TIMER, 0);
         SkillDataRegister.register(manager, RED_TIMER, 0);
+        SkillDataRegister.register(manager, LAST_STACK, 0);
         SkillDataRegister.register(manager, STARS_CONSUMED, 0);
         SkillDataRegister.register(manager, IS_CHARGING, false);
         SkillDataRegister.register(manager, IS_IN_SPECIAL_ATTACK, false);
-        SkillDataRegister.register(manager, CHARGING_TIMER, 0);
         SkillDataRegister.register(manager, CAN_FIRST_DERIVE, false);
         SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
         SkillDataRegister.register(manager, CAN_JUMP_HEAVY, false);
@@ -180,7 +185,6 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
             if(container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)){
                 container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + 10);//获得棍势
-                event.getPlayerPatch().playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.5F, 1.2f, 1.4f);
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
                 event.setAmount(0);
                 event.setCanceled(true);
@@ -192,14 +196,22 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (event -> {
                     ServerPlayer player = event.getPlayerPatch().getOriginal();
                     CapabilityItem capabilityItem = EpicFightCapabilities.getItemStackCapability(player.getMainHandItem());
-                    boolean isStaff = capabilityItem.getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF);
+                    if(!WukongWeaponCategories.isWeaponValid(event.getPlayerPatch())){
+                        return;
+                    }
+
                     List<StaticAnimation> autoAnimations = capabilityItem.getAutoAttckMotion(event.getPlayerPatch());
                     //autoAnimations 的倒一倒二是冲刺和跳跃攻击，倒三是第五段普攻
                     boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2));
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
-                    if(!isStaff){
-                        return;
+
+                    //蓄力的时候平A是非法的，应该清空棍势
+                    if(container.getDataManager().getDataValue(IS_CHARGING) && isLightAttack){
+                        this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
+                        this.setStackSynchronize(event.getPlayerPatch(), 0);
+                        container.getDataManager().setDataSync(IS_CHARGING, false, player);
                     }
+
                     //释放普攻后重置可衍生时间
                     if(isLightAttack && !isLastLightAttack) {
                         container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
@@ -277,6 +289,13 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
+            //层数变化检测以播音效
+            if(container.getStack() > dataManager.getDataValue(LAST_STACK)){
+                serverPlayerPatch.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
+            }
+            dataManager.setData(LAST_STACK, container.getStack());
+
+            //跳重击的判断
             if(!serverPlayer.isOnGround()){
                 dataManager.setDataSync(CAN_JUMP_HEAVY, true, serverPlayer);
             } else if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
@@ -291,8 +310,15 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 dataManager.setDataSync(CAN_SECOND_DERIVE, false, serverPlayer);
             }
 
-            //蓄力的加条
             if(dataManager.getDataValue(IS_CHARGING)){
+                //防止切物品产生的bug
+                if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+                    dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
+                    this.setConsumptionSynchronize(serverPlayerPatch, 1);
+                    this.setStackSynchronize(serverPlayerPatch, 0);
+                    return;
+                }
+                //蓄力的加条
                 if(container.getStack() < 3){
                     this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
                 }
@@ -310,9 +336,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
             //破条则加stack清空蓄力条
             if(container.getStack() < 3 && Math.ceil(container.getResource(1.0F) * 20) > 10) {
-                this.setConsumptionSynchronize( serverPlayerPatch, 1);
-                this.setStackSynchronize( serverPlayerPatch, container.getStack() + 1);
-                container.getExecuter().playSound(SoundEvents.EXPERIENCE_ORB_PICKUP,1.0F, 1.0F);
+                this.setConsumptionSynchronize(serverPlayerPatch, 1);
+                this.setStackSynchronize(serverPlayerPatch, container.getStack() + 1);
             }
 
             int current = dataManager.getDataValue(CHARGED4_TIMER);

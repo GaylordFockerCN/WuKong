@@ -165,14 +165,14 @@ public class WukongAnimations {
         JUMP = new StaticAnimation(0.15F, false, "biped/jump",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
         FALL = new StaticAnimation(0.15F, true, "biped/fall",biped);
-        DODGE_F1 = new DodgeAnimation(0.1F, 1.0F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
-        DODGE_B1 = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
-        DODGE_R1 = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
-        DODGE_L1 = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
-        DODGE_FP = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped);
-        DODGE_BP = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped);
-        DODGE_RP = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped);
-        DODGE_LP = new DodgeAnimation(0.1F, 1.0F,"biped/dodge/dodge_lp", 0.6F, 1.35F, biped);
+        DODGE_F1 = new DodgeAnimation(0.1F, 0.625F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
+        DODGE_B1 = new DodgeAnimation(0.1F, 0.625F,"biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
+        DODGE_R1 = new DodgeAnimation(0.1F, 0.625F,"biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
+        DODGE_L1 = new DodgeAnimation(0.1F, 0.625F,"biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
+        DODGE_FP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped);
+        DODGE_BP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped);
+        DODGE_RP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped);
+        DODGE_LP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_lp", 0.6F, 1.35F, biped);
 
         STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
@@ -473,6 +473,16 @@ public class WukongAnimations {
             }
         }));
     }
+
+    /**
+     * 添加物品缩放
+     */
+    public static StaticAnimation setScaleEvents(StaticAnimation animation, LocalPlayerPatch localPlayerPatch, ScaleTime... times){
+
+        return animation;
+    }
+
+    public record ScaleTime(float time, float x, float y, float z){}
 
     public static void onPlayerTick(TickEvent.PlayerTickEvent event){
         if(event.player instanceof ServerPlayer serverPlayer){

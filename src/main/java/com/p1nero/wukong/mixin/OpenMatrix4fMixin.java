@@ -14,10 +14,10 @@ import yesman.epicfight.api.utils.math.Vec3f;
  */
 @Mixin(value = OpenMatrix4f.class, remap = false)
 public class OpenMatrix4fMixin {
-    @Inject(method = "toQuaternion(Lyesman/epicfight/api/utils/math/OpenMatrix4f;)Lcom/mojang/math/Quaternion;",at = @At("HEAD"), cancellable = true)
+    @Inject(method = "toQuaternion(Lyesman/epicfight/api/utils/math/OpenMatrix4f;)Lcom/mojang/math/Quaternion;",at = @At("RETURN"), cancellable = true)
     private static void removeScale(OpenMatrix4f matrix4f, CallbackInfoReturnable<Quaternion> cir){
         OpenMatrix4f newMatrix = new OpenMatrix4f(matrix4f);
-        wukong$removeScale(newMatrix);
+        newMatrix = wukong$removeScale(newMatrix);
         float diagonal = newMatrix.m00 + newMatrix.m11 + newMatrix.m22;
         float w;
         float x;
@@ -53,14 +53,14 @@ public class OpenMatrix4fMixin {
     }
 
     @Unique
-    private static void wukong$removeScale(OpenMatrix4f src) {
+    private static OpenMatrix4f wukong$removeScale(OpenMatrix4f src) {
         float xScale = new Vec3f(src.m00, src.m01, src.m02).length();
         float yScale = new Vec3f(src.m10, src.m11, src.m12).length();
         float zScale = new Vec3f(src.m20, src.m21, src.m22).length();
 
         OpenMatrix4f copy = new OpenMatrix4f(src);
         copy.scale(1 / xScale, 1 / yScale, 1 / zScale);
-
+        return copy;
     }
 
 }
