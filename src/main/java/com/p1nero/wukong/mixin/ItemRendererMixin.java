@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * 缩放的备案
+ * 缩放的备案，在yesman修复bug之前这玩意儿真好使
  */
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {

@@ -265,24 +265,40 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.75F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
                 .addEvents(allStopMovement);
-        SMASH_CHARGED2 = new BasicAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy2_scale", biped)
+        SMASH_CHARGED2 = new BasicAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(8.8F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        setScaleEvents(SMASH_CHARGED2,
+                ScaleTime.reset(1.30F),
+                ScaleTime.of(1.45F, 1, 1.8F, 1),
+                ScaleTime.of(2.13F, 1, 1.8F, 1),
+                ScaleTime.reset(2.29F));
         SMASH_CHARGED3 = new BasicAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy3", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(11))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
-        SMASH_CHARGED4 = new BasicAttackAnimation(0.15F, 2.63F, 2.8F, 3.3F, null, biped.toolR,  "biped/smash/smash_heavy4_scale", biped)
+        setScaleEvents(SMASH_CHARGED3,
+                ScaleTime.reset(1.30F),
+                ScaleTime.of(1.45F, 1, 2.4F, 1),
+                ScaleTime.of(2.13F, 1, 2.4F, 1),
+                ScaleTime.reset(2.29F));
+        SMASH_CHARGED4 = new BasicAttackAnimation(0.15F, 2.63F, 2.8F, 3.3F, null, biped.toolR,  "biped/smash/smash_heavy4", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(15.5F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 2.63F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        setScaleEvents(SMASH_CHARGED4,
+                ScaleTime.of(2.4167F, 1, 1, 1),
+                ScaleTime.of(2.5833F, 1.15F, 1.15F, 1.15F),
+                ScaleTime.of(2.7083F, 1.15F, 3.15F, 1.15F),
+                ScaleTime.of(3.3333F, 1.15F, 3.15F, 1.15F),
+                ScaleTime.of(3.5833F, 1, 1, 1));
 
         SMASH_DERIVE1 = new BasicAttackAnimation(0.15F, 0.63F, 0.75F, 1.20F, null, biped.toolR,  "biped/smash/smash_special1", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
@@ -475,14 +491,105 @@ public class WukongAnimations {
     }
 
     /**
-     * 添加物品缩放
+     * 添加物品缩放，并插值
      */
-    public static StaticAnimation setScaleEvents(StaticAnimation animation, LocalPlayerPatch localPlayerPatch, ScaleTime... times){
-
-        return animation;
+    public static void setScaleEvents(StaticAnimation animation, ScaleTime... ticks){
+        int lastTick = ticks[ticks.length-1].tick;
+        AnimationEvent.TimeStampedEvent[] timeStampedEvents = new AnimationEvent.TimeStampedEvent[lastTick];
+        ticks = interpolate(ticks, lastTick);
+        timeStampedEvents[0] = AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+            CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
+            tag.putBoolean("WK_shouldScaleItem", false);
+        }), AnimationEvent.Side.CLIENT);
+        timeStampedEvents[lastTick-1] = AnimationEvent.TimeStampedEvent.create(0.05F * lastTick, ((livingEntityPatch, staticAnimation, objects) -> {
+            CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
+            tag.putBoolean("WK_shouldScaleItem", false);
+        }), AnimationEvent.Side.CLIENT);
+        for(int i = 1; i < lastTick-1; i++){
+            float x = ticks[i].x;
+            float y = ticks[i].y;
+            float z = ticks[i].z;
+            timeStampedEvents[i] = AnimationEvent.TimeStampedEvent.create(0.05F * i, ((livingEntityPatch, staticAnimation, objects) -> {
+                CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
+                tag.putBoolean("WK_shouldScaleItem", true);
+                tag.putFloat("WK_XScale", x);
+                tag.putFloat("WK_YScale", y);
+                tag.putFloat("WK_ZScale", z);
+            }), AnimationEvent.Side.CLIENT);
+        }
+        animation.addEvents(timeStampedEvents);
     }
 
-    public record ScaleTime(float time, float x, float y, float z){}
+    /**
+     * 插值处理
+     * @param scaleTimes 需要插值的时间点，按tick算！
+     * @param lastTick 最后一个tick，将对0~lastTick的每个tick插值处理
+     * @return 插值后的数组
+     */
+    public static ScaleTime[] interpolate(ScaleTime[] scaleTimes, int lastTick) {
+        ScaleTime[] results = new ScaleTime[lastTick + 1];
+
+        // Fill known values
+        for (ScaleTime scaleTime : scaleTimes) {
+            if (scaleTime.tick <= lastTick) {
+                results[scaleTime.tick] = scaleTime;
+            }
+        }
+
+        // Perform linear interpolation
+        for (int i = 0; i <= lastTick; i++) {
+            if (results[i] == null) {
+                // Find the two surrounding points
+                ScaleTime before = null;
+                ScaleTime after = null;
+
+                for (int j = i - 1; j >= 0; j--) {
+                    if (results[j] != null) {
+                        before = results[j];
+                        break;
+                    }
+                }
+
+                for (int j = i + 1; j <= lastTick; j++) {
+                    if (results[j] != null) {
+                        after = results[j];
+                        break;
+                    }
+                }
+
+                if (before != null && after != null) {
+                    // Linear interpolation
+                    float t = (float) (i - before.tick) / (after.tick - before.tick);
+                    float x = before.x + t * (after.x - before.x);
+                    float y = before.y + t * (after.y - before.y);
+                    float z = before.z + t * (after.z - before.z);
+                    results[i] = new ScaleTime(i, x, y, z);
+                }
+            }
+        }
+
+        // Fill in nulls with the closest known value (forward filling)
+        for (int i = 0; i <= lastTick; i++) {
+            if (results[i] == null) {
+                if(i > 0){
+                    results[i] = results[i - 1]; // Copy the last known value
+                } else {
+                    results[i] = new ScaleTime(i, 1, 1, 1);
+                }
+            }
+        }
+
+        return results;
+    }
+
+    public record ScaleTime(int tick, float x, float y, float z){
+        public static ScaleTime of(float time, float x, float y, float z){
+            return new ScaleTime(((int) (time * 20)), x, y, z);
+        }
+        public static ScaleTime reset(float time){
+            return new ScaleTime(((int) (time * 20)), 1, 1, 1);
+        }
+    }
 
     public static void onPlayerTick(TickEvent.PlayerTickEvent event){
         if(event.player instanceof ServerPlayer serverPlayer){
