@@ -28,9 +28,9 @@ import java.util.Set;
 @Mod.EventBusSubscriber(value = {Dist.CLIENT},bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongKeyMappings {
     public static final MyKeyMapping W = new MyKeyMapping("key.wukong.w", GLFW.GLFW_KEY_W, "key.wukong.category");
-    public static final MyKeyMapping CHOP_STYLE = new MyKeyMapping("key.wukong.smash_style", GLFW.GLFW_KEY_Z, "key.wukong.category");
-    public static final MyKeyMapping STAND_STYLE = new MyKeyMapping("key.wukong.pillar_style", GLFW.GLFW_KEY_X, "key.wukong.category");
-    public static final MyKeyMapping POKE_STYLE = new MyKeyMapping("key.wukong.thrust_style", GLFW.GLFW_KEY_C, "key.wukong.category");
+    public static final MyKeyMapping CHOP_STYLE = new MyKeyMapping("key.wukong.smash_stance", GLFW.GLFW_KEY_Z, "key.wukong.category");
+    public static final MyKeyMapping STAND_STYLE = new MyKeyMapping("key.wukong.pillar_stance", GLFW.GLFW_KEY_X, "key.wukong.category");
+    public static final MyKeyMapping POKE_STYLE = new MyKeyMapping("key.wukong.thrust_stance", GLFW.GLFW_KEY_C, "key.wukong.category");
     public static final KeyMapping STAFF_FLOWER = new CombatKeyMapping("key.wukong.staff_spin", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.wukong.category");
 
     @SubscribeEvent

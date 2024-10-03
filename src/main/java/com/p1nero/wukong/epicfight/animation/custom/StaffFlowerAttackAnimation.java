@@ -40,7 +40,7 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addEvents(
-                        AnimationEvent.TimeStampedEvent.create(end - 0.1F, ((livingEntityPatch, staticAnimation, objects) -> {
+                        AnimationEvent.TimeStampedEvent.create(end - 0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                                 if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
                                     return;
@@ -64,18 +64,20 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                                 passiveContainer.getDataManager().setDataSync(StaffSpin.PLAYING_STAFF_SPIN, true, serverPlayerPatch.getOriginal());
                             }
                         }), AnimationEvent.Side.SERVER),
-                        AnimationEvent.TimeStampedEvent.create(end - 0.1F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            if(isTwoHand){
-                                CameraAnim.zoomOut(20);
-                            }
-                        }), AnimationEvent.Side.CLIENT),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(isTwoHand){
                                 CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
                             }
-
                         }), AnimationEvent.Side.CLIENT));
 
+    }
+
+    @Override
+    public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
+        super.end(entityPatch, nextAnimation, isEnd);
+        if(entityPatch.isLogicalClient() && CameraAnim.isAiming()){
+            CameraAnim.zoomOut(20);//保险
+        }
     }
 
     protected void bindPhaseState(Phase phase) {

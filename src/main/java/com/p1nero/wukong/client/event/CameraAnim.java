@@ -66,6 +66,7 @@ public class CameraAnim {
                 aiming = false;
             }
         }
+        System.out.println(zoomCount);
     }
 
     private static void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {
@@ -121,10 +122,9 @@ public class CameraAnim {
         }
 
         BlockPos cameraPos= new BlockPos(totalX, totalY, totalZ);
+        //防止视角卡墙里
         if(Minecraft.getInstance().level.getBlockState(cameraPos).is(Blocks.AIR)){
             camera.setPosition(totalX, totalY, totalZ);
-        } else {
-            //好像也不用干啥？
         }
     }
 

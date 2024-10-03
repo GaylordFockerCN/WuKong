@@ -44,6 +44,18 @@ public class WukongSkills {
                         () -> WukongAnimations.DODGE_L1,
                         () -> WukongAnimations.DODGE_R1
                 )
+                .setAnimations2(
+                        () -> WukongAnimations.DODGE_F2,
+                        () -> WukongAnimations.DODGE_B2,
+                        () -> WukongAnimations.DODGE_L2,
+                        () -> WukongAnimations.DODGE_R2
+                )
+                .setAnimations3(
+                        () -> WukongAnimations.DODGE_F3,
+                        () -> WukongAnimations.DODGE_B3,
+                        () -> WukongAnimations.DODGE_L3,
+                        () -> WukongAnimations.DODGE_R3
+                )
                 .setPerfectAnimations(
                         () -> WukongAnimations.DODGE_FP,
                         () -> WukongAnimations.DODGE_BP,

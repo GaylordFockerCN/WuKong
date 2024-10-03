@@ -36,7 +36,7 @@ public class WukongDodge extends Skill {
     private static final SkillDataManager.SkillDataKey<Integer> DIRECTION = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//方向
     private static final SkillDataManager.SkillDataKey<Integer> RESET_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//回归第一段的时间
     private static final SkillDataManager.SkillDataKey<Boolean> SOUND_PLAYED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播过音效，防止重复播放
-    public static final int RESET_TICKS = 30;
+    public static final int RESET_TICKS = 100;
     protected final StaticAnimationProvider[][] animations;
 
     public static WukongDodge.Builder createDodgeBuilder() {
@@ -115,26 +115,28 @@ public class WukongDodge extends Skill {
         SkillDataManager dataManager = executer.getSkill(SkillSlots.DODGE).getDataManager();
         dataManager.setData(SOUND_PLAYED, false);
         int count = dataManager.getDataValue(COUNT);
-        executer.playAnimationSynchronized(this.animations[0][i].get(), 0.0F);
-//        executer.playAnimationSynchronized(this.animations[count][i].get(), 0.0F);//轮播
+//        executer.playAnimationSynchronized(this.animations[0][i].get(), 0.0F);
+        executer.playAnimationSynchronized(this.animations[count][i].get(), 0.0F);//轮播
         executer.playSound(EpicFightSounds.ROLL, 1.0F, 1.0F);
-        dataManager.setDataSync(DIRECTION, i, executer.getOriginal());
+        dataManager.setDataSync(DIRECTION, i, executer.getOriginal());//完美闪避用
         if(count != 0){
             dataManager.setDataSync(RESET_TIMER, RESET_TICKS, executer.getOriginal());
         }
-        dataManager.setDataSync(COUNT, ++count % 2, executer.getOriginal());
+        dataManager.setDataSync(COUNT, ++count % 3, executer.getOriginal());
         executer.changeModelYRot(yaw);
     }
 
-    //太久则复原第一段
+    /**
+     * 太久则复原第一段
+     */
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
         SkillDataManager manager = container.getDataManager();
         if(manager.hasData(RESET_TIMER) && manager.getDataValue(RESET_TIMER) > 0){
             manager.setData(RESET_TIMER, manager.getDataValue(RESET_TIMER) - 1);
-            if(manager.getDataValue(RESET_TIMER) == 1 && manager.hasData(COUNT) && container.getExecuter().getOriginal() instanceof ServerPlayer serverPlayer){
-                manager.setDataSync(COUNT, 0, serverPlayer);
+            if(manager.getDataValue(RESET_TIMER) == 1 && manager.hasData(COUNT)){
+                manager.setData(COUNT, 0);
             }
         }
     }

@@ -206,7 +206,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
 
                     //蓄力的时候平A是非法的，应该清空棍势
-                    if(container.getDataManager().getDataValue(IS_CHARGING) && isLightAttack){
+                    if(container.getDataManager().getDataValue(IS_CHARGING) && isLightAttack || event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2))){
                         this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
                         this.setStackSynchronize(event.getPlayerPatch(), 0);
                         container.getDataManager().setDataSync(IS_CHARGING, false, player);
@@ -290,7 +290,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
             //层数变化检测以播音效
-            if(container.getStack() > dataManager.getDataValue(LAST_STACK)){
+            if(container.getStack() > dataManager.getDataValue(LAST_STACK) && dataManager.getDataValue(IS_CHARGING)){
                 serverPlayerPatch.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
             }
             dataManager.setData(LAST_STACK, container.getStack());
@@ -361,10 +361,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean shouldDraw(SkillContainer container) {
-        if(Minecraft.getInstance().player != null){
-            return EpicFightCapabilities.getItemStackCapability(Minecraft.getInstance().player.getMainHandItem()).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF);
-        }
-        return false;
+        return WukongWeaponCategories.isWeaponValid(container.getExecuter());
     }
 
     /**

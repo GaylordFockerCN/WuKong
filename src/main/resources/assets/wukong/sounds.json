@@ -30,5 +30,11 @@
     "sounds": [
       "wukong:stack4"
     ]
+  },
+  "hit_ground": {
+    "subtitle": "sounds.wukong.hit_ground",
+    "sounds": [
+      "wukong:hit_ground"
+    ]
   }
 }

@@ -175,7 +175,7 @@ public class StaffSpin extends Skill {
         if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
             container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN)){
-                boolean isOneHand = container.getExecuter().getOriginal().getDeltaMovement().length() < 0.1 && !WukongKeyMappings.W.isDown();//按w可变双手棍花
+                boolean isOneHand = !WukongKeyMappings.W.isDown();//按w可变双手棍花
                 if(!isOneHand){
                     //不这样判断不知道为什么会播完双手就回去播单手
                     container.getDataManager().setDataSync(IS_ONE_HAND, false, ((LocalPlayer) container.getExecuter().getOriginal()));
@@ -186,7 +186,6 @@ public class StaffSpin extends Skill {
         } else {
             container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
             container.getDataManager().setDataSync(IS_ONE_HAND, true, ((LocalPlayer) container.getExecuter().getOriginal()));
-            CameraAnim.zoomOut(20);
         }
     }
 }

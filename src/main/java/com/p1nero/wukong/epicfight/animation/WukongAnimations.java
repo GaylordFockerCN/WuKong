@@ -165,10 +165,18 @@ public class WukongAnimations {
         JUMP = new StaticAnimation(0.15F, false, "biped/jump",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
         FALL = new StaticAnimation(0.15F, true, "biped/fall",biped);
-        DODGE_F1 = new DodgeAnimation(0.1F, 0.625F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
-        DODGE_B1 = new DodgeAnimation(0.1F, 0.625F,"biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
-        DODGE_R1 = new DodgeAnimation(0.1F, 0.625F,"biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
-        DODGE_L1 = new DodgeAnimation(0.1F, 0.625F,"biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
+        DODGE_F1 = new DodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
+        DODGE_B1 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
+        DODGE_R1 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
+        DODGE_L1 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
+        DODGE_F2 = new DodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f2", 0.6F, 0.8F, biped);
+        DODGE_B2 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_b2", 0.6F, 0.8F, biped);
+        DODGE_R2 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_r2", 0.6F, 0.8F, biped);
+        DODGE_L2 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_l2", 0.6F, 0.8F, biped);
+        DODGE_F3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_f3", 0.6F, 1.35F, biped);
+        DODGE_B3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_b3", 0.6F, 1.35F, biped);
+        DODGE_R3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_r3", 0.6F, 1.35F, biped);
+        DODGE_L3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_l3", 0.6F, 1.35F, biped);
         DODGE_FP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped);
         DODGE_BP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped);
         DODGE_RP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped);
@@ -176,7 +184,7 @@ public class WukongAnimations {
 
         STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
@@ -187,11 +195,11 @@ public class WukongAnimations {
         STAFF_AUTO1 = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         STAFF_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR,  "biped/auto_2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         STAFF_AUTO3 = new BasicMultipleAttackAnimation(0.15F, "biped/auto_3", biped,
                 new AttackAnimation.Phase(0.0F, 0.25F, 0.4583F, 0.4583F, 0.4583F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)),
@@ -243,6 +251,7 @@ public class WukongAnimations {
 
         //前摇完自动接下一个动作
         SMASH_CHARGING_PRE = new ActionAnimation(0.15F, "biped/smash/smash_charge_pre", biped)
+
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                     livingEntityPatch.reserveAnimation(SMASH_CHARGING_LOOP_STAND);
                     if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
@@ -265,60 +274,76 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.75F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
                 .addEvents(allStopMovement);
-        SMASH_CHARGED2 = new BasicAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy2", biped)
+        SMASH_CHARGED2 = new WukongScaleStaffAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(8.8F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
-        setScaleEvents(SMASH_CHARGED2,
-                ScaleTime.reset(1.30F),
-                ScaleTime.of(1.45F, 1, 1.8F, 1),
-                ScaleTime.of(2.13F, 1, 1.8F, 1),
-                ScaleTime.reset(2.29F));
-        SMASH_CHARGED3 = new BasicAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy3", biped)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addEvents(
+                        getScaleEvents(
+                            ScaleTime.reset(1.30F),
+                            ScaleTime.of(1.45F, 1, 1.8F, 1),
+                            ScaleTime.of(2.13F, 1, 1.8F, 1),
+                            ScaleTime.reset(2.29F)
+                        )
+                );
+        SMASH_CHARGED3 = new WukongScaleStaffAttackAnimation(0.15F, 1.792F, 1.958F, 2.667F, null, biped.toolR,  "biped/smash/smash_heavy3", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(11))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
-        setScaleEvents(SMASH_CHARGED3,
-                ScaleTime.reset(1.30F),
-                ScaleTime.of(1.45F, 1, 2.4F, 1),
-                ScaleTime.of(2.13F, 1, 2.4F, 1),
-                ScaleTime.reset(2.29F));
-        SMASH_CHARGED4 = new BasicAttackAnimation(0.15F, 2.63F, 2.8F, 3.3F, null, biped.toolR,  "biped/smash/smash_heavy4", biped)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addEvents(
+                        getScaleEvents(
+                            ScaleTime.reset(1.667F),
+                            ScaleTime.of(1.792F, 1, 2.4F, 1),
+                            ScaleTime.of(1.958F, 1, 2.4F, 1),
+                            ScaleTime.of(2.667F, 1, 2F, 1),
+                            ScaleTime.reset(2.8F)
+                        )
+                );
+        SMASH_CHARGED4 = new WukongScaleStaffAttackAnimation(0.15F, 2.63F, 2.8F, 3.3F, null, biped.toolR,  "biped/smash/smash_heavy4", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(15.5F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 2.63F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
-        setScaleEvents(SMASH_CHARGED4,
-                ScaleTime.of(2.4167F, 1, 1, 1),
-                ScaleTime.of(2.5833F, 1.15F, 1.15F, 1.15F),
-                ScaleTime.of(2.7083F, 1.15F, 3.15F, 1.15F),
-                ScaleTime.of(3.3333F, 1.15F, 3.15F, 1.15F),
-                ScaleTime.of(3.5833F, 1, 1, 1));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                .addEvents(
+                        getScaleEvents(
+                            ScaleTime.of(2.4167F, 1, 1, 1),
+                            ScaleTime.of(2.5833F, 1.15F, 1.15F, 1.15F),
+                            ScaleTime.of(2.7083F, 1.15F, 3.15F, 1.15F),
+                            ScaleTime.of(3.3333F, 1.15F, 3.15F, 1.15F),
+                            ScaleTime.of(3.5833F, 1, 1, 1)
+                        )
+                );
 
-        SMASH_DERIVE1 = new BasicAttackAnimation(0.15F, 0.63F, 0.75F, 1.20F, null, biped.toolR,  "biped/smash/smash_special1", biped)
+        SMASH_DERIVE1 = new WukongScaleStaffAttackAnimation(0.15F, 0.63F, 0.75F, 1.20F, null, biped.toolR,  "biped/smash/smash_special1", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
-                .addEvents(
-                    AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
-                        if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                            SkillDataManager dataManager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                            dataManager.setDataSync(SmashHeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
-                            dataManager.setDataSync(SmashHeavyAttack.IS_IN_SPECIAL_ATTACK, true, serverPlayerPatch.getOriginal());
-                        }
-                    }), AnimationEvent.Side.SERVER),
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                        SkillDataManager dataManager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                        dataManager.setDataSync(SmashHeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
+                        dataManager.setDataSync(SmashHeavyAttack.IS_IN_SPECIAL_ATTACK, true, serverPlayerPatch.getOriginal());
+                    }
+                }), AnimationEvent.Side.SERVER))
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS,
                     AnimationEvent.TimeStampedEvent.create(0.75F, ((livingEntityPatch, staticAnimation, objects) -> {
                         if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                             serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_IN_SPECIAL_ATTACK, false, serverPlayerPatch.getOriginal());
                         }
-                    }), AnimationEvent.Side.SERVER));
+                    }), AnimationEvent.Side.SERVER)
+                )
+                .addEvents(getScaleEvents(
+                        ScaleTime.of(0.625F, 1, 1.8F, 1),
+                        ScaleTime.of(1.125F, 1, 1.8F, 1),
+                        ScaleTime.reset(1.25F)
+                ));
 
-        SMASH_DERIVE2 = new BasicAttackAnimation(0.15F, 1.04F, 1.71F, 2.30F, null, biped.toolR,  "biped/smash/smash_special2", biped)
+        SMASH_DERIVE2 = new WukongScaleStaffAttackAnimation(0.15F, 1.04F, 1.71F, 2.30F, null, biped.toolR,  "biped/smash/smash_special2", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.04F))
@@ -328,7 +353,17 @@ public class WukongAnimations {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                                 serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, false, serverPlayerPatch.getOriginal());
                             }
-                        }), AnimationEvent.Side.SERVER));
+                        }), AnimationEvent.Side.SERVER))
+                .addEvents(
+                        getScaleEvents(
+                            ScaleTime.of(0.042F, 1, 1.583F, 1),
+                            ScaleTime.of(0.083F, 1, 1.758F, 1),
+                            ScaleTime.of(0.167F, 1, 1.952F, 1),
+                            ScaleTime.of(0.208F, 1, 2, 1),
+                                ScaleTime.of(1.458F, 1, 2, 1),
+                            ScaleTime.reset(1.460F)
+                        )
+                );
 
 
         THRUST_DERIVE_PRE = new AttackAnimation(0.00F, 0.0167F, 0.0167F,0.3F, 0.33F, null, biped.toolR,  "biped/thrust/thrust_derive_pre", biped)
@@ -492,8 +527,11 @@ public class WukongAnimations {
 
     /**
      * 添加物品缩放，并插值
+     * 用途：{@link com.p1nero.wukong.mixin.ItemRendererMixin}
+     *
+     * @return
      */
-    public static void setScaleEvents(StaticAnimation animation, ScaleTime... ticks){
+    public static AnimationEvent.TimeStampedEvent[] getScaleEvents(ScaleTime... ticks){
         int lastTick = ticks[ticks.length-1].tick;
         AnimationEvent.TimeStampedEvent[] timeStampedEvents = new AnimationEvent.TimeStampedEvent[lastTick];
         ticks = interpolate(ticks, lastTick);
@@ -517,7 +555,7 @@ public class WukongAnimations {
                 tag.putFloat("WK_ZScale", z);
             }), AnimationEvent.Side.CLIENT);
         }
-        animation.addEvents(timeStampedEvents);
+        return timeStampedEvents;
     }
 
     /**
