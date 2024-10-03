@@ -26,6 +26,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
+import yesman.epicfight.api.animation.types.DodgeAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
@@ -147,9 +148,21 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         super.executeOnServer(executer, args);
     }
 
+    /**
+     * 清空耐力并播红光和音效
+     */
     private void resetConsumption(SkillContainer container, ServerPlayerPatch executer){
         if(container.getStack() > 0){
-            executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
+            new Thread(()->{
+                for(int i = 0; i < container.getStack(); i++){
+                    executer.playSound(WuKongSounds.stackSounds.get(i).get(), 1, 1);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }).start();
         }
         this.setStackSynchronize(executer, 0);
         this.setConsumptionSynchronize(executer, 1);
@@ -205,8 +218,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2));
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
 
-                    //蓄力的时候平A是非法的，应该清空棍势
-                    if(container.getDataManager().getDataValue(IS_CHARGING) && isLightAttack || event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2))){
+                    //蓄力的时候做动作是非法的，应该清空棍势
+                    if(container.getDataManager().getDataValue(IS_CHARGING) && !event.getAnimation().equals(chargePre)){
                         this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
                         this.setStackSynchronize(event.getPlayerPatch(), 0);
                         container.getDataManager().setDataSync(IS_CHARGING, false, player);

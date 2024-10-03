@@ -149,16 +149,10 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-//    maven {
-//        url "https://cursemaven.com"
-//        content {
-//            includeGroup "curse.maven"
-//        }
-//    }
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
     flatDir {
         dir 'libs'
     }
@@ -169,6 +163,7 @@ dependencies {
     implementation fg.deobf("libs:EpicFight:18.5.24")
     implementation fg.deobf("libs:WeaponsOfMiracles:18.1.7.38")
     implementation fg.deobf("libs:MmmMmmMmmMmm-1.18.2:1.5.2")
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.18:3.0.57')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

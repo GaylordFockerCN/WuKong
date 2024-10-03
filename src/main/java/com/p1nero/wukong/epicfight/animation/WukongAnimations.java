@@ -2,6 +2,7 @@ package com.p1nero.wukong.epicfight.animation;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
@@ -35,6 +36,10 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
+
+import javax.swing.text.html.parser.Entity;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
@@ -165,22 +170,22 @@ public class WukongAnimations {
         JUMP = new StaticAnimation(0.15F, false, "biped/jump",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
         FALL = new StaticAnimation(0.15F, true, "biped/fall",biped);
-        DODGE_F1 = new DodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
-        DODGE_B1 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
-        DODGE_R1 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
-        DODGE_L1 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
-        DODGE_F2 = new DodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f2", 0.6F, 0.8F, biped);
-        DODGE_B2 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_b2", 0.6F, 0.8F, biped);
-        DODGE_R2 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_r2", 0.6F, 0.8F, biped);
-        DODGE_L2 = new DodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_l2", 0.6F, 0.8F, biped);
-        DODGE_F3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_f3", 0.6F, 1.35F, biped);
-        DODGE_B3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_b3", 0.6F, 1.35F, biped);
-        DODGE_R3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_r3", 0.6F, 1.35F, biped);
-        DODGE_L3 = new DodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_l3", 0.6F, 1.35F, biped);
-        DODGE_FP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped);
-        DODGE_BP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped);
-        DODGE_RP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped);
-        DODGE_LP = new DodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_lp", 0.6F, 1.35F, biped);
+        DODGE_F1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
+        DODGE_B1 = new WukongDodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
+        DODGE_R1 = new WukongDodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
+        DODGE_L1 = new WukongDodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
+        DODGE_F2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f2", 0.6F, 0.8F, biped);
+        DODGE_B2 = new WukongDodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_b2", 0.6F, 0.8F, biped);
+        DODGE_R2 = new WukongDodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_r2", 0.6F, 0.8F, biped);
+        DODGE_L2 = new WukongDodgeAnimation(0.1F, 0.4F,"biped/dodge/dodge_l2", 0.6F, 0.8F, biped);
+        DODGE_F3 = new WukongDodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_f3", 0.6F, 1.35F, biped);
+        DODGE_B3 = new WukongDodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_b3", 0.6F, 1.35F, biped);
+        DODGE_R3 = new WukongDodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_r3", 0.6F, 1.35F, biped);
+        DODGE_L3 = new WukongDodgeAnimation(0.1F, 0.8F,"biped/dodge/dodge_l3", 0.6F, 1.35F, biped);
+        DODGE_FP = new WukongDodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped);
+        DODGE_BP = new WukongDodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped);
+        DODGE_RP = new WukongDodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped);
+        DODGE_LP = new WukongDodgeAnimation(0.1F, 0.83F,"biped/dodge/dodge_lp", 0.6F, 1.35F, biped);
 
         STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
@@ -217,7 +222,6 @@ public class WukongAnimations {
                 new AttackAnimation.Phase(0.6F, 0.6F, 0.8F, 0.8F, 0.8F , biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)),
                 new AttackAnimation.Phase(0.8F, 1.0416F, 1.125F, 1.2583F, 2.5F , biped.toolR, null)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.BLUNT_HIT_HARD)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
@@ -225,8 +229,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
         STAFF_AUTO5 = new BasicAttackAnimation(0.01F, 0.9166F,1.15F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
-                .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.BLUNT_HIT_HARD)
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.9833F))
@@ -242,6 +246,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.0F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         JUMP_ATTACK_HEAVY = new BasicAttackAnimation(0.01F, 0.54F,0.67F, 1.25F, null, biped.toolR,  "biped/jump_attack/jump_heavy", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.67F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
@@ -249,77 +255,112 @@ public class WukongAnimations {
         STAFF_FLOWER_ONE_HAND_LOOP = new StaffFlowerAttackAnimation(1.25F, biped, "biped/staff_flower/staff_flower_one_hand", 0.05F, false);
         STAFF_FLOWER_TWO_HAND_LOOP = new StaffFlowerAttackAnimation(0.83F, biped, "biped/staff_flower/staff_flower_two_hand", 0.08F, true);
 
+        //劈start
         //前摇完自动接下一个动作
         SMASH_CHARGING_PRE = new ActionAnimation(0.15F, "biped/smash/smash_charge_pre", biped)
-
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                     livingEntityPatch.reserveAnimation(SMASH_CHARGING_LOOP_STAND);
                     if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                         serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
                     }
-                }), AnimationEvent.Side.SERVER));
+                }), AnimationEvent.Side.SERVER))
+                .addEvents(
+                        AnimationEvent.TimeStampedEvent.create(0.2F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            livingEntityPatch.playSound(EpicFightSounds.WHOOSH_ROD, 1, 1);
+                        }), AnimationEvent.Side.SERVER),
+                        AnimationEvent.TimeStampedEvent.create(0.5F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            livingEntityPatch.playSound(EpicFightSounds.WHOOSH_ROD, 1, 1);
+                        }), AnimationEvent.Side.SERVER));
         SMASH_CHARGING_LOOP_STAND = new StaticAnimation(0.15F, true, "biped/smash/smash_charging", biped);
 
         SMASH_CHARGED0 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 1.67F, WukongColliders.STACK_0_1, biped.toolR,  "biped/smash/smash_heavy1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.6F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.75F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
-                .addEvents(allStopMovement);
+                .addEvents(allStopMovement)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(0.083F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1);
+                }), AnimationEvent.Side.SERVER));
         SMASH_CHARGED1 = new BasicAttackAnimation(0.15F, 0.75F, 0.92F, 1.67F, null, biped.toolR,  "biped/smash/smash_heavy1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(5.6F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.75F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
-                .addEvents(allStopMovement);
+                .addEvents(allStopMovement)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(0.083F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1);
+                }), AnimationEvent.Side.SERVER));
         SMASH_CHARGED2 = new WukongScaleStaffAttackAnimation(0.15F, 1.30F, 1.55F, 2.5F, null, biped.toolR,  "biped/smash/smash_heavy2", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(8.8F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
                 .addEvents(
-                        getScaleEvents(
-                            ScaleTime.reset(1.30F),
-                            ScaleTime.of(1.45F, 1, 1.8F, 1),
-                            ScaleTime.of(2.13F, 1, 1.8F, 1),
-                            ScaleTime.reset(2.29F)
-                        )
+                        append(
+                                AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
+                                getScaleEvents(
+                                    ScaleTime.reset(1.30F),
+                                    ScaleTime.of(1.45F, 1, 1.8F, 1),
+                                    ScaleTime.of(2.13F, 1, 1.8F, 1),
+                                    ScaleTime.reset(2.29F)
+                                )
+                        ).toArray(new AnimationEvent.TimeStampedEvent[0])
                 );
         SMASH_CHARGED3 = new WukongScaleStaffAttackAnimation(0.15F, 1.792F, 1.958F, 2.667F, null, biped.toolR,  "biped/smash/smash_heavy3", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(3.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(11))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
                 .addEvents(
-                        getScaleEvents(
-                            ScaleTime.reset(1.667F),
-                            ScaleTime.of(1.792F, 1, 2.4F, 1),
-                            ScaleTime.of(1.958F, 1, 2.4F, 1),
-                            ScaleTime.of(2.667F, 1, 2F, 1),
-                            ScaleTime.reset(2.8F)
-                        )
+                        append(
+                                AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
+                                getScaleEvents(
+                                        ScaleTime.reset(1.667F),
+                                        ScaleTime.of(1.792F, 1, 2.4F, 1),
+                                        ScaleTime.of(1.958F, 1, 2.4F, 1),
+                                        ScaleTime.of(2.667F, 1, 2F, 1),
+                                        ScaleTime.reset(2.8F)
+                                )
+                        ).toArray(new AnimationEvent.TimeStampedEvent[0])
                 );
         SMASH_CHARGED4 = new WukongScaleStaffAttackAnimation(0.15F, 2.63F, 2.8F, 3.3F, null, biped.toolR,  "biped/smash/smash_heavy4", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(4.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(15.5F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.BLUNT_HIT_HARD)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 2.63F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
                 .addEvents(
-                        getScaleEvents(
-                            ScaleTime.of(2.4167F, 1, 1, 1),
-                            ScaleTime.of(2.5833F, 1.15F, 1.15F, 1.15F),
-                            ScaleTime.of(2.7083F, 1.15F, 3.15F, 1.15F),
-                            ScaleTime.of(3.3333F, 1.15F, 3.15F, 1.15F),
-                            ScaleTime.of(3.5833F, 1, 1, 1)
-                        )
+                        append(
+                                AnimationEvent.TimeStampedEvent.create(0.208F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
+                                getScaleEvents(
+                                        ScaleTime.of(2.4167F, 1, 1, 1),
+                                        ScaleTime.of(2.5833F, 1.15F, 1.15F, 1.15F),
+                                        ScaleTime.of(2.7083F, 1.15F, 3.15F, 1.15F),
+                                        ScaleTime.of(3.3333F, 1.15F, 3.15F, 1.15F),
+                                        ScaleTime.of(3.5833F, 1, 1, 1)
+                                )
+                        ).toArray(new AnimationEvent.TimeStampedEvent[0])
                 );
 
         SMASH_DERIVE1 = new WukongScaleStaffAttackAnimation(0.15F, 0.63F, 0.75F, 1.20F, null, biped.toolR,  "biped/smash/smash_special1", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.SHORT)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
@@ -344,6 +385,8 @@ public class WukongAnimations {
                 ));
 
         SMASH_DERIVE2 = new WukongScaleStaffAttackAnimation(0.15F, 1.04F, 1.71F, 2.30F, null, biped.toolR,  "biped/smash/smash_special2", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.04F))
@@ -355,17 +398,20 @@ public class WukongAnimations {
                             }
                         }), AnimationEvent.Side.SERVER))
                 .addEvents(
-                        getScaleEvents(
-                            ScaleTime.of(0.042F, 1, 1.583F, 1),
-                            ScaleTime.of(0.083F, 1, 1.758F, 1),
-                            ScaleTime.of(0.167F, 1, 1.952F, 1),
-                            ScaleTime.of(0.208F, 1, 2, 1),
-                                ScaleTime.of(1.458F, 1, 2, 1),
-                            ScaleTime.reset(1.460F)
-                        )
+                        append(
+                                AnimationEvent.TimeStampedEvent.create(0.042F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
+                                getScaleEvents(
+                                        ScaleTime.of(0.042F, 1, 1.583F, 1),
+                                        ScaleTime.of(0.083F, 1, 1.758F, 1),
+                                        ScaleTime.of(0.167F, 1, 1.952F, 1),
+                                        ScaleTime.of(0.208F, 1, 2, 1),
+                                        ScaleTime.of(1.458F, 1, 2, 1),
+                                        ScaleTime.reset(1.460F)
+                                )
+                        ).toArray(new AnimationEvent.TimeStampedEvent[0])
                 );
-
-
+        //劈end
+        //戳start
         THRUST_DERIVE_PRE = new AttackAnimation(0.00F, 0.0167F, 0.0167F,0.3F, 0.33F, null, biped.toolR,  "biped/thrust/thrust_derive_pre", biped)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
@@ -525,11 +571,16 @@ public class WukongAnimations {
         }));
     }
 
+    public static List<AnimationEvent.TimeStampedEvent> append(AnimationEvent.TimeStampedEvent e, AnimationEvent.TimeStampedEvent... oldArr){
+        List<AnimationEvent.TimeStampedEvent> list = new ArrayList<>(List.of(oldArr));
+        list.add(e);
+        return list;
+    }
+
     /**
      * 添加物品缩放，并插值
      * 用途：{@link com.p1nero.wukong.mixin.ItemRendererMixin}
      *
-     * @return
      */
     public static AnimationEvent.TimeStampedEvent[] getScaleEvents(ScaleTime... ticks){
         int lastTick = ticks[ticks.length-1].tick;

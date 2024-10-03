@@ -68,7 +68,7 @@ public class WukongSkills {
                         .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
                         .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)
                         .setHeavyAttacks(
-                                () -> WukongAnimations.SMASH_CHARGED4,
+                                () -> WukongAnimations.SMASH_CHARGED0,
                                 () -> WukongAnimations.SMASH_CHARGED1,
                                 () -> WukongAnimations.SMASH_CHARGED2,
                                 () -> WukongAnimations.SMASH_CHARGED3,
