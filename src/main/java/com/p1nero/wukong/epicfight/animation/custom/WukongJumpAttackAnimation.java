@@ -37,6 +37,9 @@ public class WukongJumpAttackAnimation extends BasicAttackAnimation {
         super(convertTime, path, armature, phases);
     }
 
+    /**
+     * 打中则后跳
+     */
     protected void attackTick(LivingEntityPatch<?> entityPatch) {
         AnimationPlayer player = entityPatch.getAnimator().getPlayerFor(this);
         float elapsedTime = player.getElapsedTime();
@@ -67,4 +70,8 @@ public class WukongJumpAttackAnimation extends BasicAttackAnimation {
 
     }
 
+    @Override
+    public boolean isBasicAttackAnimation() {
+        return false;
+    }
 }

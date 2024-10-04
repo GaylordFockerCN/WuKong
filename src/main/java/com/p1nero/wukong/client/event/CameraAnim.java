@@ -66,7 +66,6 @@ public class CameraAnim {
                 aiming = false;
             }
         }
-        System.out.println(zoomCount);
     }
 
     private static void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {

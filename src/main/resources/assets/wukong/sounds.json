@@ -36,5 +36,11 @@
     "sounds": [
       "wukong:hit_ground"
     ]
+  },
+  "start_charge": {
+    "subtitle": "sounds.wukong.start_charge",
+    "sounds": [
+      "wukong:start_charge"
+    ]
   }
 }

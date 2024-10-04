@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.*;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
-import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
@@ -19,21 +18,18 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
-import yesman.epicfight.api.animation.types.DodgeAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.config.ConfigurationIngame;
-import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
@@ -88,7 +84,6 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
         this.animations = new StaticAnimation[builder.animationProviders.length];
         for(int i = 0; i < builder.animationProviders.length; i++) {
-            WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.animationProviders[i].get());
             this.animations[i] = builder.animationProviders[i].get();
         }
 
@@ -153,20 +148,21 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
      */
     private void resetConsumption(SkillContainer container, ServerPlayerPatch executer){
         if(container.getStack() > 0){
+            int cnt = container.getStack();
             new Thread(()->{
-                for(int i = 0; i < container.getStack(); i++){
+                for(int i = 0; i < cnt; i++){
                     executer.playSound(WuKongSounds.stackSounds.get(i).get(), 1, 1);
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(300);
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        WukongMoveset.LOGGER.error("interrupted when play stack sounds!", e);
                     }
                 }
             }).start();
         }
+        container.getDataManager().setDataSync(RED_TIMER, MAX_DERIVE_TIMER, executer.getOriginal());//通知客户端该亮红灯了
         this.setStackSynchronize(executer, 0);
         this.setConsumptionSynchronize(executer, 1);
-        container.getDataManager().setDataSync(RED_TIMER, MAX_DERIVE_TIMER, executer.getOriginal());//通知客户端该亮红灯了
     }
 
     @Override
@@ -218,7 +214,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2));
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
 
-                    //蓄力的时候做动作是非法的，应该清空棍势
+                    //蓄力的时候做动作是非法的，应该清空棍势 TODO 完美闪避的判断，完美闪避保留棍势
                     if(container.getDataManager().getDataValue(IS_CHARGING) && !event.getAnimation().equals(chargePre)){
                         this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
                         this.setStackSynchronize(event.getPlayerPatch(), 0);
@@ -241,8 +237,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                         container.getDataManager().setDataSync(CHARGED4_TIMER, MAX_CHARGED4_TICKS, player);
                     }
                     if(event.getDamageSource().getAnimation().equals(deriveAnimation1)){
-                        container.getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, true, event.getPlayerPatch().getOriginal());
-                        container.getDataManager().setDataSync(SmashHeavyAttack.DERIVE_TIMER, SmashHeavyAttack.MAX_DERIVE_TIMER, event.getPlayerPatch().getOriginal());
+                        container.getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, true, player);
+                        container.getDataManager().setDataSync(SmashHeavyAttack.DERIVE_TIMER, SmashHeavyAttack.MAX_DERIVE_TIMER, player);
                     }
                 }));
 
@@ -410,11 +406,14 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
 
         if(container.getDataManager().getDataValue(RED_TIMER) > 0){
-            int star = Math.max(1,Math.min(container.getDataManager().getDataValue(STARS_CONSUMED), 3));
-            ResourceLocation lightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/" + star + ".png");//及时获取stack，新鲜的，热乎的
-            RenderSystem.setShaderTexture(0, lightTexture);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
+            int star = Math.min(container.getDataManager().getDataValue(STARS_CONSUMED), 3);
+            if(star > 0){
+                ResourceLocation lightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/" + star + ".png");//及时获取stack，新鲜的，热乎的
+                RenderSystem.setShaderTexture(0, lightTexture);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
+
+            }
         }
 
         if(container.isFull()){

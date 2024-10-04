@@ -25,4 +25,5 @@ public class WukongDodgeAnimation extends DodgeAnimation {
                 .newTimePair(0.0F, delayTime)//区别就在这里，把闪避时间缩短到后摇时间
                     .addState(EntityState.ATTACK_RESULT, DODGEABLE_SOURCE_VALIDATOR);
     }
+
 }

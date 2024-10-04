@@ -25,20 +25,22 @@ public class Config
     public static final ForgeConfigSpec.DoubleValue STAFF_FLOWER_STAMINA_CONSUME;
     public static final ForgeConfigSpec.DoubleValue DERIVE_STAMINA_CONSUME;
     public static final ForgeConfigSpec.DoubleValue BASIC_ATTACK_INTERVAL_TICKS;
+    public static final ForgeConfigSpec.BooleanValue GET_GUILD_BOOK;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER;
     public static final ForgeConfigSpec SPEC;
 
     public static Set<? extends EntityType<?>> entities_can_be_blocked = new HashSet<>();
 
     static {
-        BASIC_ATTACK_INTERVAL_TICKS = createDouble("Custom time interval between basic attack (ordinal interval is too long!)", "basic_attack_time_interval", 16.0);
-        DERIVE_CHECK_TIME = createDouble("The time period that can use derive attack after basic attack.", "derive_check_time", 40.0);
-        CHARGING_SPEED = createDouble("The consumption increase or decrease per tick", "charging_speed", 0.5);
-        STAFF_FLOWER_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Staff Spin", "staff_flower_stamina_consume", 0.5);
-        DERIVE_STAMINA_CONSUME = createDouble("Stamina consumed per use of the Special Attack Loop in Thrust or Pillar", "derive_stamina_consume", 2.0);
+        GET_GUILD_BOOK = createBool("给第一个进游戏的玩家玩法说明。", "get_guild_book", true);
+        BASIC_ATTACK_INTERVAL_TICKS = createDouble("自定义普攻间隔判定时间（原版太长了！）", "basic_attack_time_interval", 16.0);
+        DERIVE_CHECK_TIME = createDouble("切手技判定时间", "derive_check_time", 40.0);
+        CHARGING_SPEED = createDouble("蓄力时每tick增加的棍势（影响棍势消耗速度！）", "charging_speed", 0.8);
+        STAFF_FLOWER_STAMINA_CONSUME = createDouble("棍花每tick耐力消耗", "staff_flower_stamina_consume", 0.5);
+        DERIVE_STAMINA_CONSUME = createDouble("立棍和戳棍切手技每tick耐力消耗", "derive_stamina_consume", 2.0);
         ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER = BUILDER
-                .comment("A list of items considered as sword.")
-                .defineListAllowEmpty(List.of("entities can be blocked by staff flower"), () -> List.of("minecraft:arrow"), Config::validateEntityName);
+                .comment("可被棍花格挡的实体")
+                .defineListAllowEmpty(List.of("可被棍花格挡的实体"), () -> List.of("minecraft:arrow"), Config::validateEntityName);
         SPEC = BUILDER.build();
     }
 

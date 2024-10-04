@@ -28,6 +28,14 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     }
 
     /**
+     * 取消加棍势
+     */
+    @Override
+    public boolean isBasicAttackAnimation() {
+        return false;
+    }
+
+    /**
      * 保险，复位棍子的缩放
      */
     @Override

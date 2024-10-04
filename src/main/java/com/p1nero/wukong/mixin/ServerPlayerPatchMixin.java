@@ -1,5 +1,6 @@
 package com.p1nero.wukong.mixin;
 
+import com.p1nero.wukong.epicfight.animation.custom.WukongScaleStaffAttackAnimation;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +15,7 @@ import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 
 /**
  * 取消耗星后的攻击造成的棍势增加
+ * 不知怎么突然失效了，改用{@link WukongScaleStaffAttackAnimation#isBasicAttackAnimation()} 来取消
  */
 @Mixin(value = ServerPlayerPatch.class, remap = false)
 public abstract class ServerPlayerPatchMixin extends PlayerPatch<ServerPlayer> {

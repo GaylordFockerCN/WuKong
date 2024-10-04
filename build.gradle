@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 
-version = '18.0.0.1alpha'
+version = '18.0.1.0beta'
 group = 'net.p1nero.wk' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'wukong_moveset-forge1.18.2'
 
@@ -175,12 +175,12 @@ mixin {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "wukong",
-                "Specification-Vendor"    : "P1nero(programmer), Rapits(animator)",
+                "Specification-Title"     : "Epic Fight - Wukong Moveset",
+                "Specification-Vendor"    : "P1nero, MoGlasses",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "P1nero(programmer), Rapits(animator)",
+                "Implementation-Vendor"   : "P1nero, MoGlasses",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConfigs": "wukong.mixins.json"
         ])
