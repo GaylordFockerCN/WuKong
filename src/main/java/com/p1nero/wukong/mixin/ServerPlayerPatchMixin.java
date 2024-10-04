@@ -15,16 +15,16 @@ import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 
 /**
  * 取消耗星后的攻击造成的棍势增加
- * 不知怎么突然失效了，改用{@link WukongScaleStaffAttackAnimation#isBasicAttackAnimation()} 来取消
+ * 改用{@link yesman.epicfight.api.animation.types.AttackAnimation#isBasicAttackAnimation()} 来取消
  */
 @Mixin(value = ServerPlayerPatch.class, remap = false)
 public abstract class ServerPlayerPatchMixin extends PlayerPatch<ServerPlayer> {
     @Inject(method = "gatherDamageDealt", at = @At(value = "HEAD"), cancellable = true)
     private void inject(EpicFightDamageSource source, float amount, CallbackInfo ci){
-        SkillDataManager manager = this.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-        if(manager.hasData(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION) && manager.getDataValue(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION)){
-            manager.setDataSync(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION, false, this.getOriginal());
-            ci.cancel();
-        }
+//        SkillDataManager manager = this.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+//        if(manager.hasData(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION) && manager.getDataValue(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION)){
+//            manager.setDataSync(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION, false, this.getOriginal());
+//            ci.cancel();
+//        }
     }
 }

@@ -244,7 +244,7 @@ public class WukongAnimations {
                         AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) ->
                                 livingEntityPatch.playSound(EpicFightSounds.ENTITY_MOVE, 1, 1)), AnimationEvent.Side.SERVER));
 
-        JUMP_ATTACK_LIGHT = new WukongJumpAttackAnimation(0.10F, 0.13F, 0.30F, 0.50F, WukongColliders.JUMP_ATTACK_LIGHT, biped.toolR,  "biped/jump_attack/jump_light_pre", biped)
+        JUMP_ATTACK_LIGHT = new WukongJumpAttackAnimation(0.10F, 0.13F, 0.40F, 0.50F, WukongColliders.JUMP_ATTACK_LIGHT, biped.toolR,  "biped/jump_attack/jump_light_pre", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.45F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))//最多踹一个
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.10F))
@@ -487,7 +487,9 @@ public class WukongAnimations {
                             }
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.00F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            CameraAnim.zoomIn(CameraAnim.DEFAULT_AIMING_CORRECTION);
+                            if(livingEntityPatch.getOriginal() instanceof LocalPlayer){
+                                CameraAnim.zoomIn(CameraAnim.DEFAULT_AIMING_CORRECTION);
+                            }
                         }), AnimationEvent.Side.CLIENT));
 
         THRUST_DERIVE1_BACKSWING = new ActionAnimation(0.15F, "biped/thrust/thrust_derive_backswing", biped)
@@ -512,7 +514,9 @@ public class WukongAnimations {
                     }
                 }), AnimationEvent.Side.SERVER),
                 AnimationEvent.TimeStampedEvent.create(0.00F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    CameraAnim.zoomIn(new Vec3f(1.0F, 0, 1.35F), 50);
+                    if(livingEntityPatch.getOriginal() instanceof LocalPlayer) {
+                        CameraAnim.zoomIn(new Vec3f(1.0F, 0, 1.35F), 50);
+                    }
                 }), AnimationEvent.Side.CLIENT))
                 .addStateRemoveOld(EntityState.TURNING_LOCKED, false)//为了用自己的视角...
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));

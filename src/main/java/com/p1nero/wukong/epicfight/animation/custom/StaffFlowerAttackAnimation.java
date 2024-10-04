@@ -4,6 +4,7 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
@@ -65,7 +66,7 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                             }
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            if(isTwoHand){
+                            if(isTwoHand && livingEntityPatch.getOriginal() instanceof LocalPlayer){
                                 CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
                             }
                         }), AnimationEvent.Side.CLIENT));

@@ -1,7 +1,8 @@
 {
   "itemGroup.wukong.items": "Epic Fight: Wukong Items",
-  "epicfight.skill_slot.staff_style": "Staff Style",
-  "skill.epicfight.staff_style.category": "Staff Style",
+  "item.wukong.staff": "Test Staff",
+  "epicfight.skill_slot.staff_style": "Staff Stance",
+  "skill.epicfight.staff_style.category": "Staff Stance",
   "skill.wukong.smash_style": "Smash Stance",
   "skill.wukong.thrust_style": "Thrust Stance",
   "skill.wukong.pillar_style": "Pillar Stance",
