@@ -255,6 +255,7 @@ public class WukongAnimations {
         JUMP_ATTACK_LIGHT_HIT = new ActionAnimation(0.15F, "biped/jump_attack/jump_light_hit", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.0F))
+                .addState(EntityState.CAN_SKILL_EXECUTION, true)//为了可以用重击取消后摇
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         JUMP_ATTACK_HEAVY = new WukongScaleStaffAttackAnimation(0.01F, 0.54F,0.67F, 1.25F, null, biped.toolR,  "biped/jump_attack/jump_heavy", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
@@ -382,9 +383,9 @@ public class WukongAnimations {
                 AnimationEvent.TimeStampedEvent.create(0.208F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(
                         ScaleTime.of(2.4167F, 1, 1, 1),
-                        ScaleTime.of(2.5833F, 1.15F, 1.15F, 1.15F),
-                        ScaleTime.of(2.7083F, 1.15F, 3.15F, 1.15F),
-                        ScaleTime.of(3.3333F, 1.15F, 3.15F, 1.15F),
+                        ScaleTime.of(2.5833F, 1F, 1.15F, 1F),
+                        ScaleTime.of(2.7083F, 1.5F, 3.15F, 1.15F),
+                        ScaleTime.of(3.3333F, 1.5F, 3.15F, 1.5F),
                         ScaleTime.of(3.5833F, 1, 1, 1)
                 )
         );

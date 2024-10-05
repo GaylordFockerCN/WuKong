@@ -9,25 +9,25 @@
     "thirdperson_righthand": {
       "translation": [
         0,
-        9,
+        6,
         1.25
       ],
       "scale": [
-        0.14,
-        0.14,
-        0.14
+        0.2,
+        0.13,
+        0.2
       ]
     },
     "thirdperson_lefthand": {
       "translation": [
         0,
-        9,
-        1.25
+        6,
+        -2
       ],
       "scale": [
-        0.14,
-        0.14,
-        0.14
+        0.2,
+        0.11,
+        0.2
       ]
     },
     "firstperson_righthand": {
