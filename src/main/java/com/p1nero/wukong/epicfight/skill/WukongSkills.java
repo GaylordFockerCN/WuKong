@@ -104,7 +104,7 @@ public class WukongSkills {
 
         SMASH_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "smash_charged");
         THRUST_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "thrust_charged");
-        PILLAR_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "stand_charged");
+        PILLAR_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "pillar_charged");
 
         SMASH_STYLE = event.build(WukongMoveset.MOD_ID, "smash_style");
         THRUST_STYLE = event.build(WukongMoveset.MOD_ID, "thrust_style");

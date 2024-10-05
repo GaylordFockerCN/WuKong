@@ -369,17 +369,18 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 this.setStackSynchronize(serverPlayerPatch, container.getStack() + 1);
             }
 
+            //四蓄的掉棍势时间判断
             int current = dataManager.getDataValue(CHARGED4_TIMER);
-            //四蓄的时间判断
-            if(container.isFull() && current > 0){
+            if(current > 0){
                 dataManager.setDataSync(CHARGED4_TIMER, current - 1, serverPlayer);
             }
-            if(current == 1){
+            float consumption = Config.CHARGING_SPEED.get().floatValue() / 3;
+            if(current == 1 && container.isFull()){
                 this.setStackSynchronize(serverPlayerPatch, 3);
-                this.setConsumptionSynchronize(serverPlayerPatch, container.getMaxResource() - Config.CHARGING_SPEED.get().floatValue());
+                this.setConsumptionSynchronize(serverPlayerPatch, container.getMaxResource() - consumption);
             }
-            if(current == 0 && container.getStack() >= 3 && container.getResource() > Config.CHARGING_SPEED.get().floatValue() / 2 + 0.1){
-                this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() - Config.CHARGING_SPEED.get().floatValue() / 2);
+            if(current == 0 && container.getStack() >= 3 && container.getResource() > consumption + 0.1){
+                this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() - consumption);
             }
 
         }

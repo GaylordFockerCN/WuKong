@@ -1,11 +1,10 @@
 {
-    "priority":"MIDDLE",
     "trail_effects": [
         {
             "lifetime": 4,
             "fade_time": 0.95,
-            "start_time": 0.2,
-            "end_time": 2.8,
+            "start_time": 0.54,
+            "end_time": 0.67,
             "interpolations": 12,
             "joint": "Tool_R",
             "item_skin_hand": "main_hand"

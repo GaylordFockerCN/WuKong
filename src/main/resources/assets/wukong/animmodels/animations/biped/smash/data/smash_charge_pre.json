@@ -1,3 +1,14 @@
 {
-    "priority":"HIGHEST"
+    "priority":"HIGHEST",
+    "trail_effects": [
+        {
+            "lifetime": 4,
+            "fade_time": 0.95,
+            "start_time": 0.2,
+            "end_time": 0.67,
+            "interpolations": 12,
+            "joint": "Tool_R",
+            "item_skin_hand": "main_hand"
+        }
+    ]
 }

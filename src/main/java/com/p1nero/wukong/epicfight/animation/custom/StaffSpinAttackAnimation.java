@@ -5,13 +5,11 @@ import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.skill.custom.StaffSpin;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.InteractionHand;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
-import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -24,9 +22,9 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
  * 尝试修改动画播放的move lock
  * 后面直接监听输入事件取消input了。。
  */
-public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
+public class StaffSpinAttackAnimation extends BasicMultipleAttackAnimation {
 
-    public StaffFlowerAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier, boolean isTwoHand){
+    public StaffSpinAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier, boolean isTwoHand){
         super(0, path, biped,
                         new AttackAnimation.Phase(0.0F, 0.00F, 0.25F, end, 0.26F , biped.toolR, null)
                                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(damageMultiplier)),
@@ -43,7 +41,7 @@ public class StaffFlowerAttackAnimation extends BasicMultipleAttackAnimation {
                 .addEvents(
                         AnimationEvent.TimeStampedEvent.create(end - 0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+                                if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch) || !serverPlayerPatch.getOriginal().isOnGround()){
                                     return;
                                 }
                                 SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
