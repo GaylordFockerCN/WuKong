@@ -19,6 +19,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -63,6 +64,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_SECOND_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第二段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_JUMP_HEAVY = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用跳跃重击
     public static final SkillDataManager.SkillDataKey<Boolean> PLAY_SOUND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播放棍势消耗音效
+    public static final SkillDataManager.SkillDataKey<Boolean> PROTECT_NEXT_FALL = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//防止坠机
     protected final StaticAnimation[] animations;//0~4共有五种重击
     protected StaticAnimation deriveAnimation1;
     protected StaticAnimation deriveAnimation2;
@@ -110,22 +112,27 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillContainer container = executer.getSkill(SkillSlots.WEAPON_INNATE);
         SkillDataManager dataManager = container.getDataManager();
         ServerPlayer player = executer.getOriginal();
-
         dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
         if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
+            dataManager.setData(PROTECT_NEXT_FALL, true);//放里面，防止瞎按技能键就防坠机的bug
             //跳跃攻击，也消耗所有棍势
             dataManager.setDataSync(CAN_JUMP_HEAVY, false, player);
+            if(container.getStack() > 0){//0星是null会中断
+                executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
+            }
             executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);
-            resetConsumption(container, executer, true);
-        } else {
+            resetConsumption(container, executer, false);
+        } else if(player.isOnGround()){
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
-            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用破棍式
+            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed && !container.isFull()){//有星才能用破棍式，且满星直接放大（也防bug）
                 if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
+                    dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
                 }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
+                    dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation2, 0.2F);
@@ -182,6 +189,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
         SkillDataRegister.register(manager, CAN_JUMP_HEAVY, false);
         SkillDataRegister.register(manager, PLAY_SOUND, true);
+        SkillDataRegister.register(manager, PROTECT_NEXT_FALL, false);
         SkillDataRegister.register(manager, DERIVE_TIMER, 0);
 
         //长按期间禁止跳跃
@@ -200,7 +208,17 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 event.setAmount(0);
                 event.setCanceled(true);
             }
+            //防止坠机
+            if (event.getDamageSource().isFall() && container.getDataManager().getDataValue(PROTECT_NEXT_FALL)) {
+                event.setAmount(0);
+                event.setCanceled(true);
+                container.getDataManager().setData(PROTECT_NEXT_FALL, false);
+            }
         }));
+
+//        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID, (event) -> {
+//            container.getDataManager().setData(PROTECT_NEXT_FALL, false);
+//        });
 
         //普攻后立即右键可以衍生
         container.getExecuter().getEventListener().addEventListener(
@@ -283,6 +301,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID);
     }
 
     @Override
@@ -337,6 +356,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 //松手则清空棍势打重击
                 if(!dataManager.getDataValue(KEY_PRESSING)){
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
+                    dataManager.setData(PROTECT_NEXT_FALL, true);//MAN
                     serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
                     dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
                     resetConsumption(container, serverPlayerPatch, dataManager.getDataValue(PLAY_SOUND));

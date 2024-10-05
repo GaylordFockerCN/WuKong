@@ -1,10 +1,10 @@
 {
     "trail_effects": [
         {
-            "lifetime": 6,
+            "lifetime": 4,
             "fade_time": 0.95,
-            "start_time": 0.08,
-            "end_time": 0.5,
+            "start_time": 0.12,
+            "end_time": 0.75,
             "interpolations": 12,
             "joint": "Tool_R",
             "item_skin_hand": "main_hand"
