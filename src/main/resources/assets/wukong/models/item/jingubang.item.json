@@ -117,13 +117,5 @@
         0.15
       ]
     }
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "pulling": 0
-      },
-      "model": "wukong:item/jingubang"
-    }
-  ]
+  }
 }
