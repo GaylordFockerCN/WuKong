@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 
-version = '18.0.1.0beta'
+version = '18.0.1.1beta'
 group = 'net.p1nero.wk' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'wukong_moveset-forge1.18.2'
 

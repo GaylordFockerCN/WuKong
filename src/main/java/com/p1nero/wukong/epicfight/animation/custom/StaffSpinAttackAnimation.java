@@ -39,7 +39,7 @@ public class StaffSpinAttackAnimation extends BasicMultipleAttackAnimation {
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
                 .addEvents(
-                        AnimationEvent.TimeStampedEvent.create(end - 0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+                        AnimationEvent.TimeStampedEvent.create(end - 0.05F, ((livingEntityPatch, staticAnimation, objects) -> {
                             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                                 if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch) || !serverPlayerPatch.getOriginal().isOnGround()){
                                     return;
@@ -74,6 +74,10 @@ public class StaffSpinAttackAnimation extends BasicMultipleAttackAnimation {
     @Override
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
+        if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+            SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
+            passiveContainer.getDataManager().setDataSync(StaffSpin.PLAYING_STAFF_SPIN, false, serverPlayerPatch.getOriginal());
+        }
         if(entityPatch.isLogicalClient() && CameraAnim.isAiming()){
             CameraAnim.zoomOut(20);//保险
         }
