@@ -37,7 +37,7 @@ public class WukongSkills {
     }
 
     public static void registerSkills() {
-        SkillManager.register(WukongDodge::new, WukongDodge.createDodgeBuilder()
+        SkillManager.register(WukongDodgeSkill::new, WukongDodgeSkill.createDodgeBuilder()
                 .setAnimations1(
                         () -> WukongAnimations.DODGE_F1,
                         () -> WukongAnimations.DODGE_B1,
@@ -63,7 +63,7 @@ public class WukongSkills {
                         () -> WukongAnimations.DODGE_RP
                 ).setCreativeTab(WukongItems.CREATIVE_MODE_TAB),
                 WukongMoveset.MOD_ID, "dodge");
-        SkillManager.register(StaffSpin::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
+        SkillManager.register(StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
         SkillManager.register(SmashHeavyAttack::new, SmashHeavyAttack.createChargedAttack()
                         .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
                         .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)

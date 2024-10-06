@@ -2,6 +2,8 @@ package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
+import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.client.AddEntityAfterImageParticle;
@@ -15,11 +17,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.types.EntityState;
+import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.events.engine.ControllEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.network.client.CPExecuteSkill;
 import yesman.epicfight.skill.*;
+import yesman.epicfight.skill.dodge.DodgeSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -30,7 +35,7 @@ import java.util.UUID;
 /**
  * 完美闪避回棍势，TODO 蓄力的时候完美闪避保留棍势
  */
-public class WukongDodge extends Skill {
+public class WukongDodgeSkill extends Skill {
     private static final UUID EVENT_UUID = UUID.fromString("d2d011cc-f30f-11ed-a05b-0242ac114515");
     private static final SkillDataManager.SkillDataKey<Integer> COUNT = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//闪避计数器
     private static final SkillDataManager.SkillDataKey<Integer> DIRECTION = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//方向
@@ -39,11 +44,11 @@ public class WukongDodge extends Skill {
     public static final int RESET_TICKS = 100;
     protected final StaticAnimationProvider[][] animations;
 
-    public static WukongDodge.Builder createDodgeBuilder() {
-        return (new WukongDodge.Builder()).setCategory(SkillCategories.DODGE).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.STAMINA);
+    public static WukongDodgeSkill.Builder createDodgeBuilder() {
+        return (new WukongDodgeSkill.Builder()).setCategory(SkillCategories.DODGE).setActivateType(ActivateType.ONE_SHOT).setResource(Resource.STAMINA);
     }
 
-    public WukongDodge(WukongDodge.Builder builder) {
+    public WukongDodgeSkill(WukongDodgeSkill.Builder builder) {
         super(builder);
         animations = builder.animations;
     }
@@ -69,6 +74,12 @@ public class WukongDodge extends Skill {
             }
             event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(DIRECTION)].get(), 0.0F);
         }));
+    }
+
+    @Override
+    public void onRemoved(SkillContainer container) {
+        super.onRemoved(container);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -146,47 +157,47 @@ public class WukongDodge extends Skill {
         return !executer.isUnstable() && playerState.canUseSkill() && !executer.getOriginal().isInWater() && !executer.getOriginal().onClimbable() && executer.getOriginal().getVehicle() == null;
     }
 
-    public static class Builder extends Skill.Builder<WukongDodge> {
+    public static class Builder extends Skill.Builder<WukongDodgeSkill> {
         protected StaticAnimationProvider[][] animations = new StaticAnimationProvider[4][4];//第一个参数分别是1、2、3段和完美闪避，第二个是前、后、左、右
 
         public Builder() {
         }
 
-        public WukongDodge.Builder setCategory(SkillCategory category) {
+        public WukongDodgeSkill.Builder setCategory(SkillCategory category) {
             this.category = category;
             return this;
         }
 
-        public WukongDodge.Builder setActivateType(Skill.ActivateType activateType) {
+        public WukongDodgeSkill.Builder setActivateType(Skill.ActivateType activateType) {
             this.activateType = activateType;
             return this;
         }
 
-        public WukongDodge.Builder setResource(Skill.Resource resource) {
+        public WukongDodgeSkill.Builder setResource(Skill.Resource resource) {
             this.resource = resource;
             return this;
         }
 
-        public WukongDodge.Builder setCreativeTab(CreativeModeTab tab) {
+        public WukongDodgeSkill.Builder setCreativeTab(CreativeModeTab tab) {
             this.tab = tab;
             return this;
         }
 
-        public WukongDodge.Builder setAnimations1(StaticAnimationProvider... animations) {
+        public WukongDodgeSkill.Builder setAnimations1(StaticAnimationProvider... animations) {
             this.animations[0] = animations;
             return this;
         }
 
-        public WukongDodge.Builder setAnimations2(StaticAnimationProvider... animations) {
+        public WukongDodgeSkill.Builder setAnimations2(StaticAnimationProvider... animations) {
             this.animations[1] = animations;
             return this;
         }
 
-        public WukongDodge.Builder setAnimations3(StaticAnimationProvider... animations) {
+        public WukongDodgeSkill.Builder setAnimations3(StaticAnimationProvider... animations) {
             this.animations[2] = animations;
             return this;
         }
-        public WukongDodge.Builder setPerfectAnimations(StaticAnimationProvider... animations) {
+        public WukongDodgeSkill.Builder setPerfectAnimations(StaticAnimationProvider... animations) {
             this.animations[3] = animations;
             return this;
         }

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-    public static Capability<WKPlayer> SS_PLAYER = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<WKPlayer> WK_PLAYER = CapabilityManager.get(new CapabilityToken<>() {});
 
     private WKPlayer WKPlayer = null;
     
@@ -35,7 +35,7 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction direction) {
-        if(capability == SS_PLAYER){
+        if(capability == WK_PLAYER){
             return optional.cast();
         }
 
@@ -59,17 +59,18 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
         @SubscribeEvent
         public static void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
             if (event.getObject() instanceof Player) {
-               if(!event.getObject().getCapability(WKCapabilityProvider.SS_PLAYER).isPresent()){
-                   event.addCapability(new ResourceLocation(WukongMoveset.MOD_ID, "ss_player"), new WKCapabilityProvider());
+               if(!event.getObject().getCapability(WKCapabilityProvider.WK_PLAYER).isPresent()){
+                   event.addCapability(new ResourceLocation(WukongMoveset.MOD_ID, "wk_player"), new WKCapabilityProvider());
                }
             }
         }
 
         @SubscribeEvent
         public static void onPlayerCloned(PlayerEvent.Clone event) {
+            event.getOriginal().reviveCaps();
             if(event.isWasDeath()) {
-                event.getOriginal().getCapability(WKCapabilityProvider.SS_PLAYER).ifPresent(oldStore -> {
-                    event.getOriginal().getCapability(WKCapabilityProvider.SS_PLAYER).ifPresent(newStore -> {
+                event.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(oldStore -> {
+                    event.getEntity().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(newStore -> {
                         newStore.copyFrom(oldStore);
                     });
                 });

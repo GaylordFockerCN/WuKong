@@ -254,7 +254,7 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         JUMP_ATTACK_LIGHT_HIT = new ActionAnimation(0.15F, "biped/jump_attack/jump_light_hit", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.0F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.3F))
                 .addState(EntityState.CAN_SKILL_EXECUTION, true)//为了可以用重击取消后摇
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         JUMP_ATTACK_HEAVY = new WukongScaleStaffAttackAnimation(0.01F, 0.54F,0.67F, 1.25F, null, biped.toolR,  "biped/jump_attack/jump_heavy", biped)
@@ -267,7 +267,6 @@ public class WukongAnimations {
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) ->
                                 livingEntityPatch.playSound(EpicFightSounds.ROLL, 1, 1)), AnimationEvent.Side.SERVER));
-
 
         STAFF_SPIN_ONE_HAND_LOOP = new StaffSpinAttackAnimation(1.25F, biped, "biped/staff_spin/staff_spin_one_hand", 0.05F, false);
         STAFF_SPIN_TWO_HAND_LOOP = new StaffSpinAttackAnimation(0.83F, biped, "biped/staff_spin/staff_spin_two_hand", 0.08F, true);

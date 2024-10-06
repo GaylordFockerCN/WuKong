@@ -1,4 +1,5 @@
 {
+    "priority":"HIGHEST",
     "trail_effects": [
         {
             "lifetime": 6,

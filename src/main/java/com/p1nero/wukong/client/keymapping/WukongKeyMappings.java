@@ -28,16 +28,16 @@ import java.util.Set;
 @Mod.EventBusSubscriber(value = {Dist.CLIENT},bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongKeyMappings {
     public static final MyKeyMapping W = new MyKeyMapping("key.wukong.w", GLFW.GLFW_KEY_W, "key.wukong.category");
-    public static final MyKeyMapping CHOP_STYLE = new MyKeyMapping("key.wukong.smash_stance", GLFW.GLFW_KEY_Z, "key.wukong.category");
-    public static final MyKeyMapping STAND_STYLE = new MyKeyMapping("key.wukong.pillar_stance", GLFW.GLFW_KEY_X, "key.wukong.category");
-    public static final MyKeyMapping POKE_STYLE = new MyKeyMapping("key.wukong.thrust_stance", GLFW.GLFW_KEY_C, "key.wukong.category");
+    public static final MyKeyMapping SMASH_STYLE = new MyKeyMapping("key.wukong.smash_stance", GLFW.GLFW_KEY_Z, "key.wukong.category");
+    public static final MyKeyMapping PILLAR_STYLE = new MyKeyMapping("key.wukong.pillar_stance", GLFW.GLFW_KEY_X, "key.wukong.category");
+    public static final MyKeyMapping THRUST_STYLE = new MyKeyMapping("key.wukong.thrust_stance", GLFW.GLFW_KEY_C, "key.wukong.category");
     public static final KeyMapping STAFF_FLOWER = new CombatKeyMapping("key.wukong.staff_spin", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.wukong.category");
 
     @SubscribeEvent
     public static void registerKeys(FMLClientSetupEvent event) {
-        ClientRegistry.registerKeyBinding(CHOP_STYLE);
-        ClientRegistry.registerKeyBinding(STAND_STYLE);
-        ClientRegistry.registerKeyBinding(POKE_STYLE);
+        ClientRegistry.registerKeyBinding(SMASH_STYLE);
+        ClientRegistry.registerKeyBinding(PILLAR_STYLE);
+        ClientRegistry.registerKeyBinding(THRUST_STYLE);
         ClientRegistry.registerKeyBinding(STAFF_FLOWER);
     }
 
@@ -56,11 +56,11 @@ public class WukongKeyMappings {
             localPlayer.getCapability(EpicFightCapabilities.CAPABILITY_SKILL).ifPresent(capabilitySkill -> {
                 Collection<Skill> styles = capabilitySkill.getLearnedSkills(WukongSkillCategories.STAFF_STYLE);
                 Skill skill;
-                if (CHOP_STYLE.isRelease() && styles.contains(WukongSkills.SMASH_STYLE)) {
+                if (SMASH_STYLE.isRelease() && styles.contains(WukongSkills.SMASH_STYLE)) {
                     skill = WukongSkills.SMASH_STYLE;
-                } else if (POKE_STYLE.isRelease() && styles.contains(WukongSkills.THRUST_STYLE)) {
+                } else if (THRUST_STYLE.isRelease() && styles.contains(WukongSkills.THRUST_STYLE)) {
                     skill = WukongSkills.THRUST_STYLE;
-                } else if (STAND_STYLE.isRelease() && styles.contains(WukongSkills.PILLAR_STYLE)) {
+                } else if (PILLAR_STYLE.isRelease() && styles.contains(WukongSkills.PILLAR_STYLE)) {
                     skill = WukongSkills.PILLAR_STYLE;
                 } else {
                     return;

@@ -1,9 +1,11 @@
 package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.p1nero.wukong.Config;
+import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
@@ -18,33 +20,37 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.EpicFightSounds;
+import yesman.epicfight.network.EpicFightNetworkManager;
+import yesman.epicfight.network.client.CPChangeSkill;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 防守技能棍花
+ * 棍花和闪避
  */
-public class StaffSpin extends Skill {
+public class StaffPassive extends Skill {
 
     public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
-    public static final SkillDataManager.SkillDataKey<Boolean> IS_ONE_HAND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
-    public static final SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
 
-    public StaffSpin(Builder<? extends Skill> builder) {
+    public StaffPassive(Builder<? extends Skill> builder) {
         super(builder);
     }
 
@@ -53,8 +59,6 @@ public class StaffSpin extends Skill {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, PLAYING_STAFF_SPIN, false);
-        SkillDataRegister.register(manager, IS_ONE_HAND, false);
-        SkillDataRegister.register(manager, KEY_PRESSING, false);
 
         //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
@@ -70,7 +74,7 @@ public class StaffSpin extends Skill {
                 input.shiftKeyDown = false;
                 LocalPlayer clientPlayer = event.getPlayerPatch().getOriginal();
                 clientPlayer.setSprinting(false);
-//                clientPlayer.sprintTriggerTime = -1;
+                clientPlayer.sprintTriggerTime = -1;
                 Minecraft mc = Minecraft.getInstance();
                 ClientEngine.getInstance().controllEngine.setKeyBind(mc.options.keySprint, false);
             }
@@ -113,6 +117,41 @@ public class StaffSpin extends Skill {
                 }
             }
         }));
+
+        //拦截闪避事件，替换为自己的闪避并执行
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID, (event -> {
+            PlayerPatch<?> executer = event.getPlayerPatch();
+            Skill ordinalSkill = event.getSkillContainer().getSkill();
+            if(!ordinalSkill.getCategory().equals(SkillCategories.DODGE)){
+                return;
+            }
+            int dodgeId = event.getSkillContainer().getSlotId();
+            if(executer.isLogicalClient()){
+                //还原为上一个闪避
+                if(!WukongWeaponCategories.isWeaponValid(executer)){
+                    executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+                        if(wkPlayer.getLastDodgeSkill().isEmpty()){
+                            return;
+                        }
+                        Skill old = SkillManager.getSkill(wkPlayer.getLastDodgeSkill());
+                        executer.getSkill(SkillSlots.DODGE).setSkill(old);
+                        EpicFightNetworkManager.sendToServer(new CPChangeSkill(dodgeId, -1, old.toString(), false));
+                    });
+                    return;
+                }
+                //临时替换为悟空闪避
+                if(!ordinalSkill.equals(WukongSkills.WUKONG_DODGE) && executer.hasStamina(this.getConsumption())){
+                    executer.getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
+                    EpicFightNetworkManager.sendToServer(new CPChangeSkill(dodgeId, -1, WukongSkills.WUKONG_DODGE.toString(), false));
+                    executer.getSkill(SkillSlots.DODGE).sendExecuteRequest((LocalPlayerPatch) executer, ClientEngine.getInstance().controllEngine);
+                    executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+                        wkPlayer.setLastDodgeSkill(ordinalSkill.toString());
+                    });
+                    event.setCanceled(true);
+                }
+            }
+        }));
+
     }
 
     @Override
@@ -121,6 +160,17 @@ public class StaffSpin extends Skill {
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
+        PlayerPatch<?> executer = container.getExecuter();
+        executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+            if(wkPlayer.getLastDodgeSkill().isEmpty()){
+                return;
+            }
+            Skill old = SkillManager.getSkill(wkPlayer.getLastDodgeSkill());
+            executer.getSkill(SkillSlots.DODGE).setSkill(old);
+            EpicFightNetworkManager.sendToServer(new CPChangeSkill(executer.getSkill(SkillSlots.DODGE).getSlotId(), -1, old.toString(), false));
+        });
+        return;
     }
 
     public static boolean canBeBlocked(Entity entity){
@@ -166,19 +216,10 @@ public class StaffSpin extends Skill {
         }
 
         if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
-            container.getDataManager().setDataSync(KEY_PRESSING, true, ((LocalPlayer) container.getExecuter().getOriginal()));
-            if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN)){
-                boolean isOneHand = !WukongKeyMappings.W.isDown();//按w可变双手棍花
-                if(!isOneHand){
-                    //不这样判断不知道为什么会播完双手就回去播单手
-                    container.getDataManager().setDataSync(IS_ONE_HAND, false, ((LocalPlayer) container.getExecuter().getOriginal()));
-                }
-                PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(isOneHand));
+            if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && Minecraft.getInstance().player != null){
+                PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(WukongKeyMappings.W.isDown()));//按w可变双手棍花
                 container.getDataManager().setDataSync(PLAYING_STAFF_SPIN, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             }
-        } else {
-            container.getDataManager().setDataSync(KEY_PRESSING, false, ((LocalPlayer) container.getExecuter().getOriginal()));
-            container.getDataManager().setDataSync(IS_ONE_HAND, true, ((LocalPlayer) container.getExecuter().getOriginal()));
         }
     }
 }
