@@ -15,6 +15,7 @@ import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 /**
@@ -46,18 +47,26 @@ public class StaffSpinAttackAnimation extends BasicMultipleAttackAnimation {
     @Override
     public void begin(LivingEntityPatch<?> entityPatch) {
         super.begin(entityPatch);
-        if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+//        if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+//            SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
+//            passiveContainer.getDataManager().setDataSync(StaffPassive.PLAYING_STAFF_SPIN, true, serverPlayerPatch.getOriginal());
+//        }
+        if(WukongWeaponCategories.isWeaponValid(entityPatch) && entityPatch instanceof PlayerPatch<?> serverPlayerPatch){
             SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-            passiveContainer.getDataManager().setDataSync(StaffPassive.PLAYING_STAFF_SPIN, true, serverPlayerPatch.getOriginal());
+            passiveContainer.getDataManager().setData(StaffPassive.PLAYING_STAFF_SPIN, true);
         }
     }
 
     @Override
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
-        if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+//        if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+//            SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
+//            passiveContainer.getDataManager().setDataSync(StaffPassive.PLAYING_STAFF_SPIN, false, serverPlayerPatch.getOriginal());
+//        }
+        if(WukongWeaponCategories.isWeaponValid(entityPatch) && entityPatch instanceof PlayerPatch<?> serverPlayerPatch){
             SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-            passiveContainer.getDataManager().setDataSync(StaffPassive.PLAYING_STAFF_SPIN, false, serverPlayerPatch.getOriginal());
+            passiveContainer.getDataManager().setData(StaffPassive.PLAYING_STAFF_SPIN, false);
         }
         if(entityPatch.isLogicalClient() && CameraAnim.isAiming()){
             CameraAnim.zoomOut(20);//保险

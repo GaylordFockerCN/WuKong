@@ -1,5 +1,6 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
+import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +42,7 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     @Override
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
-        if(entityPatch.isLogicalClient()){
+        if(entityPatch.isLogicalClient() && WukongWeaponCategories.isWeaponValid(entityPatch)){
             CompoundTag tag = entityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
         }
