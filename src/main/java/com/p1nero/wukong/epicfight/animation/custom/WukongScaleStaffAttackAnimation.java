@@ -1,5 +1,6 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
+import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +9,7 @@ import yesman.epicfight.api.animation.types.BasicAttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
@@ -41,7 +43,7 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     @Override
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
-        if(entityPatch.isLogicalClient()){
+        if(entityPatch instanceof LocalPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
             CompoundTag tag = entityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
         }

@@ -1,13 +1,9 @@
 package com.p1nero.wukong.epicfight.animation;
 
-import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
-import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.WukongSkillDataKeys;
-import com.p1nero.wukong.epicfight.skill.WukongSkills;
-import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.player.Input;
@@ -27,7 +23,6 @@ import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.LevelUtil;
 import yesman.epicfight.api.utils.TimePairList;
 import yesman.epicfight.api.utils.math.ValueModifier;
-import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -479,10 +474,16 @@ public class WukongAnimations {
         AnimationEvent.TimeStampedEvent[] timeStampedEvents = new AnimationEvent.TimeStampedEvent[lastTick];
         ticks = interpolate(ticks, lastTick);
         timeStampedEvents[0] = AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
+            if(livingEntityPatch instanceof LocalPlayerPatch playerPatch && !WukongWeaponCategories.isWeaponValid(playerPatch)){
+                return;
+            }
             CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
         }), AnimationEvent.Side.CLIENT);
         timeStampedEvents[lastTick-1] = AnimationEvent.TimeStampedEvent.create(0.05F * lastTick, ((livingEntityPatch, staticAnimation, objects) -> {
+            if(livingEntityPatch instanceof LocalPlayerPatch playerPatch && !WukongWeaponCategories.isWeaponValid(playerPatch)){
+                return;
+            }
             CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
         }), AnimationEvent.Side.CLIENT);
@@ -491,6 +492,9 @@ public class WukongAnimations {
             float y = ticks[i].y;
             float z = ticks[i].z;
             timeStampedEvents[i] = AnimationEvent.TimeStampedEvent.create(0.05F * i, ((livingEntityPatch, staticAnimation, objects) -> {
+                if(livingEntityPatch instanceof LocalPlayerPatch playerPatch && !WukongWeaponCategories.isWeaponValid(playerPatch)){
+                    return;
+                }
                 CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
                 tag.putBoolean("WK_shouldScaleItem", true);
                 tag.putFloat("WK_XScale", x);
