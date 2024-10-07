@@ -474,14 +474,14 @@ public class WukongAnimations {
         AnimationEvent.TimeStampedEvent[] timeStampedEvents = new AnimationEvent.TimeStampedEvent[lastTick];
         ticks = interpolate(ticks, lastTick);
         timeStampedEvents[0] = AnimationEvent.TimeStampedEvent.create(0.01F, ((livingEntityPatch, staticAnimation, objects) -> {
-            if(livingEntityPatch instanceof LocalPlayerPatch playerPatch && !WukongWeaponCategories.isWeaponValid(playerPatch)){
+            if(!WukongWeaponCategories.isWeaponValid(livingEntityPatch)){
                 return;
             }
             CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
         }), AnimationEvent.Side.CLIENT);
         timeStampedEvents[lastTick-1] = AnimationEvent.TimeStampedEvent.create(0.05F * lastTick, ((livingEntityPatch, staticAnimation, objects) -> {
-            if(livingEntityPatch instanceof LocalPlayerPatch playerPatch && !WukongWeaponCategories.isWeaponValid(playerPatch)){
+            if(!WukongWeaponCategories.isWeaponValid(livingEntityPatch)){
                 return;
             }
             CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();
@@ -492,7 +492,7 @@ public class WukongAnimations {
             float y = ticks[i].y;
             float z = ticks[i].z;
             timeStampedEvents[i] = AnimationEvent.TimeStampedEvent.create(0.05F * i, ((livingEntityPatch, staticAnimation, objects) -> {
-                if(livingEntityPatch instanceof LocalPlayerPatch playerPatch && !WukongWeaponCategories.isWeaponValid(playerPatch)){
+                if(!WukongWeaponCategories.isWeaponValid(livingEntityPatch)){
                     return;
                 }
                 CompoundTag tag = livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag();

@@ -43,7 +43,7 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     @Override
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
-        if(entityPatch instanceof LocalPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
+        if(WukongWeaponCategories.isWeaponValid(entityPatch)){
             CompoundTag tag = entityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
         }
