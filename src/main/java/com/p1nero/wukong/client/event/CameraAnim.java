@@ -6,14 +6,13 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -57,9 +56,9 @@ public class CameraAnim {
      * 实现过渡
      */
     @SubscribeEvent
-    public static void cameraSetupEvent(EntityViewRenderEvent.CameraSetup event) {
+    public static void cameraSetupEvent(ViewportEvent.ComputeCameraAngles event) {
         if (zoomCount > 0) {
-            setRangedWeaponThirdPerson(event, Minecraft.getInstance().options.getCameraType(), event.getPartialTicks());
+            setRangedWeaponThirdPerson(event, Minecraft.getInstance().options.getCameraType(), event.getPartialTick());
             zoomCount = aiming || zoomOutTimer --> 0 ? zoomCount + 1 : zoomCount - 1;
             zoomCount = Math.min(zoomMaxCount, zoomCount);
             if(zoomOutTimer < 0){
@@ -68,7 +67,7 @@ public class CameraAnim {
         }
     }
 
-    private static void setRangedWeaponThirdPerson(EntityViewRenderEvent.CameraSetup event, CameraType pov, double partialTicks) {
+    private static void setRangedWeaponThirdPerson(ViewportEvent.ComputeCameraAngles event, CameraType pov, double partialTicks) {
         if (ClientEngine.getInstance().getPlayerPatch() == null) {
             return;
         }
@@ -120,7 +119,7 @@ public class CameraAnim {
             totalZ += rotateVec.z * dist;
         }
 
-        BlockPos cameraPos= new BlockPos(totalX, totalY, totalZ);
+        BlockPos cameraPos= new BlockPos((int) totalX, (int) totalY, (int) totalZ);
         //防止视角卡墙里
         if(Minecraft.getInstance().level.getBlockState(cameraPos).is(Blocks.AIR)){
             camera.setPosition(totalX, totalY, totalZ);

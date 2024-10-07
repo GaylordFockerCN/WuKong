@@ -2,17 +2,16 @@ package com.p1nero.wukong.epicfight.skill.custom;
 
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import com.p1nero.wukong.epicfight.skill.WukongSkillDataKeys;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.SkillDataManager;
 
 public class StaffStance extends Skill {
 
     public final WukongStyles style;//客户端无效，所以得有datakey
-    private static final SkillDataManager.SkillDataKey<Integer> STYLE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
 
     public StaffStance(Builder builder) {
         super(builder);
@@ -22,8 +21,9 @@ public class StaffStance extends Skill {
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
-        container.getDataManager().registerData(STYLE);
-        container.getDataManager().setData(STYLE, style.ordinal());
+        if(container.getExecuter().getOriginal() instanceof ServerPlayer serverPlayer){
+            container.getDataManager().setDataSync(WukongSkillDataKeys.STANCE.get(), style.ordinal(), serverPlayer);
+        }
     }
 
     public static Builder createStaffStyle(){
@@ -32,7 +32,7 @@ public class StaffStance extends Skill {
 
     @Override
     public void onRemoved(SkillContainer container) {
-        container.getDataManager().setData(STYLE, WukongStyles.SMASH.ordinal());
+        container.getDataManager().setData(WukongSkillDataKeys.STANCE.get(), WukongStyles.SMASH.ordinal());
     }
 
     /**
@@ -40,13 +40,13 @@ public class StaffStance extends Skill {
      * 很奇怪，onInitiate里面setDataSync会出错
      */
     public WukongStyles getStyle(SkillContainer container) {
-        if(!container.getDataManager().hasData(STYLE)){
-            container.getDataManager().registerData(STYLE);
+        if(!container.getDataManager().hasData(WukongSkillDataKeys.STANCE.get())){
+            container.getDataManager().registerData(WukongSkillDataKeys.STANCE.get());
             if(!container.getExecuter().isLogicalClient()){
-                container.getDataManager().setDataSync(STYLE, style.ordinal(), ((ServerPlayer) container.getExecuter().getOriginal()));
+                container.getDataManager().setDataSync(WukongSkillDataKeys.STANCE.get(), style.ordinal(), ((ServerPlayer) container.getExecuter().getOriginal()));
             }
         }
-        return WukongStyles.values()[container.getDataManager().getDataValue(STYLE)];
+        return WukongStyles.values()[container.getDataManager().getDataValue(WukongSkillDataKeys.STANCE.get())];
     }
 
     public static class Builder extends Skill.Builder<StaffStance>{

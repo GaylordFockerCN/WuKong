@@ -7,13 +7,12 @@ import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 import yesman.epicfight.client.input.CombatKeyMapping;
 import yesman.epicfight.network.EpicFightNetworkManager;
@@ -34,11 +33,11 @@ public class WukongKeyMappings {
     public static final KeyMapping STAFF_FLOWER = new CombatKeyMapping("key.wukong.staff_spin", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.wukong.category");
 
     @SubscribeEvent
-    public static void registerKeys(FMLClientSetupEvent event) {
-        ClientRegistry.registerKeyBinding(SMASH_STYLE);
-        ClientRegistry.registerKeyBinding(PILLAR_STYLE);
-        ClientRegistry.registerKeyBinding(THRUST_STYLE);
-        ClientRegistry.registerKeyBinding(STAFF_FLOWER);
+    public static void registerKeys(RegisterKeyMappingsEvent event) {
+        event.register(SMASH_STYLE);
+        event.register(PILLAR_STYLE);
+        event.register(THRUST_STYLE);
+        event.register(STAFF_FLOWER);
     }
 
     @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID)
@@ -69,7 +68,7 @@ public class WukongKeyMappings {
                 SkillContainer skillContainer = skillContainers.iterator().next();
                 skillContainer.setSkill(skill);
                 capabilitySkill.addLearnedSkill(skill);
-                localPlayer.displayClientMessage(new TranslatableComponent("tips.wukong.style_change").append(skill.getDisplayName()), true);
+                localPlayer.displayClientMessage(Component.translatable("tips.wukong.style_change").append(skill.getDisplayName()), true);
                 EpicFightNetworkManager.sendToServer(new CPChangeSkill(skillContainer.getSlot().universalOrdinal(), -1, skill.toString(), false));
             });
         }

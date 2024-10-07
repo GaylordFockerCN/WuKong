@@ -10,7 +10,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.ControllEngine;
+
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, value = {Dist.CLIENT})
 public class MovementInputListener {
@@ -32,7 +33,7 @@ public class MovementInputListener {
                 clientPlayer.setSprinting(false);
                 clientPlayer.sprintTriggerTime = -1;
                 Minecraft mc = Minecraft.getInstance();
-                ClientEngine.getInstance().controllEngine.setKeyBind(mc.options.keySprint, false);
+                ControllEngine.setKeyBind(mc.options.keySprint, false);
             }
         }
     }

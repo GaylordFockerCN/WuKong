@@ -10,7 +10,6 @@ public class WKPlayer {
     }
 
     public String getLastDodgeSkill() {
-        System.out.println(lastSkill);
         return lastSkill;
     }
 

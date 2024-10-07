@@ -29,7 +29,7 @@ public class WuKongSounds {
         stackSounds.add(STACK4);
     }
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
-        return SOUND_EVENTS.register(name, () -> new SoundEvent(new ResourceLocation(WukongMoveset.MOD_ID, name)));
+        return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(WukongMoveset.MOD_ID, name)));
     }
 
 }

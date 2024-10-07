@@ -31,6 +31,6 @@ public class PacketHandler {
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {
-        INSTANCE.messageBuilder(packet, index++).encoder(BasePacket::encode).decoder(decoder).consumer(BasePacket::handle).add();
+        INSTANCE.messageBuilder(packet, index++).encoder(BasePacket::encode).decoder(decoder).consumerMainThread(BasePacket::handle).add();
     }
 }

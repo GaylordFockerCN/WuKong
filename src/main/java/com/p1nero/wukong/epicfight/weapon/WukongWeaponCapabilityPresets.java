@@ -6,6 +6,7 @@ import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.StaffStance;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -35,7 +36,7 @@ public class WukongWeaponCapabilityPresets {
                 }
                 return WukongStyles.SMASH;//默认劈棍
             }).collider(WukongColliders.WK_STAFF)
-            .hitSound(EpicFightSounds.BLUNT_HIT)
+            .hitSound(EpicFightSounds.BLUNT_HIT.get())
             .hitParticle(EpicFightParticles.HIT_BLUNT.get())
             .canBePlacedOffhand(false)
             .comboCancel((style) -> false)
@@ -133,7 +134,7 @@ public class WukongWeaponCapabilityPresets {
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.SMASH)
                     .collider(WukongColliders.WK_STAFF)
-                    .hitSound(EpicFightSounds.BLUNT_HIT)
+                    .hitSound(EpicFightSounds.BLUNT_HIT.get())
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)
                     .comboCancel((style) -> false)
@@ -173,7 +174,7 @@ public class WukongWeaponCapabilityPresets {
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.THRUST)
                     .collider(WukongColliders.WK_STAFF)
-                    .hitSound(EpicFightSounds.BLUNT_HIT)
+                    .hitSound(EpicFightSounds.BLUNT_HIT.get())
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)
                     .comboCancel((style) -> false)
@@ -208,7 +209,7 @@ public class WukongWeaponCapabilityPresets {
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     .styleProvider((entityPatch) -> WukongStyles.PILLAR)
                     .collider(WukongColliders.WK_STAFF)
-                    .hitSound(EpicFightSounds.BLUNT_HIT)
+                    .hitSound(EpicFightSounds.BLUNT_HIT.get())
                     .hitParticle(EpicFightParticles.HIT_BLUNT.get())
                     .canBePlacedOffhand(false)
                     .comboCancel((style) -> false)
@@ -243,10 +244,10 @@ public class WukongWeaponCapabilityPresets {
 
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
-        event.getTypeEntry().put("wk_staff", STAFF);
-        event.getTypeEntry().put("smash_only", SMASH_ONLY);
-        event.getTypeEntry().put("thrust_only", THRUST_ONLY);
-        event.getTypeEntry().put("pillar_only", PILLAR_ONLY);
+        event.getTypeEntry().put(new ResourceLocation(WukongMoveset.MOD_ID, "wk_staff"), STAFF);
+        event.getTypeEntry().put(new ResourceLocation(WukongMoveset.MOD_ID, "smash_only"), SMASH_ONLY);
+        event.getTypeEntry().put(new ResourceLocation(WukongMoveset.MOD_ID, "thrust_only"), THRUST_ONLY);
+        event.getTypeEntry().put(new ResourceLocation(WukongMoveset.MOD_ID, "pillar_only"), PILLAR_ONLY);
     }
 
 }

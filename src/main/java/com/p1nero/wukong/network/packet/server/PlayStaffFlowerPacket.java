@@ -29,7 +29,7 @@ public record PlayStaffFlowerPacket(boolean isTwoHand) implements BasePacket {
                 if(entityPatch instanceof ServerPlayerPatch playerPatch){
                     playerPatch.playAnimationSynchronized((isTwoHand)
                             ? WukongAnimations.STAFF_SPIN_TWO_HAND_LOOP : WukongAnimations.STAFF_SPIN_ONE_HAND_LOOP, 0);
-                    playerPatch.consumeStamina(player.isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
+                    playerPatch.setStamina(playerPatch.getStamina() - (player.isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue()));
                 }
             }));
         }

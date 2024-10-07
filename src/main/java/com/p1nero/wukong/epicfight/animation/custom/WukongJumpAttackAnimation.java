@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.types.BasicAttackAnimation;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
@@ -40,7 +41,8 @@ public class WukongJumpAttackAnimation extends BasicAttackAnimation {
     /**
      * 打中则后跳
      */
-    protected void attackTick(LivingEntityPatch<?> entityPatch) {
+    @Override
+    protected void attackTick(LivingEntityPatch<?> entityPatch, DynamicAnimation animation) {
         AnimationPlayer player = entityPatch.getAnimator().getPlayerFor(this);
         float elapsedTime = player.getElapsedTime();
         float prevElapsedTime = player.getPrevElapsedTime();

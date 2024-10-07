@@ -64,7 +64,7 @@ public class Config
     }
 
     private static boolean validateEntityName(final Object obj){
-        return obj instanceof final String itemName && ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(itemName));
+        return obj instanceof final String itemName && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(itemName));
     }
 
     @SubscribeEvent
@@ -79,13 +79,13 @@ public class Config
 
     private static int setConfig(ForgeConfigSpec.DoubleValue config, double value, CommandSourceStack stack){
         config.set(value);
-        stack.sendSuccess(Component.nullToEmpty("Successfully set to : "+value), true);
+        stack.sendSuccess(() -> Component.literal("Successfully set to : "+value), true);
         return 0;
     }
 
     private static int setConfig(ForgeConfigSpec.BooleanValue config, boolean value, CommandSourceStack stack){
         config.set(value);
-        stack.sendSuccess(Component.nullToEmpty("Successfully set to : "+value), true);
+        stack.sendSuccess(() -> Component.literal("Successfully set to : "+value), true);
         return 0;
     }
 

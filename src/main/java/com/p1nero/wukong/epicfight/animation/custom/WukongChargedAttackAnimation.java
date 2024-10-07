@@ -18,7 +18,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 public class WukongChargedAttackAnimation extends BasicAttackAnimation {
     public WukongChargedAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
         super(convertTime, antic, contact, recovery, collider, colliderJoint, path, armature);
-        this.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+        this.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2)  -> 1.5F))
                 .addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false);
         this.addEvents(

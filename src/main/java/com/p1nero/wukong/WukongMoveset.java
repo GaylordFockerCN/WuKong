@@ -6,15 +6,13 @@ import com.p1nero.wukong.client.particle.WuKongParticles;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
-import com.p1nero.wukong.epicfight.skill.WukongSkills;
-import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.WukongSkillDataKeys;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.item.WukongItems;
 import com.p1nero.wukong.network.PacketHandler;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,19 +34,18 @@ public class WukongMoveset{
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public WukongMoveset(){
-        SkillCategory.ENUM_MANAGER.loadPreemptive(WukongSkillCategories.class);
-        SkillSlot.ENUM_MANAGER.loadPreemptive(WukongSkillSlots.class);
-        WeaponCategory.ENUM_MANAGER.loadPreemptive(WukongWeaponCategories.class);
+        SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID ,WukongSkillCategories.class);
+        SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID ,WukongSkillSlots.class);
+        WeaponCategory.ENUM_MANAGER.registerEnumCls(MOD_ID ,WukongWeaponCategories.class);
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         WukongItems.ITEMS.register(bus);
+        WukongItems.ITEM_TAB.register(bus);
         WuKongParticles.PARTICLES.register(bus);
         WuKongSounds.SOUND_EVENTS.register(bus);
-        bus.addListener(SmashHeavyAttack::register);
+        WukongSkillDataKeys.DATA_KEYS.register(bus);
         PacketHandler.register();
-        WukongSkills.registerSkills();
 
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
-        fg_bus.addListener(WukongSkills::BuildSkills);
         fg_bus.addListener(WukongAnimations::onPlayerTick);
         fg_bus.addListener(WukongMoveset::onPlayerLoggedIn);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -78,7 +75,7 @@ public class WukongMoveset{
         book.addTagElement("author", StringTag.valueOf("P1nero"));
         book.addTagElement("title", StringTag.valueOf("史诗战斗：悟空附属游玩指南"));
 
-        event.getPlayer().addItem(book);
+        event.getEntity().addItem(book);
         Config.GET_GUILD_BOOK.set(false);
     }
 

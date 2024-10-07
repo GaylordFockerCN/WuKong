@@ -6,7 +6,8 @@ import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.*;
 import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.world.entity.player.Player;
-import yesman.epicfight.api.data.reloader.SkillManager;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
@@ -16,6 +17,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongSkills {
     public static Skill SMASH_STYLE;
     public static Skill THRUST_STYLE;
@@ -35,80 +37,53 @@ public class WukongSkills {
         });
         return stack.get();
     }
-
-    public static void registerSkills() {
-        SkillManager.register(WukongDodgeSkill::new, WukongDodgeSkill.createDodgeBuilder()
-                .setAnimations1(
-                        () -> WukongAnimations.DODGE_F1,
-                        () -> WukongAnimations.DODGE_B1,
-                        () -> WukongAnimations.DODGE_L1,
-                        () -> WukongAnimations.DODGE_R1
-                )
-                .setAnimations2(
-                        () -> WukongAnimations.DODGE_F2,
-                        () -> WukongAnimations.DODGE_B2,
-                        () -> WukongAnimations.DODGE_L2,
-                        () -> WukongAnimations.DODGE_R2
-                )
-                .setAnimations3(
-                        () -> WukongAnimations.DODGE_F3,
-                        () -> WukongAnimations.DODGE_B3,
-                        () -> WukongAnimations.DODGE_L3,
-                        () -> WukongAnimations.DODGE_R3
-                )
-                .setPerfectAnimations(
-                        () -> WukongAnimations.DODGE_FP,
-                        () -> WukongAnimations.DODGE_BP,
-                        () -> WukongAnimations.DODGE_LP,
-                        () -> WukongAnimations.DODGE_RP
-                ).setCreativeTab(WukongItems.CREATIVE_MODE_TAB),
-                WukongMoveset.MOD_ID, "dodge");
-        SkillManager.register(StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
-        SkillManager.register(SmashHeavyAttack::new, SmashHeavyAttack.createChargedAttack()
-                        .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
-                        .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)
-                        .setHeavyAttacks(
-                                () -> WukongAnimations.SMASH_CHARGED0,
-                                () -> WukongAnimations.SMASH_CHARGED1,
-                                () -> WukongAnimations.SMASH_CHARGED2,
-                                () -> WukongAnimations.SMASH_CHARGED3,
-                                () -> WukongAnimations.SMASH_CHARGED4)
-                        .setDeriveAnimations(
-                                () -> WukongAnimations.SMASH_DERIVE1,
-                                () -> WukongAnimations.SMASH_DERIVE2)
-                        .setJumpAttackHeavy(() -> WukongAnimations.JUMP_ATTACK_HEAVY)
-                , WukongMoveset.MOD_ID, "smash_charged");
-        SkillManager.register(ThrustHeavyAttack::new, ThrustHeavyAttack.createChargedAttack()
-                .setChargePreAnimation(()-> WukongAnimations.THRUST_PRE)
-                .setChargingAnimation(()->WukongAnimations.THRUST_CHARGING)
-                .setAnimationProviders(
-                        () -> WukongAnimations.THRUST_CHARGED0,
-                        () -> WukongAnimations.THRUST_CHARGED1,
-                        () -> WukongAnimations.THRUST_CHARGED2,
-                        () -> WukongAnimations.THRUST_CHARGED3,
-                        () -> WukongAnimations.THRUST_CHARGED4)
-                .setDeriveAnimations(
-                        () -> WukongAnimations.THRUST_DERIVE_PRE,
-                        () -> WukongAnimations.THRUST_DERIVE2)
-                .setCanChargeWhenMove(false)
-                , WukongMoveset.MOD_ID, "thrust_charged");
-        SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.SMASH).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "smash_style");
-        SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.THRUST).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "thrust_style");
-        SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.PILLAR).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "pillar_style");
-    }
-
-
+    @SubscribeEvent
     public static void BuildSkills(SkillBuildEvent event){
-        WUKONG_DODGE = event.build(WukongMoveset.MOD_ID, "dodge");
-        STAFF_SPIN = event.build(WukongMoveset.MOD_ID, "staff_flower");
-
-        SMASH_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "smash_charged");
-        THRUST_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "thrust_charged");
-        PILLAR_HEAVY_ATTACK = event.build(WukongMoveset.MOD_ID, "pillar_charged");
-
-        SMASH_STYLE = event.build(WukongMoveset.MOD_ID, "smash_style");
-        THRUST_STYLE = event.build(WukongMoveset.MOD_ID, "thrust_style");
-        PILLAR_STYLE = event.build(WukongMoveset.MOD_ID, "pillar_style");
+        SkillBuildEvent.ModRegistryWorker registryWorker = event.createRegistryWorker(WukongMoveset.MOD_ID);
+        WUKONG_DODGE = registryWorker.build("dodge",WukongDodgeSkill::new, WukongDodgeSkill.createDodgeBuilder()
+                        .setAnimations1(
+                                () -> WukongAnimations.DODGE_F1,
+                                () -> WukongAnimations.DODGE_B1,
+                                () -> WukongAnimations.DODGE_L1,
+                                () -> WukongAnimations.DODGE_R1
+                        )
+                        .setAnimations2(
+                                () -> WukongAnimations.DODGE_F2,
+                                () -> WukongAnimations.DODGE_B2,
+                                () -> WukongAnimations.DODGE_L2,
+                                () -> WukongAnimations.DODGE_R2
+                        )
+                        .setAnimations3(
+                                () -> WukongAnimations.DODGE_F3,
+                                () -> WukongAnimations.DODGE_B3,
+                                () -> WukongAnimations.DODGE_L3,
+                                () -> WukongAnimations.DODGE_R3
+                        )
+                        .setPerfectAnimations(
+                                () -> WukongAnimations.DODGE_FP,
+                                () -> WukongAnimations.DODGE_BP,
+                                () -> WukongAnimations.DODGE_LP,
+                                () -> WukongAnimations.DODGE_RP
+                        )
+        );
+        STAFF_SPIN = registryWorker.build("staff_spin", StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE));
+        SMASH_HEAVY_ATTACK = registryWorker.build("smash_heavy_attack", SmashHeavyAttack::new, SmashHeavyAttack.createChargedAttack()
+                .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
+                .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)
+                .setHeavyAttacks(
+                        () -> WukongAnimations.SMASH_CHARGED0,
+                        () -> WukongAnimations.SMASH_CHARGED1,
+                        () -> WukongAnimations.SMASH_CHARGED2,
+                        () -> WukongAnimations.SMASH_CHARGED3,
+                        () -> WukongAnimations.SMASH_CHARGED4)
+                .setDeriveAnimations(
+                        () -> WukongAnimations.SMASH_DERIVE1,
+                        () -> WukongAnimations.SMASH_DERIVE2)
+                .setJumpAttackHeavy(() -> WukongAnimations.JUMP_ATTACK_HEAVY)
+        );
+        SMASH_STYLE = registryWorker.build("smash_style", StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.SMASH));
+        THRUST_STYLE = registryWorker.build("thrust_style", StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.THRUST));
+        PILLAR_STYLE = registryWorker.build("pillar_style", StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.PILLAR));
     }
 
 }
