@@ -46,7 +46,6 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
-            arg "-mixin.config=wukong.mixins.json"
         }
 
         server {
@@ -81,18 +80,9 @@ repositories {
     flatDir {
         dir 'libs'
     }
-//    maven {
-//        name = "worldeditapi"
-//        url "https://maven.enginehub.org/repo/"
-//    }
 
 }
 
-jarJar.enable()
-//jarJar.fromRuntimeConfiguration()
-tasks.named('jarJar') {
-
-}
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

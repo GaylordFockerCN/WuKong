@@ -14,5 +14,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "wukong.mixins.refmap.json"
+  "refmap": "wukong.mixin-refmap.json"
 }
