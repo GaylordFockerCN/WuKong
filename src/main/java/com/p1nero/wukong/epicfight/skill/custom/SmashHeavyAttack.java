@@ -5,6 +5,7 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.WukongStyles;
+import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.WukongSkillDataKeys;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
@@ -181,8 +182,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                         return;
                     }
 
-                    //蓄力的时候做动作是非法的，应该清空棍势 TODO 完美闪避的判断，完美闪避保留棍势
-                    if(container.getDataManager().getDataValue(WukongSkillDataKeys.IS_CHARGING.get()) && !event.getAnimation().equals(chargePre.get())){
+                    //蓄力的时候做动作是非法的，应该清空棍势
+                    if(container.getDataManager().getDataValue(WukongSkillDataKeys.IS_CHARGING.get()) && !event.getAnimation().equals(chargePre.get()) && !(event.getAnimation() instanceof WukongDodgeAnimation)){
                         this.setConsumptionSynchronize(serverPlayerPatch, 1);
                         this.setStackSynchronize(serverPlayerPatch, 0);
                         container.getDataManager().setDataSync(WukongSkillDataKeys.IS_CHARGING.get(), false, player);

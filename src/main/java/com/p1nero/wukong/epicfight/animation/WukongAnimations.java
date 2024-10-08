@@ -179,10 +179,10 @@ public class WukongAnimations {
         DODGE_B3 = new WukongDodgeAnimation(0.1F, 0.6F,"biped/dodge/dodge_b3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
         DODGE_R3 = new WukongDodgeAnimation(0.1F, 0.6F,"biped/dodge/dodge_r3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
         DODGE_L3 = new WukongDodgeAnimation(0.1F, 0.6F,"biped/dodge/dodge_l3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
-        DODGE_FP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped);
-        DODGE_BP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped);
-        DODGE_RP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped);
-        DODGE_LP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_lp", 0.6F, 1.35F, biped);
+        DODGE_FP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_fp", 0.6F, 1.35F, biped, true);
+        DODGE_BP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_bp", 0.6F, 1.35F, biped, true);
+        DODGE_RP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_rp", 0.6F, 1.35F, biped, true);
+        DODGE_LP = new WukongDodgeAnimation(0.1F, 0.63F,"biped/dodge/dodge_lp", 0.6F, 1.35F, biped, true);
 
         STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR,  "biped/auto_1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
