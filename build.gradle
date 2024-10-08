@@ -163,6 +163,7 @@ dependencies {
     implementation fg.deobf("libs:EpicFight:18.5.24")
     implementation fg.deobf("libs:WeaponsOfMiracles:18.1.7.38")
     implementation fg.deobf("libs:MmmMmmMmmMmm-1.18.2:1.5.2")
+    implementation fg.deobf("libs:SpitItOut-1.18.2:1.0.1")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.18:3.0.57')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

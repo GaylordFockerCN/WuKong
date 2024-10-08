@@ -8,6 +8,7 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
+import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
@@ -236,8 +237,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2));
                     boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
 
-                    //蓄力的时候做动作是非法的，应该清空棍势 TODO 完美闪避的判断，完美闪避保留棍势
-                    if(container.getDataManager().getDataValue(IS_CHARGING) && !event.getAnimation().equals(chargePre)){
+                    //蓄力的时候做动作是非法的，应该清空棍势，悟空Dodge额外判断
+                    if(container.getDataManager().getDataValue(IS_CHARGING) && !event.getAnimation().equals(chargePre) && !(event.getAnimation() instanceof WukongDodgeAnimation)){
                         this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
                         this.setStackSynchronize(event.getPlayerPatch(), 0);
                         container.getDataManager().setDataSync(IS_CHARGING, false, player);

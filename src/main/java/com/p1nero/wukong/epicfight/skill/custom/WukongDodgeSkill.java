@@ -1,5 +1,6 @@
 package com.p1nero.wukong.epicfight.skill.custom;
 
+import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
@@ -17,14 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.types.EntityState;
-import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.events.engine.ControllEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
-import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.network.client.CPExecuteSkill;
 import yesman.epicfight.skill.*;
-import yesman.epicfight.skill.dodge.DodgeSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -40,7 +38,7 @@ public class WukongDodgeSkill extends Skill {
     private static final SkillDataManager.SkillDataKey<Integer> COUNT = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//闪避计数器
     private static final SkillDataManager.SkillDataKey<Integer> DIRECTION = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//方向
     private static final SkillDataManager.SkillDataKey<Integer> RESET_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//回归第一段的时间
-    private static final SkillDataManager.SkillDataKey<Boolean> SOUND_PLAYED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播过音效，防止重复播放
+    public static final SkillDataManager.SkillDataKey<Boolean> SOUND_PLAYED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播过音效，防止重复播放
     public static final int RESET_TICKS = 100;
     protected final StaticAnimationProvider[][] animations;
 
@@ -62,6 +60,9 @@ public class WukongDodgeSkill extends Skill {
         container.getDataManager().registerData(SOUND_PLAYED);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID, (event -> {
             Player player = event.getPlayerPatch().getOriginal();
+            player.getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+                wkPlayer.setPerfectDodge(true);
+            });
             if(!container.getDataManager().getDataValue(SOUND_PLAYED)){
                 event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1);
                 if(player.level instanceof ServerLevel){
