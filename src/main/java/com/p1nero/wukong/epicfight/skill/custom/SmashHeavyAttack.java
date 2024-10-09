@@ -285,11 +285,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
      */
     public void processDamage(PlayerPatch<?> playerPatch, DamageSource damageSource, AttackResult.ResultType attackResult, float amount, @Nullable LivingEntityPatch<?> attackerPatch){
         AttackResult result = playerPatch != null ? AttackResult.of(attackResult, amount) : AttackResult.success(amount);
-
         if (attackerPatch != null) {
             attackerPatch.setLastAttackResult(result);
         }
-        EpicFightDamageSource deflictedDamage = EpicFightDamageSources.copy(damageSource);
+        EpicFightDamageSource deflictedDamage = (damageSource instanceof EpicFightDamageSource epicFightDamageSource)? epicFightDamageSource : EpicFightDamageSources.copy(damageSource);
         deflictedDamage.addRuntimeTag(EpicFightDamageType.PARTIAL_DAMAGE);
         if(playerPatch != null){
             playerPatch.getOriginal().hurt(deflictedDamage, result.damage);
