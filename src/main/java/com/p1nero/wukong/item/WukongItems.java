@@ -20,7 +20,7 @@ public class WukongItems {
     public static final RegistryObject<Item> STAFF = ITEMS.register("staff", () -> new TestStaff(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(114514).rarity(Rarity.COMMON).tab(CREATIVE_MODE_TAB)));
     public static final RegistryObject<Item> JIN_GU_BANG;
     static {
-        if(ModList.get().isLoaded("geckolib3")){
+        if(ModList.get().isLoaded("geckolib3")){//damage In 83
             JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.EPIC).tab(CREATIVE_MODE_TAB)));
         } else {
             JIN_GU_BANG = STAFF;
