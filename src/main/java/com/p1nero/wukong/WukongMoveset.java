@@ -49,7 +49,6 @@ public class WukongMoveset{
 
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         fg_bus.addListener(WukongSkills::BuildSkills);
-        fg_bus.addListener(SmashHeavyAttack::onPlayerHurt);
         fg_bus.addListener(WukongAnimations::onPlayerTick);
         fg_bus.addListener(WukongMoveset::onPlayerLoggedIn);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);

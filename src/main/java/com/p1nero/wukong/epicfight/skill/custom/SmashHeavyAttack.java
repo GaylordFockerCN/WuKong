@@ -28,7 +28,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
@@ -38,8 +40,12 @@ import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
@@ -210,11 +216,24 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         //成功识破加棍势，并重置普攻计数器，下次从三段普攻开始
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
             if(container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)){
-                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + 10);//获得棍势
+                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
                 event.setAmount(0);
                 event.setCanceled(true);
             }
+
+            event.getPlayerPatch().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+                if(wkPlayer.getDamageReduce() > 0){
+                    if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource){
+                        epicFightDamageSource.setStunType(StunType.NONE);
+                    }
+                    LivingEntityPatch<?> attackerPatch = EpicFightCapabilities.getEntityPatch(event.getDamageSource().getEntity(), LivingEntityPatch.class);
+                    this.processDamage(event.getPlayerPatch(), event.getDamageSource(), AttackResult.ResultType.SUCCESS, event.getAmount() * (1 - wkPlayer.getDamageReduce()), attackerPatch);
+                    event.setResult(AttackResult.ResultType.BLOCKED);
+                    event.setCanceled(true);
+                }
+            });
+
             //防止坠机
             if (event.getDamageSource().isFall() && container.getDataManager().getDataValue(PROTECT_NEXT_FALL)) {
                 event.setAmount(0);
@@ -299,15 +318,15 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         super.onInitiate(container);
     }
 
-    /**
-     * 减伤，史诗战斗的接口有bug
-     */
-    public static void onPlayerHurt(LivingHurtEvent event){
-        event.getEntity().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-            if(wkPlayer.getDamageReduce() != 0){
-                event.setAmount(event.getAmount() * (1 - wkPlayer.getDamageReduce()));
-            }
-        });
+    public void processDamage(PlayerPatch<?> entitypatch, DamageSource damageSource, AttackResult.ResultType resultType, float amount, @Nullable LivingEntityPatch<?> attackerPatch){
+        AttackResult result = (entitypatch != null && !damageSource.isBypassInvul()) ? new AttackResult(resultType, amount) : AttackResult.success(amount);
+        if (attackerPatch != null) {
+            attackerPatch.setLastAttackResult(result);
+        }
+        DamageSource deflictedDamage = new DamageSource(damageSource.msgId).bypassInvul();
+        if (entitypatch != null) {
+            entitypatch.getOriginal().hurt(deflictedDamage, result.damage);
+        }
     }
 
     @Override
@@ -338,7 +357,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
             //层数变化检测以播音效
-            if(container.getStack() > dataManager.getDataValue(LAST_STACK) && dataManager.getDataValue(IS_CHARGING)){
+            if(container.getStack() > dataManager.getDataValue(LAST_STACK)){
                 serverPlayerPatch.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                 dataManager.setDataSync(PLAY_SOUND, false, serverPlayer);
             }

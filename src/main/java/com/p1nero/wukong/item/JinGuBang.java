@@ -36,6 +36,11 @@ public class JinGuBang extends WeaponItem implements IAnimatable {
     }
 
     @Override
+    public boolean isDamageable(ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
         consumer.accept(new IItemRenderProperties() {
             private JinGuBangRenderer renderer = null;

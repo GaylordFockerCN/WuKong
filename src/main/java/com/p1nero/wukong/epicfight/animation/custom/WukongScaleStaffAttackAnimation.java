@@ -22,18 +22,6 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
         super(convertTime, antic, contact, recovery, collider, colliderJoint, path, armature);
     }
 
-    public WukongScaleStaffAttackAnimation(float convertTime, float antic, float preDelay, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
-        super(convertTime, antic, preDelay, contact, recovery, collider, colliderJoint, path, armature);
-    }
-
-    public WukongScaleStaffAttackAnimation(float convertTime, float antic, float contact, float recovery, InteractionHand hand, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature) {
-        super(convertTime, antic, contact, recovery, hand, collider, colliderJoint, path, armature);
-    }
-
-    public WukongScaleStaffAttackAnimation(float convertTime, String path, Armature armature, Phase... phases) {
-        super(convertTime, path, armature, phases);
-    }
-
     /**
      * 取消加棍势
      * 设置减伤
@@ -59,7 +47,7 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
         entityPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-            wkPlayer.setDamageReduce(0.0F);
+            wkPlayer.setDamageReduce(-1.0F);
         });
         if(entityPatch.isLogicalClient() && WukongWeaponCategories.isWeaponValid(entityPatch)){
             CompoundTag tag = entityPatch.getOriginal().getMainHandItem().getOrCreateTag();

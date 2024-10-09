@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 public class WKPlayer {
     private String lastSkill = "";//用于恢复闪避技能
     private boolean perfectDodge;
-    private float damageReduce;
+    private float damageReduce = -1;
 
     public void setDamageReduce(float damageReduce) {
         this.damageReduce = damageReduce;
