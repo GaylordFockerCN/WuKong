@@ -36,6 +36,11 @@ public class JinGuBang extends WeaponItem implements GeoItem {
     }
 
     @Override
+    public boolean isDamageable(ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
             private JinGuBangRenderer renderer = null;

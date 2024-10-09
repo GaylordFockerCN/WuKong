@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class WukongItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WukongMoveset.MOD_ID);
     public static final RegistryObject<Item> STAFF = ITEMS.register("staff", () -> new TestStaff(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(114514).rarity(Rarity.COMMON)));
-    public static final RegistryObject<Item> JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 1, -3, (new Item.Properties()).stacksTo(1).setNoRepair().rarity(Rarity.EPIC)));
     public static final DeferredRegister<CreativeModeTab> ITEM_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, WukongMoveset.MOD_ID);
     public static final RegistryObject<CreativeModeTab> WK = ITEM_TAB.register("wukong_items",
             () -> CreativeModeTab.builder()

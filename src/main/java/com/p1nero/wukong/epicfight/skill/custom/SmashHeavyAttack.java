@@ -171,7 +171,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource && epicFightDamageSource.is(EpicFightDamageType.PARTIAL_DAMAGE))
                 return;
             if(container.getDataManager().getDataValue(WukongSkillDataKeys.IS_IN_SPECIAL_ATTACK.get())){
-                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + 10);//获得棍势
+                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ANOTHER_ACTION_ANIMATION, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1.get(), 2);
                 event.setAmount(0);
                 event.setCanceled(true);
@@ -309,7 +309,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
             //层数变化检测以播音效
-            if(container.getStack() > dataManager.getDataValue(WukongSkillDataKeys.LAST_STACK.get()) && dataManager.getDataValue(WukongSkillDataKeys.IS_CHARGING.get())){
+            if(container.getStack() > dataManager.getDataValue(WukongSkillDataKeys.LAST_STACK.get())){
                 serverPlayerPatch.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                 dataManager.setDataSync(WukongSkillDataKeys.PLAY_SOUND.get(), false, serverPlayer);
             }
