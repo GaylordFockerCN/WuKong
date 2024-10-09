@@ -42,6 +42,8 @@ public class WukongSkillDataKeys {
             SkillDataKey.createBooleanKey(true, false, SmashHeavyAttack.class));//是否播放棍势消耗音效
     public static final RegistryObject<SkillDataKey<Boolean>> PROTECT_NEXT_FALL = DATA_KEYS.register("protect_next_fall", () ->
             SkillDataKey.createBooleanKey(false, false, SmashHeavyAttack.class));//防止坠机
+    public static final RegistryObject<SkillDataKey<Float>> DAMAGE_REDUCE = DATA_KEYS.register("damage_reduce", () ->
+            SkillDataKey.createFloatKey(-1.0F, false, SmashHeavyAttack.class));//防止坠机
     //闪避
     public static final RegistryObject<SkillDataKey<Integer>> COUNT = DATA_KEYS.register("count", () ->
             SkillDataKey.createIntKey(0, false, WukongDodgeSkill.class));//闪避计数器
@@ -49,8 +51,8 @@ public class WukongSkillDataKeys {
             SkillDataKey.createIntKey(0, false, WukongDodgeSkill.class));//方向，用于播放完美闪避
     public static final RegistryObject<SkillDataKey<Integer>> RESET_TIMER = DATA_KEYS.register("reset_timer", () ->
             SkillDataKey.createIntKey(0, false, WukongDodgeSkill.class));//回归第一段的时间
-    public static final RegistryObject<SkillDataKey<Boolean>> SOUND_PLAYED = DATA_KEYS.register("sound_played", () ->
-            SkillDataKey.createBooleanKey(false, false, WukongDodgeSkill.class));//是否播过音效，防止重复播放
+    public static final RegistryObject<SkillDataKey<Boolean>> DODGE_PLAYED = DATA_KEYS.register("dodge_played", () ->
+            SkillDataKey.createBooleanKey(false, false, WukongDodgeSkill.class));//是否播过完美闪避，防止重复播放
     //棍花
     public static final RegistryObject<SkillDataKey<Boolean>> PLAYING_STAFF_SPIN = DATA_KEYS.register("playing_staff_spin", () ->
             SkillDataKey.createBooleanKey(false, false, StaffPassive.class));

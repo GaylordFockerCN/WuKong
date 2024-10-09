@@ -16,14 +16,17 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import yesman.epicfight.api.animation.AnimationProvider;
 import yesman.epicfight.api.animation.StaticAnimationProvider;
-import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
@@ -33,8 +36,14 @@ import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.EpicFightDamageSources;
+import yesman.epicfight.world.damagesource.EpicFightDamageType;
+import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
@@ -165,6 +174,21 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 event.setAmount(0);
                 event.setCanceled(true);
             }
+
+            float damageReduce = container.getDataManager().getDataValue(WukongSkillDataKeys.DAMAGE_REDUCE.get());
+            //霸体
+            if(damageReduce > 0){
+                if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource){
+                    epicFightDamageSource.setStunType(StunType.NONE);
+                }
+                event.setAmount(event.getAmount() * (1 - damageReduce));
+                //TODO 减伤
+//                LivingEntityPatch<?> attackerPatch = EpicFightCapabilities.getEntityPatch(event.getDamageSource().getEntity(), LivingEntityPatch.class);
+//                this.processDamage(event.getPlayerPatch(), event.getDamageSource(), AttackResult.ResultType.SUCCESS,(1 - damageReduce) * event.getAmount(), attackerPatch);
+                event.setResult(AttackResult.ResultType.MISSED);
+                event.setCanceled(true);
+            }
+
             //防止坠机
             if (event.getDamageSource().is(DamageTypes.FALL) && container.getDataManager().getDataValue(WukongSkillDataKeys.PROTECT_NEXT_FALL.get())) {
                 event.setAmount(0);
@@ -255,6 +279,22 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         listener.removeListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID);
     }
 
+    /**
+     * copy from {@link yesman.epicfight.events.EntityEvents#attackEvent(LivingAttackEvent)}
+     */
+    public void processDamage(PlayerPatch<?> playerPatch, DamageSource damageSource, AttackResult.ResultType attackResult, float amount, @Nullable LivingEntityPatch<?> attackerPatch){
+        AttackResult result = playerPatch != null ? AttackResult.of(attackResult, amount) : AttackResult.success(amount);
+
+        if (attackerPatch != null) {
+            attackerPatch.setLastAttackResult(result);
+        }
+        EpicFightDamageSource deflictedDamage = EpicFightDamageSources.copy(damageSource);
+        deflictedDamage.addRuntimeTag(EpicFightDamageType.PARTIAL_DAMAGE);
+        if(playerPatch != null){
+            playerPatch.getOriginal().hurt(deflictedDamage, result.damage);
+        }
+    }
+
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
@@ -322,7 +362,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             if(current > 0){
                 dataManager.setDataSync(WukongSkillDataKeys.CHARGED4_TIMER.get(), current - 1, serverPlayer);
             }
-            float consumption = Config.CHARGING_SPEED.get().floatValue() / 3;
+            float consumption = Config.CHARGING_SPEED.get().floatValue() / 5;
             if(current == 1 && container.isFull()){
                 this.setStackSynchronize(serverPlayerPatch, 3);
                 this.setConsumptionSynchronize(serverPlayerPatch, container.getMaxResource() - consumption);

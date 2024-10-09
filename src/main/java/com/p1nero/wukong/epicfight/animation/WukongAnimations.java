@@ -241,7 +241,12 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) ->
-                                livingEntityPatch.playSound(EpicFightSounds.ENTITY_MOVE.get(), 1, 1)), AnimationEvent.Side.SERVER));
+                                livingEntityPatch.playSound(EpicFightSounds.ENTITY_MOVE.get(), 1, 1)), AnimationEvent.Side.SERVER))
+                .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 1.9833F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setData(WukongSkillDataKeys.DAMAGE_REDUCE.get(), 0.5F);//设置减伤
+                    }
+                }), AnimationEvent.Side.SERVER));
 
         JUMP_ATTACK_LIGHT = new WukongJumpAttackAnimation(0.10F, 0.13F, 0.40F, 0.50F, WukongColliders.JUMP_ATTACK_LIGHT, biped.toolR,  "biped/jump_attack/jump_light_pre", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.45F))
@@ -262,7 +267,12 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.0F))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) ->
-                                livingEntityPatch.playSound(EpicFightSounds.ROLL.get(), 1, 1)), AnimationEvent.Side.SERVER));
+                                livingEntityPatch.playSound(EpicFightSounds.ROLL.get(), 1, 1)), AnimationEvent.Side.SERVER))
+                .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 0.5F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setData(WukongSkillDataKeys.DAMAGE_REDUCE.get(), 0.5F);//设置减伤
+                    }
+                }), AnimationEvent.Side.SERVER));;
 
         STAFF_SPIN_ONE_HAND_LOOP = new StaffSpinAttackAnimation(1.25F, biped, "biped/staff_spin/staff_spin_one_hand", 0.05F, false);
         STAFF_SPIN_TWO_HAND_LOOP = new StaffSpinAttackAnimation(0.83F, biped, "biped/staff_spin/staff_spin_two_hand", 0.08F, true);
@@ -320,7 +330,12 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
                 .newTimePair(0, 2.5F)
                 .addState(EntityState.TURNING_LOCKED, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.0F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.0F))
+                .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 2.5F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setData(WukongSkillDataKeys.DAMAGE_REDUCE.get(), 0.5F);//设置减伤
+                    }
+                }), AnimationEvent.Side.SERVER));;
         List<AnimationEvent.TimeStampedEvent> sc2List = append(
                 AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(
@@ -346,7 +361,12 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
                 .newTimePair(0, 2.667F)
                 .addState(EntityState.TURNING_LOCKED, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.0F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.0F))
+                .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 2.6667F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setData(WukongSkillDataKeys.DAMAGE_REDUCE.get(), 0.7F);//设置减伤
+                    }
+                }), AnimationEvent.Side.SERVER));;
         List<AnimationEvent.TimeStampedEvent> sc3List = append(
                 AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(
@@ -373,7 +393,12 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 2.75F))
                 .newTimePair(0, 3.3F)
                 .addState(EntityState.TURNING_LOCKED, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.3F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.3F))
+                .addEvents(AnimationEvent.TimePeriodEvent.create(0.01F, 3.3F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof ServerPlayerPatch playerPatch && WukongWeaponCategories.isWeaponValid(playerPatch)){
+                        playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setData(WukongSkillDataKeys.DAMAGE_REDUCE.get(), 0.9F);//设置减伤
+                    }
+                }), AnimationEvent.Side.SERVER));;
         List<AnimationEvent.TimeStampedEvent> sc4List = append(
                 AnimationEvent.TimeStampedEvent.create(0.208F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(

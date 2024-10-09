@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 完美闪避回棍势，TODO 蓄力的时候完美闪避保留棍势
+ * 完美闪避回棍势
  */
 public class WukongDodgeSkill extends Skill {
     private static final UUID EVENT_UUID = UUID.fromString("d2d011cc-f30f-11ed-a05b-0242ac114515");
@@ -51,7 +51,7 @@ public class WukongDodgeSkill extends Skill {
         super.onInitiate(container);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID, (event -> {
             Player player = event.getPlayerPatch().getOriginal();
-            if(!container.getDataManager().getDataValue(WukongSkillDataKeys.SOUND_PLAYED.get())){
+            if(!container.getDataManager().getDataValue(WukongSkillDataKeys.DODGE_PLAYED.get())){
                 event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1);
                 if(player.level() instanceof ServerLevel){
                     PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(player.getId()));//下面那行无效，手动发包解决
@@ -59,9 +59,9 @@ public class WukongDodgeSkill extends Skill {
                 }
                 SkillContainer weaponInnateContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
                 weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + 5);//获得棍势
-                container.getDataManager().setData(WukongSkillDataKeys.SOUND_PLAYED.get(), true);
+                container.getDataManager().setData(WukongSkillDataKeys.DODGE_PLAYED.get(), true);
+                event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(WukongSkillDataKeys.DIRECTION.get())].get(), 0.0F);
             }
-            event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(WukongSkillDataKeys.DIRECTION.get())].get(), 0.0F);
         }));
     }
 
@@ -101,7 +101,7 @@ public class WukongDodgeSkill extends Skill {
         int i = args.readInt();
         float yaw = args.readFloat();
         SkillDataManager dataManager = executer.getSkill(SkillSlots.DODGE).getDataManager();
-        dataManager.setData(WukongSkillDataKeys.SOUND_PLAYED.get(), false);
+        dataManager.setData(WukongSkillDataKeys.DODGE_PLAYED.get(), false);
         int count = dataManager.getDataValue(WukongSkillDataKeys.COUNT.get());
 //        executer.playAnimationSynchronized(this.animations[0][i].get(), 0.0F);
         executer.playAnimationSynchronized(this.animations[count][i].get(), 0.0F);//轮播
