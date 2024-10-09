@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
@@ -24,6 +25,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.api.animation.types.StaticAnimation;
@@ -65,6 +67,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_SECOND_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第二段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_JUMP_HEAVY = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用跳跃重击
     public static final SkillDataManager.SkillDataKey<Boolean> PLAY_SOUND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播放棍势消耗音效
+    public static final SkillDataManager.SkillDataKey<Float> DAMAGE_REDUCE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);//是否播放棍势消耗音效
     public static final SkillDataManager.SkillDataKey<Boolean> PROTECT_NEXT_FALL = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//防止坠机
     protected final StaticAnimation[] animations;//0~4共有五种重击
     protected StaticAnimation deriveAnimation1;
@@ -186,6 +189,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, RED_TIMER, 0);
         SkillDataRegister.register(manager, LAST_STACK, 0);
         SkillDataRegister.register(manager, STARS_CONSUMED, 0);
+        SkillDataRegister.register(manager, DAMAGE_REDUCE, 0.0F);
         SkillDataRegister.register(manager, IS_CHARGING, false);
         SkillDataRegister.register(manager, IS_IN_SPECIAL_ATTACK, false);
         SkillDataRegister.register(manager, CAN_FIRST_DERIVE, false);
@@ -295,6 +299,17 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         super.onInitiate(container);
     }
 
+    /**
+     * 减伤，史诗战斗的接口有bug
+     */
+    public static void onPlayerHurt(LivingHurtEvent event){
+        event.getEntity().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+            if(wkPlayer.getDamageReduce() != 0){
+                event.setAmount(event.getAmount() * (1 - wkPlayer.getDamageReduce()));
+            }
+        });
+    }
+
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
@@ -377,7 +392,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             if(current > 0){
                 dataManager.setDataSync(CHARGED4_TIMER, current - 1, serverPlayer);
             }
-            float consumption = Config.CHARGING_SPEED.get().floatValue() / 3;
+            float consumption = Config.CHARGING_SPEED.get().floatValue() / 5;
             if(current == 1 && container.isFull()){
                 this.setStackSynchronize(serverPlayerPatch, 3);
                 this.setConsumptionSynchronize(serverPlayerPatch, container.getMaxResource() - consumption);

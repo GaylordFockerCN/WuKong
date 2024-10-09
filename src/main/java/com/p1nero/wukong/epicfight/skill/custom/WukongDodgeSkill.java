@@ -3,8 +3,6 @@ package com.p1nero.wukong.epicfight.skill.custom;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
-import com.p1nero.wukong.epicfight.skill.WukongSkills;
-import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.client.AddEntityAfterImageParticle;
@@ -31,14 +29,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 完美闪避回棍势，TODO 蓄力的时候完美闪避保留棍势
+ * 完美闪避回棍势，蓄力的时候完美闪避保留棍势
  */
 public class WukongDodgeSkill extends Skill {
     private static final UUID EVENT_UUID = UUID.fromString("d2d011cc-f30f-11ed-a05b-0242ac114515");
     private static final SkillDataManager.SkillDataKey<Integer> COUNT = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//闪避计数器
     private static final SkillDataManager.SkillDataKey<Integer> DIRECTION = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//方向
     private static final SkillDataManager.SkillDataKey<Integer> RESET_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//回归第一段的时间
-    public static final SkillDataManager.SkillDataKey<Boolean> SOUND_PLAYED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播过音效，防止重复播放
+    public static final SkillDataManager.SkillDataKey<Boolean> DODGE_PLAYED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播过完美闪避动画，防止重复播放
     public static final int RESET_TICKS = 100;
     protected final StaticAnimationProvider[][] animations;
 
@@ -57,13 +55,13 @@ public class WukongDodgeSkill extends Skill {
         container.getDataManager().registerData(COUNT);
         container.getDataManager().registerData(DIRECTION);
         container.getDataManager().registerData(RESET_TIMER);
-        container.getDataManager().registerData(SOUND_PLAYED);
+        container.getDataManager().registerData(DODGE_PLAYED);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID, (event -> {
             Player player = event.getPlayerPatch().getOriginal();
             player.getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                 wkPlayer.setPerfectDodge(true);
             });
-            if(!container.getDataManager().getDataValue(SOUND_PLAYED)){
+            if(!container.getDataManager().getDataValue(DODGE_PLAYED)){
                 event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1);
                 if(player.level instanceof ServerLevel){
                     PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(player.getId()));//下面那行无效，手动发包解决
@@ -71,9 +69,9 @@ public class WukongDodgeSkill extends Skill {
                 }
                 SkillContainer weaponInnateContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
                 weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + 5);//获得棍势
-                container.getDataManager().setData(SOUND_PLAYED, true);
+                container.getDataManager().setData(DODGE_PLAYED, true);
+                event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(DIRECTION)].get(), 0.0F);//只播一次
             }
-            event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(DIRECTION)].get(), 0.0F);
         }));
     }
 
@@ -125,7 +123,7 @@ public class WukongDodgeSkill extends Skill {
         int i = args.readInt();
         float yaw = args.readFloat();
         SkillDataManager dataManager = executer.getSkill(SkillSlots.DODGE).getDataManager();
-        dataManager.setData(SOUND_PLAYED, false);
+        dataManager.setData(DODGE_PLAYED, false);
         int count = dataManager.getDataValue(COUNT);
 //        executer.playAnimationSynchronized(this.animations[0][i].get(), 0.0F);
         executer.playAnimationSynchronized(this.animations[count][i].get(), 0.0F);//轮播

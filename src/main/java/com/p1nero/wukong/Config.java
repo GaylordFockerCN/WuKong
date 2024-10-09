@@ -35,7 +35,7 @@ public class Config
         GET_GUILD_BOOK = createBool("给第一个进游戏的玩家玩法说明。", "get_guild_book", true);
         BASIC_ATTACK_INTERVAL_TICKS = createDouble("自定义普攻间隔判定时间（原版太长了！）", "basic_attack_time_interval", 16.0);
         DERIVE_CHECK_TIME = createDouble("切手技判定时间", "derive_check_time", 30.0);
-        CHARGING_SPEED = createDouble("蓄力时每tick增加的棍势（影响棍势消耗速度！）", "charging_speed", 0.8);
+        CHARGING_SPEED = createDouble("蓄力时每tick增加的棍势（棍花充能速度为3倍， 第四段棍势每tick消耗 1/5）", "charging_speed", 1.2);
         STAFF_FLOWER_STAMINA_CONSUME = createDouble("棍花每tick耐力消耗", "staff_flower_stamina_consume", 0.1);
         DERIVE_STAMINA_CONSUME = createDouble("立棍和戳棍切手技每tick耐力消耗", "derive_stamina_consume", 2.0);
         ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER = BUILDER
