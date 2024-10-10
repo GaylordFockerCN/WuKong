@@ -28,6 +28,8 @@ public class WukongSkillDataKeys {
             SkillDataKey.createIntKey(0, false, SmashHeavyAttack.class));//本次攻击是否消耗星（是否强化）
     public static final RegistryObject<SkillDataKey<Boolean>> IS_IN_SPECIAL_ATTACK = DATA_KEYS.register("is_in_special_attack", () ->
             SkillDataKey.createBooleanKey(false, false, SmashHeavyAttack.class));//是否正在切手技（用来判断无敌时间）
+    public static final RegistryObject<SkillDataKey<Boolean>> IS_SPECIAL_SUCCESS = DATA_KEYS.register("is_special_success", () ->
+            SkillDataKey.createBooleanKey(false, false, SmashHeavyAttack.class));//是否正在切手技（用来判断无敌时间）
     public static final RegistryObject<SkillDataKey<Boolean>> IS_CHARGING = DATA_KEYS.register("is_charging", () ->
             SkillDataKey.createBooleanKey(false, false, SmashHeavyAttack.class));//是否正在蓄力
     public static final RegistryObject<SkillDataKey<Integer>> DERIVE_TIMER = DATA_KEYS.register("derive_timer", () ->

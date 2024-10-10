@@ -94,7 +94,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataManager dataManager = container.getDataManager();
         ServerPlayer player = executer.getOriginal();
         dataManager.setDataSync(WukongSkillDataKeys.STARS_CONSUMED.get(), container.getStack(), player);//0星也是星！
-        if(dataManager.getDataValue(WukongSkillDataKeys.CAN_JUMP_HEAVY.get())){
+        if(dataManager.getDataValue(WukongSkillDataKeys.CAN_JUMP_HEAVY.get()) && !player.onGround()){
             dataManager.setData(WukongSkillDataKeys.PROTECT_NEXT_FALL.get(), true);//放里面，防止瞎按技能键就防坠机的bug
             //跳跃攻击，也消耗所有棍势
             dataManager.setDataSync(WukongSkillDataKeys.CAN_JUMP_HEAVY.get(), false, player);
@@ -171,7 +171,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource && epicFightDamageSource.is(EpicFightDamageType.PARTIAL_DAMAGE))
                 return;
             if(container.getDataManager().getDataValue(WukongSkillDataKeys.IS_IN_SPECIAL_ATTACK.get())){
-                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
+                if(!container.getDataManager().getDataValue(WukongSkillDataKeys.IS_SPECIAL_SUCCESS.get())){
+                    container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
+                    container.getDataManager().setDataSync(WukongSkillDataKeys.IS_SPECIAL_SUCCESS.get(), true, event.getPlayerPatch().getOriginal());
+                }
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ANOTHER_ACTION_ANIMATION, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1.get(), 2);
                 event.setAmount(0);
                 event.setCanceled(true);
@@ -232,7 +235,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     if(container.isFull()){
                         container.getDataManager().setDataSync(WukongSkillDataKeys.CHARGED4_TIMER.get(), MAX_CHARGED4_TICKS, player);
                     }
-                    if(event.getDamageSource().getAnimation().equals(deriveAnimation1)){
+                    if(event.getDamageSource().getAnimation().equals(deriveAnimation1.get())){
                         container.getDataManager().setDataSync(WukongSkillDataKeys.CAN_SECOND_DERIVE.get(), true, player);
                         container.getDataManager().setDataSync(WukongSkillDataKeys.DERIVE_TIMER.get(), Config.DERIVE_CHECK_TIME.get().intValue(), player);
                     }
@@ -242,7 +245,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_ATTACK, EVENT_UUID, (event -> {
                     int starCnt = container.getDataManager().getDataValue(WukongSkillDataKeys.STARS_CONSUMED.get());
-                    if(event.getDamageSource().getAnimation().equals(jumpAttackHeavy)){
+                    if(event.getDamageSource().getAnimation().equals(jumpAttackHeavy.get())){
                         float mul = switch (starCnt) {
                             case 1 -> 3;
                             case 2 -> 4.5F;
@@ -251,10 +254,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                             default -> 1.45F;
                         };
                         event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
-                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation1)){
+                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation1.get())){
                         float mul = starCnt == 0 ? 1.0F : 1.96F;
                         event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
-                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation2)){
+                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation2.get())){
                         float mul = switch (starCnt) {
                             case 1 -> 4.7F;
                             case 2 -> 4.9F;
@@ -263,6 +266,14 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                         };
                         event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
                     }
+                    //对倒地的敌人不施加硬直
+                    event.getTarget().getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
+                        if(entityPatch instanceof LivingEntityPatch<?> livingEntityPatch){
+                            if(livingEntityPatch.getEntityState().knockDown()){
+                                event.getDamageSource().setStunType(StunType.NONE);
+                            }
+                        }
+                    });
                 }));
 
         super.onInitiate(container);
@@ -347,7 +358,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     dataManager.setData(WukongSkillDataKeys.PROTECT_NEXT_FALL.get(), true);//MAN
                     serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()].get(), 0.0F);//有几星就几星重击
                     dataManager.setDataSync(WukongSkillDataKeys.STARS_CONSUMED.get(), container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
-                    resetConsumption(container, serverPlayerPatch, dataManager.getDataValue(WukongSkillDataKeys.PLAY_SOUND.get()));
+                    resetConsumption(container, serverPlayerPatch, true);
                 }
             }
 
