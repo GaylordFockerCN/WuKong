@@ -68,6 +68,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     public static final SkillDataManager.SkillDataKey<Integer> LAST_STACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//上一次的层数，用于判断是否加层
     public static final SkillDataManager.SkillDataKey<Integer> STARS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//本次攻击是否消耗星（是否强化）
     public static final SkillDataManager.SkillDataKey<Boolean> IS_IN_SPECIAL_ATTACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在切手技
+    public static final SkillDataManager.SkillDataKey<Boolean> IS_SPECIAL_ATTACK_SUCCESS = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否识破成功
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在蓄力
     public static SkillDataManager.SkillDataKey<Integer> DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//衍生合法时间计时器
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第一段衍生
@@ -199,6 +200,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, DAMAGE_REDUCE, 0.0F);
         SkillDataRegister.register(manager, IS_CHARGING, false);
         SkillDataRegister.register(manager, IS_IN_SPECIAL_ATTACK, false);
+        SkillDataRegister.register(manager, IS_SPECIAL_ATTACK_SUCCESS, false);
         SkillDataRegister.register(manager, CAN_FIRST_DERIVE, false);
         SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
         SkillDataRegister.register(manager, CAN_JUMP_HEAVY, false);
@@ -217,7 +219,11 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         //成功识破加棍势，并重置普攻计数器，下次从三段普攻开始
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
             if(container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)){
-                container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
+                //需加判断，否则此期间会猛涨
+                if(!container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)){
+                    container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
+                    container.getDataManager().setDataSync(IS_SPECIAL_ATTACK_SUCCESS, true, event.getPlayerPatch().getOriginal());
+                }
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
                 event.setAmount(0);
                 event.setCanceled(true);

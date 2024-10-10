@@ -1,5 +1,6 @@
 package com.p1nero.wukong.epicfight.skill.custom;
 
+import com.p1nero.wukong.Config;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
@@ -68,7 +69,7 @@ public class WukongDodgeSkill extends Skill {
 //                serverLevel.sendParticles(EpicFightParticles.ENTITY_AFTER_IMAGE.get(), player.getX(), player.getY(), player.getZ(), 0, Double.longBitsToDouble(player.getId()), 0.0, 0.0, 1.0);
                 }
                 SkillContainer weaponInnateContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
-                weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + 5);//获得棍势
+                weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得棍势
                 container.getDataManager().setData(DODGE_PLAYED, true);
                 event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(DIRECTION)].get(), 0.0F);//只播一次
             }

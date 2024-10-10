@@ -336,7 +336,6 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.NEUTRALIZE)
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_BIG)
                 .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.BLUNT_HIT_HARD)
-                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(3.5F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(11))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
@@ -361,7 +360,7 @@ public class WukongAnimations {
         SMASH_CHARGED4 = new WukongScaleStaffAttackAnimation(0.15F, 2.63F, 2.8F, 3.3F, WukongColliders.STACK_4, biped.toolR,  "biped/smash/smash_heavy4", biped, 0.9F)
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.NEUTRALIZE)
-                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(10.0F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_BIG)
                 .addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.BLUNT_HIT_HARD)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(15.5F))
@@ -402,6 +401,7 @@ public class WukongAnimations {
                         SkillDataManager dataManager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
                         dataManager.setDataSync(SmashHeavyAttack.CAN_FIRST_DERIVE, false, serverPlayerPatch.getOriginal());
                         dataManager.setDataSync(SmashHeavyAttack.IS_IN_SPECIAL_ATTACK, true, serverPlayerPatch.getOriginal());
+                        dataManager.setDataSync(SmashHeavyAttack.IS_SPECIAL_ATTACK_SUCCESS, false, serverPlayerPatch.getOriginal());
                     }
                 }), AnimationEvent.Side.SERVER))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS,
