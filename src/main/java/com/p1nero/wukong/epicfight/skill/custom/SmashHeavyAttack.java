@@ -29,6 +29,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.ValueModifier;
@@ -288,9 +289,9 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     }
                 }));
 
-        //根据星数改跳跃重击和破、斩棍式伤害
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
+                    //根据星数改跳跃重击和破、斩棍式伤害
                     int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);
                     if(event.getDamageSource().getAnimation().equals(jumpAttackHeavy)){
                         float mul = switch (starCnt) {
@@ -313,6 +314,14 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                         };
                         event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
                     }
+                    //对倒地的敌人不施加硬直
+                    event.getTarget().getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
+                        if(entityPatch instanceof LivingEntityPatch<?> livingEntityPatch){
+                            if(livingEntityPatch.getEntityState().knockDown()){
+                                event.getDamageSource().setStunType(StunType.NONE);
+                            }
+                        }
+                    });
                 }));
 
         super.onInitiate(container);
@@ -396,7 +405,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     dataManager.setData(PROTECT_NEXT_FALL, true);//MAN
                     serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
                     dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
-                    resetConsumption(container, serverPlayerPatch, dataManager.getDataValue(PLAY_SOUND));
+                    resetConsumption(container, serverPlayerPatch, true);
                 }
             }
 
