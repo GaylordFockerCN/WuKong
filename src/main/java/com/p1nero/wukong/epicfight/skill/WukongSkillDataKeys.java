@@ -1,9 +1,9 @@
 package com.p1nero.wukong.epicfight.skill;
 
 import com.p1nero.wukong.WukongMoveset;
-import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
-import com.p1nero.wukong.epicfight.skill.custom.StaffPassive;
-import com.p1nero.wukong.epicfight.skill.custom.WukongDodgeSkill;
+import com.p1nero.wukong.epicfight.skill.custom.wukong.SmashHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.wukong.StaffPassive;
+import com.p1nero.wukong.epicfight.skill.custom.wukong.WukongDodgeSkill;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;

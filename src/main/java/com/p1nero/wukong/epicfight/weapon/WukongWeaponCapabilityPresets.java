@@ -4,7 +4,7 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
-import com.p1nero.wukong.epicfight.skill.custom.StaffStance;
+import com.p1nero.wukong.epicfight.skill.custom.wukong.StaffStance;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
