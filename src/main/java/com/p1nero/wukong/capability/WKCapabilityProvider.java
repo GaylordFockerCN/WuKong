@@ -23,9 +23,9 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
 
     private WKPlayer WKPlayer = null;
     
-    private final LazyOptional<WKPlayer> optional = LazyOptional.of(this::createSSPlayer);
+    private final LazyOptional<WKPlayer> optional = LazyOptional.of(this::createWKPlayer);
 
-    private WKPlayer createSSPlayer() {
+    private WKPlayer createWKPlayer() {
         if(this.WKPlayer == null){
             this.WKPlayer = new WKPlayer();
         }
@@ -45,13 +45,13 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        createSSPlayer().saveNBTData(tag);
+        createWKPlayer().saveNBTData(tag);
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        createSSPlayer().loadNBTData(tag);
+        createWKPlayer().loadNBTData(tag);
     }
 
     @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID)
@@ -75,6 +75,7 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
                     });
                 });
             }
+
         }
 
         @SubscribeEvent

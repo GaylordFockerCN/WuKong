@@ -1,5 +1,10 @@
 package com.p1nero.wukong.network;
 
+import com.p1nero.wukong.capability.WKCapabilityProvider;
+import com.p1nero.wukong.network.packet.client.ClientSyncPlayerCapabilityPacket;
+import com.p1nero.wukong.network.packet.server.ServerSyncPlayerCapabilityPacket;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -31,6 +36,21 @@ public class PacketRelay {
         handler.send(PacketDistributor.DIMENSION.with(() -> {
             return dimension;
         }), message);
+    }
+
+    public static void syncPlayer(ServerPlayer serverPlayer){
+        serverPlayer.getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+            CompoundTag oldData = new CompoundTag();
+            wkPlayer.saveNBTData(oldData);
+            sendToPlayer(PacketHandler.INSTANCE, new ClientSyncPlayerCapabilityPacket(oldData), serverPlayer);
+        });
+    }
+    public static void syncPlayer(LocalPlayer localPlayer){
+        localPlayer.getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+            CompoundTag oldData = new CompoundTag();
+            wkPlayer.saveNBTData(oldData);
+            sendToServer(PacketHandler.INSTANCE, new ServerSyncPlayerCapabilityPacket(oldData));
+        });
     }
 
 }

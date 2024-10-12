@@ -60,6 +60,13 @@ public class StaffPassive extends Skill {
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, PLAYING_STAFF_SPIN, false);
 
+        //自动学闪避
+        Skill dodge = container.getExecuter().getSkill(SkillSlots.DODGE).getSkill();
+        if(dodge != WukongSkills.WUKONG_DODGE){
+            container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
+            container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.setLastDodgeSkill(dodge == null ? "" : dodge.toString()));
+        }
+
         //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
             if (event.getPlayerPatch().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown()) {
@@ -127,18 +134,6 @@ public class StaffPassive extends Skill {
             }
             int dodgeId = event.getSkillContainer().getSlotId();
             if(executer.isLogicalClient()){
-                //还原为上一个闪避
-                if(!WukongWeaponCategories.isWeaponValid(executer)){
-                    executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-                        if(wkPlayer.getLastDodgeSkill().isEmpty()){
-                            return;
-                        }
-                        Skill old = SkillManager.getSkill(wkPlayer.getLastDodgeSkill());
-                        executer.getSkill(SkillSlots.DODGE).setSkill(old);
-                        EpicFightNetworkManager.sendToServer(new CPChangeSkill(dodgeId, -1, old.toString(), false));
-                    });
-                    return;
-                }
                 //临时替换为悟空闪避
                 if(!ordinalSkill.equals(WukongSkills.WUKONG_DODGE) && executer.hasStamina(this.getConsumption())){
                     executer.getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
@@ -146,6 +141,7 @@ public class StaffPassive extends Skill {
                     executer.getSkill(SkillSlots.DODGE).sendExecuteRequest((LocalPlayerPatch) executer, ClientEngine.getInstance().controllEngine);
                     executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                         wkPlayer.setLastDodgeSkill(ordinalSkill.toString());
+                        PacketRelay.syncPlayer(((LocalPlayer) executer.getOriginal()));
                     });
                     event.setCanceled(true);
                 }
@@ -161,6 +157,17 @@ public class StaffPassive extends Skill {
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
+        //把技能还原回去
+        if(!container.getExecuter().isLogicalClient()){
+            PacketRelay.syncPlayer(((ServerPlayer) container.getExecuter().getOriginal()));
+        }
+        container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+            if(wkPlayer.getLastDodgeSkill().isEmpty()){
+                container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(null);
+            } else {
+                container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(SkillManager.getSkill(wkPlayer.getLastDodgeSkill()));
+            }
+        });
         PlayerPatch<?> executer = container.getExecuter();
         executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
             if(wkPlayer.getLastDodgeSkill().isEmpty()){
