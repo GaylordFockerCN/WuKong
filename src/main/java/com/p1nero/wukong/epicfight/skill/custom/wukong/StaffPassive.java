@@ -56,7 +56,12 @@ public class StaffPassive extends Skill {
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
-
+        //自动学闪避
+        Skill dodge = container.getExecuter().getSkill(SkillSlots.DODGE).getSkill();
+        if(dodge != null && dodge != WukongSkills.WUKONG_DODGE){
+            container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
+            container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.setLastDodgeSkill(dodge.toString()));
+        }
         //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
             if (event.getPlayerPatch().isBattleMode() && WukongKeyMappings.STAFF_FLOWER.isDown()) {
@@ -115,27 +120,15 @@ public class StaffPassive extends Skill {
             }
         }));
 
-        //拦截闪避事件，替换为自己的闪避并执行
+        //拦截闪避事件，替换为自己的闪避并执行，算是保险
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID, (event -> {
             PlayerPatch<?> executer = event.getPlayerPatch();
             Skill ordinalSkill = event.getSkillContainer().getSkill();
-            if(!ordinalSkill.getCategory().equals(SkillCategories.DODGE)){
+            if(!ordinalSkill.getCategory().equals(SkillCategories.DODGE) || ordinalSkill.equals(WukongSkills.WUKONG_DODGE)){
                 return;
             }
             int dodgeId = event.getSkillContainer().getSlotId();
             if(executer.isLogicalClient()){
-                //还原为上一个闪避
-                if(!WukongWeaponCategories.isWeaponValid(executer)){
-                    executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-                        if(wkPlayer.getLastDodgeSkill().isEmpty()){
-                            return;
-                        }
-                        Skill old = SkillManager.getSkill(wkPlayer.getLastDodgeSkill());
-                        executer.getSkill(SkillSlots.DODGE).setSkill(old);
-                        EpicFightNetworkManager.sendToServer(new CPChangeSkill(dodgeId, -1, old.toString(), false));
-                    });
-                    return;
-                }
                 //临时替换为悟空闪避
                 if(!ordinalSkill.equals(WukongSkills.WUKONG_DODGE) && executer.hasStamina(this.getConsumption())){
                     executer.getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
@@ -143,6 +136,7 @@ public class StaffPassive extends Skill {
                     executer.getSkill(SkillSlots.DODGE).sendExecuteRequest((LocalPlayerPatch) executer, ClientEngine.getInstance().controllEngine);
                     executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                         wkPlayer.setLastDodgeSkill(ordinalSkill.toString());
+                        PacketRelay.syncPlayer(((LocalPlayer) executer.getOriginal()));
                     });
                     event.setCanceled(true);
                 }
@@ -154,6 +148,19 @@ public class StaffPassive extends Skill {
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
+        //把技能还原回去
+        if(!container.getExecuter().isLogicalClient()){
+            PacketRelay.syncPlayer(((ServerPlayer) container.getExecuter().getOriginal()));
+        }
+        container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+            if(wkPlayer.getLastDodgeSkill().isEmpty()){
+                container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(null);
+            } else {
+                container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(SkillManager.getSkill(wkPlayer.getLastDodgeSkill()));
+            }
+            System.out.println("set " + wkPlayer.getLastDodgeSkill() + container.getExecuter().getOriginal().level());
+        });
+
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_DAMAGE, EVENT_UUID);

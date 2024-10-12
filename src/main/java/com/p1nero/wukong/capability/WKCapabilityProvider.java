@@ -1,9 +1,12 @@
 package com.p1nero.wukong.capability;
 
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.network.PacketRelay;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.*;
@@ -21,16 +24,16 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
 
     public static Capability<WKPlayer> WK_PLAYER = CapabilityManager.get(new CapabilityToken<>() {});
 
-    private WKPlayer WKPlayer = null;
+    private WKPlayer wkPlayer = null;
     
-    private final LazyOptional<WKPlayer> optional = LazyOptional.of(this::createSSPlayer);
+    private final LazyOptional<WKPlayer> optional = LazyOptional.of(this::createWKPlayer);
 
-    private WKPlayer createSSPlayer() {
-        if(this.WKPlayer == null){
-            this.WKPlayer = new WKPlayer();
+    private WKPlayer createWKPlayer() {
+        if(this.wkPlayer == null){
+            this.wkPlayer = new WKPlayer();
         }
 
-        return this.WKPlayer;
+        return this.wkPlayer;
     }
 
     @Override
@@ -45,13 +48,13 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        createSSPlayer().saveNBTData(tag);
+        createWKPlayer().saveNBTData(tag);
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        createSSPlayer().loadNBTData(tag);
+        createWKPlayer().loadNBTData(tag);
     }
 
     @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID)
