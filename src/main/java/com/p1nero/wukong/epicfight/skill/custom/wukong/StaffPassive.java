@@ -58,9 +58,9 @@ public class StaffPassive extends Skill {
         super.onInitiate(container);
         //自动学闪避
         Skill dodge = container.getExecuter().getSkill(SkillSlots.DODGE).getSkill();
-        if(dodge != null && dodge != WukongSkills.WUKONG_DODGE){
+        if(dodge != WukongSkills.WUKONG_DODGE){
             container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
-            container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.setLastDodgeSkill(dodge.toString()));
+            container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.setLastDodgeSkill(dodge == null ? "" : dodge.toString()));
         }
         //棍花期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {

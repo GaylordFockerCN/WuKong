@@ -154,15 +154,15 @@ public class WukongAnimations {
         }), AnimationEvent.Side.CLIENT);
 
         IDLE = new StaticAnimation(true, "biped/idle",biped);
-        WALK = new MovementAnimation(true, "biped/walk",biped)
+        WALK = new StaticAnimation(true, "biped/walk",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F));
-        RUN_F = new MovementAnimation(true, "biped/run",biped);
+        RUN_F = new StaticAnimation(true, "biped/run",biped);
         RUN = new SelectiveAnimation((entityPatch) -> {
             Vec3 view = entityPatch.getOriginal().getViewVector(1.0F);
             Vec3 move = entityPatch.getOriginal().getDeltaMovement();
             double dot = view.dot(move);
             return dot < 0.0 ? 1 : 0;
-        }, "biped/run", RUN_F, WALK);//FIXME 播放异常，等看看yesman
+        }, "biped/walk", RUN_F, WALK);//FIXME
         DASH = new StaticAnimation(true, "biped/dash",biped);
         JUMP = new StaticAnimation(0.15F, false, "biped/jump",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F));
