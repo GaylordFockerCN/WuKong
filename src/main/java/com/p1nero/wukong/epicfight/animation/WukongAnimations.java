@@ -6,11 +6,15 @@ import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.WukongSkillDataKeys;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -156,13 +160,13 @@ public class WukongAnimations {
         IDLE = new StaticAnimation(true, "biped/idle",biped);
         WALK = new StaticAnimation(true, "biped/walk",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F));
-        RUN_F = new StaticAnimation(true, "biped/run",biped);
+        RUN_F = new StaticAnimation(true, "biped/run_f",biped);
         RUN = new SelectiveAnimation((entityPatch) -> {
             Vec3 view = entityPatch.getOriginal().getViewVector(1.0F);
             Vec3 move = entityPatch.getOriginal().getDeltaMovement();
             double dot = view.dot(move);
             return dot < 0.0 ? 1 : 0;
-        }, "biped/walk", RUN_F, WALK);//FIXME
+        }, "biped/run", RUN_F, WALK);
         DASH = new StaticAnimation(true, "biped/dash",biped);
         JUMP = new StaticAnimation(0.15F, false, "biped/jump",biped)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F));
@@ -229,7 +233,15 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> 1.2F))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    LivingEntity self = livingEntityPatch.getOriginal();
+                    if(self.getMainHandItem().is(WukongItems.KANG_JIN.get())){
+                        if(livingEntityPatch.getTarget() != null && self.level() instanceof ServerLevel serverLevel){
+                            EntityType.LIGHTNING_BOLT.spawn(serverLevel, livingEntityPatch.getTarget().getOnPos(), MobSpawnType.TRIGGERED);
+                        }
+                    }
+                }), AnimationEvent.Side.SERVER));
         STAFF_AUTO5 = new BasicAttackAnimation(0.01F, 0.9166F,1.15F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
