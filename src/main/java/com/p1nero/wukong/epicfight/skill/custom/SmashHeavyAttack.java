@@ -71,7 +71,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     public static final SkillDataManager.SkillDataKey<Boolean> IS_SPECIAL_ATTACK_SUCCESS = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否识破成功
     public static final SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在蓄力
     public static SkillDataManager.SkillDataKey<Integer> DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//衍生合法时间计时器
-    public static final SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第一段衍生
+    public static SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第一段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_SECOND_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第二段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_JUMP_HEAVY = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用跳跃重击
     public static final SkillDataManager.SkillDataKey<Boolean> PLAY_SOUND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播放棍势消耗音效
@@ -111,6 +111,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
      */
     public static void register(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            SmashHeavyAttack.CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
             SmashHeavyAttack.KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
             SmashHeavyAttack.DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
             SmashHeavyAttack.RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
@@ -139,7 +140,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         } else if(player.isOnGround()){
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
-            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed && !container.isFull()){//有星才能用破棍式，且满星直接放大（也防bug）
+            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用破棍式
                 if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
                     dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);

@@ -2,6 +2,7 @@
   "itemGroup.wukong.items": "史诗战斗：悟空 物品",
   "item.wukong.staff": "测试用棍",
   "item.wukong.jingubang": "如意金箍棒",
+  "item.wukong.kang_jin": "鳞棍 - 亢金",
   "epicfight.skill_slot.staff_style": "棍式",
   "skill.epicfight.staff_style.category": "棍式",
   "skill.wukong.smash_style": "劈棍式",
@@ -19,5 +20,6 @@
   "skill.wukong.dodge.tooltip": "§4无需学习此技能，现此技能已与棍子绑定！持棍将替换其他闪避。但你需要先学习任意其他闪避技能书§r\n\n触发完美闪避可增加棍势，蓄力时完美闪避可保留棍势。（仅棍类武器有效）",
   "key.wukong.staff_spin": "棍花",
   "key.wukong.category": "史诗战斗：悟空",
-  "tips.wukong.style_change": "当前棍式："
+  "tips.wukong.style_change": "当前棍式：",
+  "tips.wukong.kang_jin_staff": "当附魔引雷时，若有攻击目标，则第四段普攻将会引雷。"
 }

@@ -7,6 +7,8 @@ import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import com.p1nero.wukong.item.WukongItems;
+import com.p1nero.wukong.item.client.KangJinStaff;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
@@ -19,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.utils.AttackResult;
@@ -88,6 +91,15 @@ public class StaffPassive extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
+            if(event.getPlayerPatch().getOriginal().getMainHandItem().is(WukongItems.KANG_JIN.get()) && event.getDamageSource().equals(DamageSource.LIGHTNING_BOLT)){
+                DynamicAnimation animation = event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation();
+                if(animation.equals(WukongAnimations.STAFF_AUTO4)){
+                    event.setResult(AttackResult.ResultType.MISSED);
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+
             if(container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
                 if(!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())){
                     return;
@@ -120,7 +132,7 @@ public class StaffPassive extends Skill {
                 SkillContainer skillContainer = dealtDamageEvent.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
                 Skill skill = skillContainer.getSkill();
                 if(skill != null){
-                    skillContainer.getSkill().setConsumptionSynchronize(dealtDamageEvent.getPlayerPatch(), skillContainer.getResource() + Config.CHARGING_SPEED.get().floatValue() * 3);
+                    skillContainer.getSkill().setConsumptionSynchronize(dealtDamageEvent.getPlayerPatch(), skillContainer.getResource() + Config.CHARGING_SPEED.get().floatValue() * 4.5F);
                 }
             }
         }));

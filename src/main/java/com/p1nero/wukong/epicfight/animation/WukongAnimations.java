@@ -6,11 +6,19 @@ import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -229,8 +237,27 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
-        STAFF_AUTO5 = new WukongScaleStaffAttackAnimation(0.01F, 0.9166F,1.15F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped, 0.5F)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    LivingEntity self = livingEntityPatch.getOriginal();
+                    if(self.getMainHandItem().is(WukongItems.KANG_JIN.get()) && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.CHANNELING, self.getMainHandItem()) > 0){
+                        if(livingEntityPatch.getTarget() != null && self.level instanceof ServerLevel serverLevel){
+                            EntityType.LIGHTNING_BOLT.spawn(serverLevel, null, null, livingEntityPatch.getTarget().getOnPos(), MobSpawnType.TRIGGERED, false, false);
+                        }
+                    }
+                }), AnimationEvent.Side.SERVER),
+                        AnimationEvent.TimeStampedEvent.create(0.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            LivingEntity self = livingEntityPatch.getOriginal();
+                            if(self.getMainHandItem().is(WukongItems.KANG_JIN.get()) && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.CHANNELING, self.getMainHandItem()) > 0){
+                                //TODO 粒子缠身
+                            }
+                        }), AnimationEvent.Side.SERVER));
+        STAFF_AUTO5 = new WukongScaleStaffAttackAnimation(0.01F, 0.9166F,1.15F, 1.9833F, null, biped.toolR,  "biped/auto_5", biped, 0.5F){
+            @Override
+            public boolean isBasicAttackAnimation() {
+                return true;
+            }
+        }
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_BIG)
@@ -322,7 +349,7 @@ public class WukongAnimations {
                 AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(
                         ScaleTime.reset(1.30F),
-                        ScaleTime.of(1.45F, 1, 1.8F, 1),
+                        ScaleTime.of(1.15F, 1, 1.8F, 1),
                         ScaleTime.of(2.13F, 1, 1.8F, 1),
                         ScaleTime.reset(2.29F)
                 )
@@ -347,7 +374,7 @@ public class WukongAnimations {
                 AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(
                         ScaleTime.reset(1.667F),
-                        ScaleTime.of(1.792F, 1, 2.4F, 1),
+                        ScaleTime.of(1.392F, 1, 2.4F, 1),
                         ScaleTime.of(1.958F, 1, 2.4F, 1),
                         ScaleTime.of(2.667F, 1, 2F, 1),
                         ScaleTime.reset(2.8F)
@@ -380,7 +407,7 @@ public class WukongAnimations {
                         ScaleTime.of(3.5833F, 1, 1, 1)
                 )
         );
-        sc4List.add(AnimationEvent.TimeStampedEvent.create(2.8F, ((livingEntityPatch, staticAnimation, objects) -> {
+        sc4List.add(AnimationEvent.TimeStampedEvent.create(2.7F, ((livingEntityPatch, staticAnimation, objects) -> {
             LivingEntity entity = livingEntityPatch.getOriginal();
             Vec3 viewVec = entity.getViewVector(1.0F);
             Vec3 hVec = viewVec.add(0, -viewVec.y, 0);

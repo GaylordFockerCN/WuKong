@@ -177,11 +177,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : "Epic Fight - Wukong Moveset",
-                "Specification-Vendor"    : "P1nero, MoGlasses",
+                "Specification-Vendor"    : "P1nero, MoGlasses, 马了还想马, Ao",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "P1nero, MoGlasses",
+                "Implementation-Vendor"   : "P1nero, MoGlasses, 马了还想马, Ao",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConfigs": "wukong.mixins.json"
         ])

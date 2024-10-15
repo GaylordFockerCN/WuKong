@@ -2,6 +2,7 @@
   "itemGroup.wukong.items": "Epic Fight: Wukong Items",
   "item.wukong.staff": "Test Staff",
   "item.wukong.jingubang": "如意金箍棒",
+  "item.wukong.kang_jin": "鳞棍 - 亢金",
   "epicfight.skill_slot.staff_style": "Staff Stance",
   "skill.epicfight.staff_style.category": "Staff Stance",
   "skill.wukong.smash_style": "Smash Stance",
@@ -19,5 +20,6 @@
   "key.wukong.pillar_stance": "Pillar Stance",
   "key.wukong.staff_spin": "Staff Spin",
   "key.wukong.category": "Epic Fight: Wukong Moveset",
-  "tips.wukong.style_change": "Current Staff Stance: "
+  "tips.wukong.style_change": "Current Staff Stance: ",
+  "tips.wukong.kang_jin_staff": "When enchanted Channel, the forth basic attack will spawn lighting if has target"
 }
