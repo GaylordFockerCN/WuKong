@@ -1,0 +1,11 @@
+{
+    "trail": {
+    	"color": [255, 255, 255],
+    	"begin_pos": [0.0, 0.0, 1.45],
+    	"end_pos": [0.0, 0.0, -2.0],
+    	"lifetime": 6,
+		"interpolations": 4,
+    	"texture_path": "wukong:textures/particle/staff1.png",
+    	"particle_type": "epicfight:swing_trail"
+    }
+}
