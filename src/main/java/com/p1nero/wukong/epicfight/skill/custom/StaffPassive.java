@@ -180,16 +180,6 @@ public class StaffPassive extends Skill {
                 container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(SkillManager.getSkill(wkPlayer.getLastDodgeSkill()));
             }
         });
-        PlayerPatch<?> executer = container.getExecuter();
-        executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-            if(wkPlayer.getLastDodgeSkill().isEmpty()){
-                return;
-            }
-            Skill old = SkillManager.getSkill(wkPlayer.getLastDodgeSkill());
-            executer.getSkill(SkillSlots.DODGE).setSkill(old);
-            EpicFightNetworkManager.sendToServer(new CPChangeSkill(executer.getSkill(SkillSlots.DODGE).getSlotId(), -1, old.toString(), false));
-        });
-        return;
     }
 
     public static boolean canBeBlocked(Entity entity){
