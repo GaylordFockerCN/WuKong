@@ -165,16 +165,7 @@ public class StaffPassive extends Skill {
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_DAMAGE, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
-        PlayerPatch<?> executer = container.getExecuter();
-        executer.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-            if(wkPlayer.getLastDodgeSkill().isEmpty()){
-                return;
-            }
-            Skill old = SkillManager.getSkill(wkPlayer.getLastDodgeSkill());
-            executer.getSkill(SkillSlots.DODGE).setSkill(old);
-            EpicFightNetworkManager.sendToServer(new CPChangeSkill(executer.getSkill(SkillSlots.DODGE).getSlotId(), -1, old.toString(), false));
-        });
-        return;
+
     }
 
     public static boolean canBeBlocked(Entity entity){
