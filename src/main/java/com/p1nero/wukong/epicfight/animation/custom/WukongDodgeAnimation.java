@@ -31,7 +31,7 @@ public class WukongDodgeAnimation extends DodgeAnimation {
             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(livingEntityPatch)){
                 serverPlayerPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                     SkillContainer weaponInnate = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-                    if(weaponInnate.getDataManager().getDataValue(SmashHeavyAttack.IS_CHARGING) && !wkPlayer.isPerfectDodge() && !isPerfect){
+                    if(weaponInnate.getDataManager().hasData(SmashHeavyAttack.IS_CHARGING) && weaponInnate.getDataManager().getDataValue(SmashHeavyAttack.IS_CHARGING) && !wkPlayer.isPerfectDodge() && !isPerfect){
                         weaponInnate.getSkill().setConsumptionSynchronize(serverPlayerPatch, 1);
                         weaponInnate.getSkill().setStackSynchronize(serverPlayerPatch, 0);
                     }
