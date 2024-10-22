@@ -83,6 +83,12 @@ public class StaffPassive extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
+
+            if(event.getDamageSource().is(DamageTypes.LIGHTNING_BOLT) && event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation().equals(WukongAnimations.STAFF_AUTO4)){
+                event.setAmount(0);
+                event.setCanceled(true);
+            }
+
             if(container.getDataManager().getDataValue(PLAYING_STAFF_SPIN.get()) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().is(DamageTypes.MOB_PROJECTILE))){
                 if(!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())){
                     return;
@@ -158,7 +164,6 @@ public class StaffPassive extends Skill {
             } else {
                 container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(SkillManager.getSkill(wkPlayer.getLastDodgeSkill()));
             }
-            System.out.println("set " + wkPlayer.getLastDodgeSkill() + container.getExecuter().getOriginal().level());
         });
 
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
